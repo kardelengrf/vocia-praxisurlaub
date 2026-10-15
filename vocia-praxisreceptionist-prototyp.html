@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vocia · Praxis-Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --vocia-deep-navy:#0D1B2A;--vocia-primary-blue:#1A73E8;--vocia-soft-gray:#E6E9EC;--vocia-fresh-green:#2BC48A;
+  --text-primary:#262626;--text-secondary:#595959;--text-disabled:#8C8C8C;--outline:#D9D9D9;
+  --state-error:#F5222D;--state-warning:#FAAD14;--state-success:#52C41A;
+  --blue-900:#003A8C;--blue-600:#1890FF;--blue-300:#91D5FF;--blue-100:#E6F7FF;
+  --orange-900:#871400;--orange-600:#FA541C;--orange-300:#FFBB96;--orange-100:#FFF2E8;
+  --green-900:#135200;--green-300:#B7EB8F;--green-100:#F6FFED;
+  --cyan-600:#13C2C2;--cyan-100:#E6FFFB;
+  /* Soft gray at 45% on white: canvas + panel tint */
+  --canvas:#F4F5F6;--surface:#FFFFFF;
+  --font-sans:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;
+  --radius-control:10px;--radius-card:16px;--radius-main:24px;
+  --ease:cubic-bezier(0.2,0,0,1);
+  --shadow-card:0 0 0 1px rgba(13,27,42,.06),0 1px 2px rgba(13,27,42,.04);
+  --shadow-raised:0 0 0 1px rgba(13,27,42,.06),0 2px 4px rgba(13,27,42,.04),0 8px 24px rgba(13,27,42,.06);
+  --shadow-float:0 0 0 1px rgba(13,27,42,.06),0 12px 32px rgba(13,27,42,.14),0 32px 64px rgba(13,27,42,.10);
+  box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--canvas);color:var(--text-primary);font-family:var(--font-sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+#app{height:100%}
+button,input,textarea,select{font-family:inherit;color:inherit;font-size:inherit}
+svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.btn svg.i,.pill svg.i,b svg.i{stroke-width:2}
+:focus-visible{outline:2px solid var(--vocia-primary-blue);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.muted{color:var(--text-secondary)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Shell: rail | panel | main ---------- */
+.shell{display:grid;grid-template-columns:80px 264px minmax(0,1fr);height:100%}
+.shell.nopanel{grid-template-columns:80px minmax(0,1fr)}
+.rail{background:var(--vocia-deep-navy);display:flex;flex-direction:column;align-items:center;padding:var(--space-6) 0 var(--space-4);gap:var(--space-1);overflow-y:auto}
+.logo{display:grid;place-items:center;width:48px;height:48px;margin-bottom:var(--space-6)}
+.logo img{width:32px;height:auto;display:block}
+.rbtn{position:relative;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;border:0;background:transparent;color:rgba(230,233,236,.62);cursor:pointer;transition:background-color 150ms var(--ease),color 150ms var(--ease),scale 150ms var(--ease)}
+.rbtn svg.i{width:22px;height:22px}
+.rbtn:hover{color:#fff;background:rgba(230,233,236,.06)}
+.rbtn:active{scale:.96}
+.rbtn[aria-current="page"]{color:#fff;background:rgba(230,233,236,.14);box-shadow:inset 0 0 0 1px rgba(230,233,236,.10)}
+.rbtn[aria-current="page"]::after{content:"";position:absolute;right:-16px;top:14px;bottom:14px;width:3px;border-radius:2px;background:var(--vocia-primary-blue)}
+.rbtn:focus-visible{outline-color:#fff}
+.rbtn .tip{position:absolute;left:58px;top:50%;translate:0 -50%;background:var(--vocia-deep-navy);color:#fff;font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 150ms var(--ease);z-index:50;box-shadow:0 4px 12px rgba(13,27,42,.25)}
+.rbtn:hover .tip,.rbtn:focus-visible .tip{opacity:1}
+.rbtn .badge{position:absolute;top:8px;right:8px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--vocia-primary-blue);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;box-shadow:0 0 0 2px var(--vocia-deep-navy)}
+.rsep{width:32px;height:1px;background:rgba(230,233,236,.12);margin:var(--space-2) 0}
+.avatar{margin-top:auto;width:40px;height:40px;border-radius:50%;background:rgba(230,233,236,.14);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+
+.panel{padding:var(--space-8) var(--space-4) var(--space-4);display:flex;flex-direction:column;overflow-y:auto}
+.panel h2{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0 var(--space-3) var(--space-1)}
+.panel .pp{font-size:13px;color:var(--text-secondary);margin:0 var(--space-3) var(--space-6)}
+.pgroup+.pgroup{margin-top:var(--space-4);padding-top:var(--space-4);border-top:1px solid var(--outline)}
+.plabel{font-size:12px;font-weight:600;color:var(--text-secondary);margin:0 var(--space-3) var(--space-2)}
+.pitem{display:flex;align-items:center;gap:var(--space-3);width:100%;padding:10px var(--space-3);border-radius:12px;border:0;background:transparent;font-size:15px;font-weight:500;text-align:left;cursor:pointer;color:var(--text-primary);transition:background-color 150ms var(--ease),box-shadow 150ms var(--ease),scale 150ms var(--ease)}
+.pitem:hover{background:rgba(13,27,42,.04)}
+.pitem:active{scale:.98}
+.pitem[aria-current="true"]{background:var(--surface);box-shadow:var(--shadow-raised);font-weight:600}
+.pitem .cnt{margin-left:auto;font-size:14px;color:var(--text-secondary);font-weight:500}
+.pitem .i{color:var(--text-secondary)}
+.pitem[aria-current="true"] .i{color:var(--vocia-primary-blue)}
+.pitem:disabled{cursor:default;color:var(--text-disabled)}
+.pitem:disabled .i{color:var(--text-disabled)}
+.pitem .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--surface);box-shadow:0 0 0 1px var(--outline);flex:none;color:var(--text-secondary)}
+.pitem[aria-current="true"] .dot{background:var(--vocia-primary-blue);color:#fff;box-shadow:none}
+.pitem.done .dot{background:var(--green-100);color:var(--green-900);box-shadow:0 0 0 1px var(--green-300)}
+.pitem .dot .i{width:13px;height:13px;color:inherit;stroke-width:2.5}
+.pfoot{margin-top:auto;padding:var(--space-4) var(--space-3) 0}
+.switch{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary);cursor:pointer}
+.switch input{appearance:none;width:32px;height:18px;border-radius:9px;background:var(--outline);position:relative;cursor:pointer;margin:0;flex:none;transition:background-color 150ms var(--ease)}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:translate 150ms var(--ease)}
+.switch input:checked{background:var(--vocia-primary-blue)}
+.switch input:checked::after{translate:14px 0}
+
+.mainwrap{padding:var(--space-2) var(--space-2) var(--space-2) 0;min-width:0;min-height:0}
+.nopanel .mainwrap{padding-left:var(--space-2)}
+.main{height:100%;overflow:auto;background:var(--surface);border-radius:var(--radius-main);box-shadow:var(--shadow-card);position:relative}
+.page{max-width:1040px;margin:0 auto;padding:var(--space-10) var(--space-10) 96px}
+.mchips{display:none}
+
+.eyebrow{font-size:13px;font-weight:600;color:var(--text-secondary);margin:0 0 var(--space-1)}
+h1{font-size:36px;line-height:1.15;font-weight:700;letter-spacing:-.025em;margin:0}
+h2{font-size:22px;line-height:1.25;font-weight:700;letter-spacing:-.01em;margin:0}
+h3{font-size:16px;font-weight:700;margin:0}
+.lead{color:var(--text-secondary);margin:var(--space-2) 0 0;max-width:62ch}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--space-4);margin-bottom:var(--space-8);flex-wrap:wrap}
+.acts{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center}
+.section{margin-top:var(--space-12);scroll-margin-top:var(--space-6)}
+.shead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
+.cap{font-size:12px;color:var(--text-secondary)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:40px;padding:0 var(--space-4);border-radius:var(--radius-control);border:0;background:var(--surface);box-shadow:0 0 0 1px var(--outline),0 1px 2px rgba(13,27,42,.04);color:var(--text-primary);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background-color 150ms var(--ease),box-shadow 150ms var(--ease),color 150ms var(--ease),scale 150ms var(--ease)}
+.btn:hover{box-shadow:0 0 0 1px var(--text-disabled),0 1px 2px rgba(13,27,42,.06)}
+.btn:active{scale:.96}
+.btn.primary{background:var(--vocia-primary-blue);color:#fff;box-shadow:0 1px 2px rgba(13,27,42,.12),inset 0 1px 0 rgba(255,255,255,.14)}
+.btn.primary:hover{background:#155FC0}
+.btn.dark{background:var(--vocia-deep-navy);color:#fff;box-shadow:none}
+.btn.dark:hover{background:#1B2B3D}
+.btn.ghost{background:transparent;box-shadow:none;color:var(--vocia-primary-blue)}
+.btn.ghost:hover{background:var(--blue-100)}
+.btn.quiet{background:transparent;box-shadow:none;color:var(--text-secondary)}
+.btn.quiet:hover{background:rgba(13,27,42,.04);color:var(--text-primary)}
+.btn.sm{min-height:32px;padding:0 var(--space-3);font-size:13px;border-radius:8px}
+.btn.icon{width:40px;padding:0}
+.btn.sm.icon{width:32px}
+.btn[aria-busy="true"]{opacity:.75;cursor:progress}
+.btn:disabled{cursor:not-allowed}
+.danger .i{color:var(--state-error)}
+.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;opacity:.8}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;font-size:13px;font-weight:600;white-space:nowrap}
+.pill .i{width:14px;height:14px}
+.pill.ok{background:var(--green-100);color:var(--green-900);box-shadow:inset 0 0 0 1px var(--green-300)}
+.pill.info{background:var(--blue-100);color:var(--blue-900);box-shadow:inset 0 0 0 1px var(--blue-300)}
+.pill.warn{background:var(--orange-100);color:var(--orange-900);box-shadow:inset 0 0 0 1px var(--orange-300)}
+.pill.err{background:var(--surface);color:var(--text-primary);box-shadow:inset 0 0 0 1px var(--state-error)}
+.pill.err .i{color:var(--state-error)}
+.pill.muted{background:var(--vocia-soft-gray);color:var(--text-secondary)}
+.pill.dark{background:rgba(230,233,236,.12);color:#fff}
+
+/* Cards */
+.card{background:var(--surface);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}
+.card.pad{padding:var(--space-6)}
+.card.soft{background:var(--canvas);box-shadow:none}
+.grid{display:grid;gap:var(--space-4)}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+/* Stats */
+.stat{padding:var(--space-6);border-radius:20px;background:var(--surface);box-shadow:var(--shadow-card);display:flex;flex-direction:column;gap:var(--space-1);min-height:148px}
+.stat .lbl{font-size:14px;font-weight:600;color:var(--text-secondary)}
+.stat .big{font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-top:auto}
+.stat .big small{font-size:20px;font-weight:600;letter-spacing:0;margin-left:2px}
+.stat .def{font-size:12px;color:var(--text-secondary)}
+.stat.green{background:var(--green-100);box-shadow:inset 0 0 0 1px var(--green-300)}
+.hero{background:var(--vocia-deep-navy);color:#fff;border-radius:20px;padding:var(--space-8);display:flex;flex-direction:column;gap:var(--space-4);min-height:100%;position:relative;overflow:hidden}
+.hero .status{display:flex;align-items:center;gap:var(--space-2);font-size:14px;font-weight:600;color:rgba(230,233,236,.82)}
+.hero .status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vocia-fresh-green);box-shadow:0 0 0 4px rgba(43,196,138,.18)}
+.hero .huge{font-size:88px;font-weight:700;letter-spacing:-.05em;line-height:.95;margin-top:auto}
+.hero .sub{font-size:15px;color:rgba(230,233,236,.72)}
+.hero .row{display:flex;gap:var(--space-6);padding-top:var(--space-4);border-top:1px solid rgba(230,233,236,.14);flex-wrap:wrap}
+.hero .row b{display:block;font-size:22px;font-weight:700}
+.hero .row span{font-size:13px;color:rgba(230,233,236,.72)}
+.hero .mark{position:absolute;right:-28px;top:-20px;width:220px;opacity:.06;pointer-events:none}
+
+/* Lists / tables */
+.list .row{display:grid;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-6);width:100%;border:0;background:transparent;text-align:left;cursor:pointer;transition:background-color 150ms var(--ease)}
+.list .row+.row{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
+.list button.row:hover{background:var(--canvas)}
+.list .hd{cursor:default;font-size:12px;font-weight:600;color:var(--text-secondary);padding-top:var(--space-3);padding-bottom:var(--space-3)}
+.list .row:first-child{border-radius:var(--radius-card) var(--radius-card) 0 0}
+.list .row:last-child{border-radius:0 0 var(--radius-card) var(--radius-card)}
+.calls .row{grid-template-columns:64px minmax(0,1.6fr) minmax(0,1fr) 64px 170px 20px}
+.tasks .row{grid-template-columns:minmax(0,2fr) 110px minmax(0,1fr) 150px 180px 20px}
+.ops .row{grid-template-columns:110px minmax(0,1.4fr) 120px 160px}
+.zt .row{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) 120px 210px}
+.team .row{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 120px minmax(0,1fr)}
+.t1{font-weight:600}
+.t2{font-size:13px;color:var(--text-secondary)}
+.chev{color:var(--text-disabled);width:16px;height:16px}
+.empty{padding:var(--space-10) var(--space-6);text-align:center;color:var(--text-secondary)}
+.empty .i{width:28px;height:28px;color:var(--text-disabled);margin-bottom:var(--space-2)}
+.empty b{display:block;color:var(--text-primary);font-weight:700;margin-bottom:var(--space-1)}
+.rowacts{display:flex;gap:var(--space-1);justify-content:flex-end}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)}
+.chip .i{width:14px;height:14px}
+
+.kv{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:var(--space-3) var(--space-6);margin:0}
+.kv dt{color:var(--text-secondary);font-size:14px}
+.kv dd{margin:0;font-weight:500}
+.hours{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-2)}
+.day{padding:var(--space-4) var(--space-3);border-radius:14px;background:var(--canvas);font-size:13px}
+.day b{display:block;font-size:14px;margin-bottom:var(--space-1)}
+.day.closed{color:var(--text-disabled)}
+
+/* Integration / check rows */
+.irow{display:flex;gap:var(--space-4);align-items:flex-start}
+.ibox{width:44px;height:44px;border-radius:12px;background:var(--canvas);display:grid;place-items:center;flex:none}
+.ibox .i{width:22px;height:22px}
+.irow .body{flex:1;min-width:0}
+.health{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0}
+.health+.health{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
+.health .body{flex:1}
+.cando{display:grid;grid-template-columns:24px 1fr auto;gap:var(--space-3);align-items:start;padding:var(--space-4) 0}
+.cando+.cando{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
+.cando .i.ok{color:var(--state-success)}
+.cando .i.no{color:var(--text-disabled)}
+
+/* Messages */
+.msg{display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) var(--space-4);border-radius:12px;font-size:14px;margin-top:var(--space-3)}
+.msg .i{margin-top:2px}
+.msg.info{background:var(--blue-100);color:var(--blue-900)}
+.msg.warn{background:var(--orange-100);color:var(--orange-900)}
+.msg.ok{background:var(--green-100);color:var(--green-900)}
+.msg.err{background:var(--surface);box-shadow:inset 0 0 0 1px var(--state-error)}
+.msg.err .i{color:var(--state-error)}
+.msg .body{flex:1}
+.banner{margin:0 0 var(--space-6);align-items:center}
+.hint{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap;padding:var(--space-4) var(--space-6);border-radius:var(--radius-card);background:var(--canvas);margin-bottom:var(--space-4)}
+.hint p{margin:0;max-width:52ch}
+
+/* Tabs */
+.tabs{display:flex;gap:var(--space-1);padding:4px;border-radius:12px;background:var(--canvas)}
+.tab{border:0;background:transparent;padding:6px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:background-color 150ms var(--ease),color 150ms var(--ease),box-shadow 150ms var(--ease)}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow-card)}
+
+/* Chart */
+.chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-4);align-items:end;height:220px;padding-top:var(--space-4)}
+.bar{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px}
+.bar .seg{border-radius:4px;min-height:3px}
+.bar .seg:first-child{border-radius:8px 8px 4px 4px}
+.seg.s{background:var(--vocia-primary-blue)}
+.seg.h{background:var(--blue-300)}
+.seg.f{background:var(--orange-600)}
+.xl{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-4);margin-top:var(--space-2);font-size:12px;color:var(--text-secondary);text-align:center}
+.xl b{display:block;color:var(--text-primary);font-size:13px}
+.legend{display:flex;gap:var(--space-4);flex-wrap:wrap;font-size:13px;color:var(--text-secondary)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.rank{display:grid;gap:var(--space-3)}
+.rank .r{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:var(--space-3);align-items:center;font-size:14px}
+.rank .track{grid-column:1 / -1;height:8px;border-radius:4px;background:var(--canvas);overflow:hidden}
+.rank .track div{height:100%;border-radius:4px;background:var(--blue-300)}
+
+/* Forms (flow) */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.field label em{font-style:normal;font-weight:400;color:var(--text-secondary)}
+.field input,.field textarea{width:100%;min-height:48px;border:0;border-radius:12px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);padding:0 var(--space-4);font-size:15px;transition:box-shadow 150ms var(--ease),background-color 150ms var(--ease)}
+.field textarea{min-height:160px;padding:var(--space-4);line-height:1.6;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;background:var(--surface);box-shadow:inset 0 0 0 2px var(--vocia-primary-blue)}
+.field [aria-invalid="true"]{background:var(--surface);box-shadow:inset 0 0 0 2px var(--state-error)}
+.ferr{display:flex;gap:6px;align-items:flex-start;font-size:13px;margin:6px 0 0}
+.ferr .i{width:16px;height:16px;color:var(--state-error);margin-top:1px}
+.derived{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2);margin-top:var(--space-4)}
+.derived>div{padding:var(--space-4);border-radius:14px;background:var(--canvas)}
+.derived>div.mid{background:var(--vocia-deep-navy);color:#fff}
+.derived small{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:2px}
+.derived .mid small,.derived .mid .t2{color:rgba(230,233,236,.72)}
+.derived b{font-weight:700;font-size:16px}
+.check{display:flex;gap:var(--space-3);align-items:flex-start;cursor:pointer;font-size:15px}
+.check input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--vocia-primary-blue);flex:none}
+.check small{display:block;color:var(--text-secondary);font-size:13px}
+.boxed{padding:var(--space-4);border-radius:14px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray)}
+.boxed.invalid{box-shadow:inset 0 0 0 2px var(--state-error)}
+.opts{display:grid;gap:var(--space-2);grid-template-columns:1fr 1fr}
+.opt{display:grid;grid-template-columns:18px 1fr;gap:var(--space-3);padding:var(--space-4);border-radius:14px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);cursor:pointer;transition:box-shadow 150ms var(--ease),background-color 150ms var(--ease)}
+.opt input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--vocia-primary-blue)}
+.opt b{font-weight:700;display:block}
+.opt span{display:block;color:var(--text-secondary);font-size:14px}
+.opt:has(input:checked){background:var(--blue-100);box-shadow:inset 0 0 0 2px var(--vocia-primary-blue)}
+.vform{margin-top:var(--space-3);display:grid;gap:var(--space-4);padding:var(--space-4);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-card)}
+.appts{margin:var(--space-2) 0 0;padding:0;list-style:none;font-size:14px}
+.appts li{display:grid;grid-template-columns:120px 56px 1fr;gap:var(--space-2);padding:6px 0;box-shadow:inset 0 1px 0 var(--orange-300)}
+.block{margin-top:var(--space-8)}
+.block>h3{margin-bottom:var(--space-3)}
+.toolrow{display:flex;gap:var(--space-2);margin-top:var(--space-3);flex-wrap:wrap}
+details.legal{margin-top:var(--space-6);border-radius:14px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);font-size:14px}
+details.legal summary{padding:var(--space-3) var(--space-4);cursor:pointer;font-weight:600}
+details.legal ul{margin:0;padding:0 var(--space-4) var(--space-3) var(--space-8);color:var(--text-secondary)}
+.flowfoot{position:sticky;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 var(--vocia-soft-gray);padding:var(--space-3) var(--space-10);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);border-radius:0 0 var(--radius-main) var(--radius-main)}
+.flowfoot .pos{font-size:13px;color:var(--text-secondary)}
+.flowpage{max-width:780px;margin:0 auto;padding:var(--space-10) var(--space-10) var(--space-12)}
+
+/* Caller preview */
+.sim{padding:var(--space-6);border-radius:20px;background:var(--canvas)}
+.simhd{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);font-size:13px;color:var(--text-secondary);flex-wrap:wrap}
+.conv{display:flex;flex-direction:column;gap:var(--space-3)}
+.m{max-width:86%;font-size:15px;line-height:1.55}
+.m .who{font-size:12px;font-weight:600;color:var(--text-secondary);margin:0 0 4px;display:flex;align-items:center;gap:6px}
+.m .txt{padding:12px 16px;border-radius:18px}
+.m.v{align-self:flex-start}
+.m.v .who::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vocia-fresh-green)}
+.m.v .txt{background:var(--surface);border-top-left-radius:6px;box-shadow:var(--shadow-card)}
+.m.c{align-self:flex-end}
+.m.c .who{justify-content:flex-end}
+.m.c .txt{background:var(--vocia-deep-navy);color:#fff;border-top-right-radius:6px}
+.m mark{background:var(--blue-100);color:var(--blue-900);padding:0 4px;border-radius:4px;font-weight:600}
+.summary .ci{display:grid;grid-template-columns:22px 1fr auto;gap:var(--space-3);align-items:start;padding:var(--space-4) var(--space-6)}
+.summary .ci+.ci{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
+.summary .ci .i.ok{color:var(--state-success)}
+.summary .ci .i.wn{color:var(--orange-600)}
+.summary .ci small{display:block;font-size:13px;color:var(--text-secondary)}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(13,27,42,.32);z-index:30;animation:fade 200ms var(--ease)}
+.drawer{position:fixed;top:8px;right:8px;bottom:8px;width:min(480px,calc(100vw - 16px));background:var(--surface);border-radius:var(--radius-main);box-shadow:var(--shadow-float);z-index:31;display:flex;flex-direction:column;animation:slide 240ms var(--ease)}
+.drawer .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-3);padding:var(--space-6) var(--space-6) var(--space-4)}
+.drawer .db{padding:0 var(--space-6) var(--space-6);overflow:auto;flex:1}
+.drawer .df{padding:var(--space-4) var(--space-6);box-shadow:inset 0 1px 0 var(--vocia-soft-gray);display:flex;gap:var(--space-2);justify-content:flex-end;flex-wrap:wrap}
+.dsec{margin-top:var(--space-6)}
+.dsec h3{font-size:13px;color:var(--text-secondary);font-weight:600;margin-bottom:var(--space-2)}
+.locked{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-4);border-radius:12px;background:var(--canvas);font-size:14px;color:var(--text-secondary)}
+@keyframes slide{from{translate:24px 0;opacity:0}to{translate:0 0;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* Notes, modal, toast */
+.note{display:none;background:var(--orange-100);color:var(--orange-900);font-size:13px;line-height:1.45;padding:var(--space-2) var(--space-3);border-radius:10px;margin:var(--space-3) 0;box-shadow:inset 3px 0 0 var(--orange-600)}
+.note b{font-weight:700}
+body.notes .note{display:block}
+.overlay{position:fixed;inset:0;background:rgba(13,27,42,.45);display:grid;place-items:center;z-index:40;padding:var(--space-4);animation:fade 150ms var(--ease)}
+.modal{background:var(--surface);border-radius:var(--radius-main);width:min(460px,100%);padding:var(--space-8);box-shadow:var(--shadow-float)}
+.modal h2{font-size:20px;margin-bottom:var(--space-2)}
+.modal p{margin:0 0 var(--space-3);color:var(--text-secondary)}
+.modal ul{margin:0 0 var(--space-6);padding-left:20px;color:var(--text-secondary);font-size:14px}
+.modal .acts{justify-content:flex-end;margin-top:var(--space-6)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));translate:-50% 8px;background:var(--vocia-deep-navy);color:#fff;padding:8px 8px 8px 16px;border-radius:14px;font-size:14px;display:flex;gap:var(--space-3);align-items:center;opacity:0;pointer-events:none;transition:opacity 150ms var(--ease),translate 150ms var(--ease);z-index:60;max-width:calc(100vw - 32px);box-shadow:var(--shadow-float);min-height:44px}
+.toast.show{opacity:1;translate:-50% 0;pointer-events:auto}
+.toast .btn{min-height:32px;background:rgba(230,233,236,.14);color:#fff;box-shadow:none}
+
+@media (max-width:1100px){
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .calls .row{grid-template-columns:56px minmax(0,1fr) 150px 20px}
+  .calls .row .c-dur,.calls .row .c-topic2{display:none}
+  .tasks .row{grid-template-columns:minmax(0,1fr) 150px 20px}
+  .tasks .row .t-prio,.tasks .row .t-owner,.tasks .row .t-due{display:none}
+}
+@media (max-width:900px){
+  .shell,.shell.nopanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .rail{flex-direction:row;justify-content:flex-start;padding:var(--space-2) var(--space-3);overflow-x:auto;gap:2px}
+  .logo{margin:0 var(--space-2) 0 0;width:40px;height:40px;flex:none}
+  .logo img{width:26px}
+  .rbtn{flex:none;width:44px;height:44px}
+  .rbtn .tip,.rsep,.avatar{display:none}
+  .rbtn[aria-current="page"]::after{right:12px;left:12px;top:auto;bottom:-6px;width:auto;height:3px}
+  .panel{display:none}
+  .mainwrap,.nopanel .mainwrap{padding:0}
+  .main{border-radius:0;box-shadow:none}
+  .mchips{display:flex;gap:var(--space-2);overflow-x:auto;margin:calc(var(--space-4) * -1) calc(var(--space-4) * -1) var(--space-6);padding:0 var(--space-4) 2px}
+  .mchips .pitem{width:auto;flex:none;white-space:nowrap;padding:6px 12px;background:var(--canvas)}
+  .mchips .pitem[aria-current="true"]{background:var(--vocia-deep-navy);color:#fff;box-shadow:none}
+  .mchips .pitem[aria-current="true"] .i,.mchips .pitem[aria-current="true"] .cnt{color:#fff}
+  .page,.flowpage{padding:var(--space-8) var(--space-4) 96px}
+  h1{font-size:30px}
+  .g2,.g3,.g4{grid-template-columns:minmax(0,1fr)}
+  .hero .huge{font-size:64px}
+  .flowfoot{padding:var(--space-3) var(--space-4);border-radius:0}
+  .grid2,.opts,.derived{grid-template-columns:minmax(0,1fr)}
+  .hours{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .list .hd{display:none}
+  .calls .row,.tasks .row{grid-template-columns:minmax(0,1fr) auto;padding:var(--space-4)}
+  .calls .row .c-time,.list .row .chev{display:none}
+  .ops .row,.zt .row,.team .row{grid-template-columns:minmax(0,1fr) auto;padding:var(--space-4)}
+  .ops .row>:nth-child(1),.team .row>:nth-child(4){display:none}
+  .zt .row .kind{display:none}
+  .zt .row .rowacts{grid-column:1 / -1;justify-content:flex-start}
+  .chart{gap:var(--space-2)}
+  .xl{gap:var(--space-2)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+"use strict";
+const LOGO="data:image/png;base64,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";
+const PRAXIS='Kieferorthopädie Doktor Immerda';
+const ME='A. Kaya';
+const STD={type:'Zahnärztlicher Notdienst',phone:'030 89004333',checked:'2026-09-02'};
+const LAST_V={name:'Praxis Dr. Müller',phone:'030 4412 9870',addr:'Kastanienallee 12, 10435 Berlin'};
+const WD=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const MO=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+const D=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const iso=dt=>`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+const addDays=(s,n)=>{const dt=D(s);dt.setDate(dt.getDate()+n);return iso(dt)};
+const fmt=s=>{const [y,m,d]=s.split('-');return `${d}.${m}.${y}`};
+const fmtS=s=>{const [,m,d]=s.split('-');return `${d}.${m}.`};
+const long=s=>{const dt=D(s);return `${WD[dt.getDay()]}, ${dt.getDate()}. ${MO[dt.getMonth()]}`};
+const wd=s=>{const g=D(s).getDay();return g>0&&g<6};
+const TODAY=iso(new Date());
+const DEF_START=(()=>{let s=addDays(TODAY,10);while(D(s).getDay()!==1)s=addDays(s,1);return s})();
+const DEF_REOPEN=addDays(DEF_START,7);
+const lastDay=d=>addDays(d.reopen,-1);
+function lastOpen(start){let s=addDays(start,-1);while(!wd(s))s=addDays(s,-1);return s}
+function workdays(d){let n=0;for(let s=d.start;s<d.reopen;s=addDays(s,1))if(wd(s))n++;return n}
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+
+const APPTS=[
+  {o:0,t:'09:30',what:'Kontrolltermin, L. Becker'},{o:1,t:'14:00',what:'Bracket-Kontrolle, J. Weber'},
+  {o:3,t:'08:15',what:'Erstberatung, M. Schulz'},{o:9,t:'10:00',what:'Retainer-Anpassung, E. Yılmaz'},
+  {o:15,t:'11:30',what:'Kontrolltermin, P. Richter'}
+].map(a=>({d:addDays(DEF_START,a.o),t:a.t,what:a.what}));
+
+/* ---------- mock data ---------- */
+const CALLS=[
+  {id:'A-2318',t:'14:52',dur:'2:41',caller:'4821',topic:'Termin vereinbaren',out:'solved',summary:'Kontrolltermin für Donnerstag, 10:30 Uhr vereinbart. Der Eintrag wurde im Kalender bestätigt.',op:{type:'Termin angelegt',id:'VG-88213',state:'ok'}},
+  {id:'A-2317',t:'14:31',dur:'1:12',caller:'0937',topic:'Öffnungszeiten',out:'solved',summary:'Fragte nach den Öffnungszeiten am Freitag.'},
+  {id:'A-2316',t:'13:58',dur:'3:05',caller:'5512',topic:'Termin verschieben',out:'handoff',summary:'Möchte den Termin am Dienstag verschieben. Verschieben ist für Vocia nicht freigegeben, Rückruf durch das Team angekündigt.',reason:'Verschieben nicht freigegeben',task:'T-512'},
+  {id:'A-2315',t:'13:20',dur:'0:48',caller:'7720',topic:'Unbekannt',out:'dropped',summary:'Verbindung nach 48 Sekunden unterbrochen. Kein Anliegen erfasst.'},
+  {id:'A-2314',t:'12:47',dur:'2:10',caller:'3305',topic:'Termin absagen',out:'solved',summary:'Termin am Mittwoch, 09:00 Uhr nach ausdrücklicher Bestätigung des Anrufers abgesagt.',op:{type:'Termin abgesagt',id:'VG-88207',state:'ok'}},
+  {id:'A-2313',t:'12:05',dur:'1:56',caller:'6148',topic:'Termin vereinbaren',out:'failed',summary:'Der Kalender war nicht erreichbar. Es wurde kein Termin bestätigt. Rückrufbitte aufgenommen.',reason:'Kalender nicht erreichbar',task:'T-511',op:{type:'Termin anlegen',id:'VG-88199',state:'no'}},
+  {id:'A-2312',t:'11:40',dur:'2:33',caller:'2290',topic:'Rezeptanfrage',out:'handoff',summary:'Bittet um Rückruf zu einem Folgerezept.',reason:'Medizinisches Anliegen',task:'T-510'},
+  {id:'A-2311',t:'11:02',dur:'1:20',caller:'8841',topic:'Anfahrt & Adresse',out:'solved',summary:'Adresse und Parkmöglichkeiten genannt.'},
+  {id:'A-2310',t:'10:26',dur:'4:12',caller:'1176',topic:'Termin vereinbaren',out:'solved',summary:'Erstberatung für Montag, 14:00 Uhr vereinbart. Der Eintrag wurde im Kalender bestätigt.',op:{type:'Termin angelegt',id:'VG-88190',state:'ok'}},
+  {id:'A-2309',t:'09:48',dur:'2:02',caller:'4410',topic:'Kostenfrage',out:'followup',summary:'Fragt nach den Kosten einer Zusatzleistung. Rückruf durch das Team zugesagt.',reason:'Abrechnungsfrage',task:'T-509'},
+  {id:'A-2308',t:'09:15',dur:'1:44',caller:'9063',topic:'Termin vereinbaren',out:'solved',summary:'Kontrolltermin für nächste Woche, 08:30 Uhr vereinbart. Im Kalender bestätigt.',op:{type:'Termin angelegt',id:'VG-88184',state:'ok'}},
+  {id:'A-2307',t:'08:31',dur:'0:57',caller:'3518',topic:'Sprache',out:'handoff',summary:'Der Anrufer sprach kein Deutsch. Rückmeldung durch das Praxisteam organisiert.',reason:'Sprache nicht unterstützt',task:'T-508'},
+  {id:'A-2306',t:'08:04',dur:'1:31',caller:'6602',topic:'Öffnungszeiten',out:'solved',summary:'Fragte, ob die Praxis heute geöffnet hat.'}
+];
+const OUT={solved:['Gelöst','ok','checkc'],handoff:['Übergeben','info','forward'],followup:['Nachverfolgung','warn','clock'],failed:['Fehlgeschlagen','err','err'],dropped:['Abgebrochen','muted','dash']};
+const TST={neu:['Neu','info','spark'],zugewiesen:['Zugewiesen','info','user'],bearbeitung:['In Bearbeitung','warn','clock'],wartet:['Wartet auf Antwort','muted','pause'],erledigt:['Erledigt','ok','checkc'],storniert:['Storniert','muted','x']};
+
+let TASKS=[
+  {id:'T-512',title:'Termin verschieben',call:'A-2316',reason:'Verschieben ist für Vocia nicht freigegeben.',promise:'Rückruf heute angekündigt',prio:'Normal',status:'neu',owner:null,age:'1 Std.',due:'Heute, 18:00'},
+  {id:'T-511',title:'Termin vereinbaren',call:'A-2313',reason:'Kalender war nicht erreichbar. Kein Termin bestätigt.',promise:'Rückruf heute angekündigt',prio:'Hoch',status:'neu',owner:null,age:'3 Std.',due:'Heute, 16:00'},
+  {id:'T-510',title:'Rückruf zu Folgerezept',call:'A-2312',reason:'Medizinisches Anliegen, nicht durch Vocia lösbar.',promise:'Rückmeldung durch das Team',prio:'Normal',status:'zugewiesen',owner:'Dr. Immerda',age:'3 Std.',due:'Morgen, 12:00'},
+  {id:'T-509',title:'Kostenfrage Zusatzleistung',call:'A-2309',reason:'Abrechnungsfrage.',promise:'Rückruf heute zugesagt',prio:'Normal',status:'bearbeitung',owner:'M. Wolf',age:'5 Std.',due:'Heute, 17:00'},
+  {id:'T-508',title:'Rückmeldung in anderer Sprache',call:'A-2307',reason:'Sprache nicht unterstützt.',promise:'Rückmeldung durch das Team',prio:'Normal',status:'wartet',owner:'M. Wolf',age:'6 Std.',due:'Morgen, 10:00'},
+  {id:'T-503',title:'Rückruf: Befundbesprechung',call:null,reason:'Bitte um Rückruf außerhalb der Sprechzeiten.',promise:'Rückruf am nächsten Werktag',prio:'Normal',status:'zugewiesen',owner:'S. Neumann',age:'1 Tag',due:'Gestern, 17:00',overdue:true},
+  {id:'T-501',title:'Termin vereinbaren',call:null,reason:'Gewünschte Uhrzeit nicht verfügbar.',promise:'Rückruf zugesagt',prio:'Normal',status:'erledigt',owner:'S. Neumann',age:'1 Tag',due:'Gestern, 12:00'}
+];
+const WEEK=(()=>{const pool=[[52,14,3],[61,17,2],[48,15,5],[57,12,2],[55,16,3]];let k=0;const out=[];
+  for(let d=-6;d<=0;d++){const date=addDays(TODAY,d);let v=[0,0,0];if(d===0)v=wd(date)?[7,3,3]:[0,0,0];else if(wd(date))v=pool[k++%pool.length];out.push({d,date,s:v[0],h:v[1],f:v[2]})}return out})();
+const REASONS=[['Verschieben nicht freigegeben',21],['Medizinisches Anliegen',17],['Abrechnungsfrage',9],['Kalender nicht erreichbar',6],['Sprache nicht unterstützt',4]];
+const TEAM=[
+  {n:'A. Kaya',r:'Praxisleitung',twofa:true,last:'Jetzt aktiv'},
+  {n:'Dr. Immerda',r:'Inhaber',twofa:true,last:'Heute, 11:20'},
+  {n:'M. Wolf',r:'Empfang',twofa:true,last:'Heute, 14:05'},
+  {n:'S. Neumann',r:'Empfang',twofa:false,last:'Gestern, 17:40'}
+];
+
+/* ---------- icons ---------- */
+const P={
+  home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+  tasks:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/>',
+  cal:'<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  plug:'<path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4"/>',
+  chart:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  pencil:'<path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  checkc:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  play:'<path d="M7 4v16l13-8z"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  err:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  refresh:'<path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  dash:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+  forward:'<path d="M15 10l5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 3.1a4 4 0 0 1 0 7.8M22 21a7 7 0 0 0-4-6.3"/>',
+  shield:'<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  db:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  card:'<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/>',
+  list:'<path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>',
+  chev:'<path d="m9 6 6 6-6 6"/>',
+  spark:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/>',
+  pause:'<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>',
+  sync:'<path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h-4M6 22v-4h4"/>',
+  sms:'<path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/>',
+  building:'<path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>',
+  history:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>',
+  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>'
+};
+const ic=(n,c)=>`<svg class="i${c?' '+c:''}" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pill=([t,c,i])=>`<span class="pill ${c}">${ic(i)}${t}</span>`;
+
+/* ---------- state ---------- */
+let S={
+  view:'dashboard',sub:{},origin:'zeiten',step:1,maxStep:1,draft:null,editingId:null,dirty:false,tried:{},
+  items:[
+    {id:1,start:addDays(TODAY,-60),end:addDays(TODAY,-60),kind:'Sonderöffnungszeit'},
+    {id:2,start:addDays(TODAY,-42),end:addDays(TODAY,-36),kind:'Urlaub'}
+  ],
+  banner:null,notes:false,modal:null,drawer:null,busy:false,focus:null,top:false,
+  range:'7',test:{state:'idle',at:null},intCheck:{}
+};
+const newDraft=()=>({start:DEF_START,reopen:DEF_REOPEN,block:true,emergency:'standard',vName:'',vPhone:'',vAddr:'',mention:true,verified:false,verifiedOn:null,ansage:'',edited:false});
+function hStatus(it){if(it.end<TODAY)return['Beendet','muted','dash'];if(it.start<=TODAY)return['Aktiv','ok','checkc'];return['Geplant','info','clock']}
+const openTasks=()=>TASKS.filter(t=>!['erledigt','storniert'].includes(t.status));
+const nextHoliday=()=>S.items.filter(i=>i.draft&&i.end>=TODAY).sort((a,b)=>a.start<b.start?-1:1)[0];
+
+/* ---------- navigation model ---------- */
+const NAV=[
+  ['dashboard','home','Dashboard'],['anrufe','phone','Anrufe'],['aufgaben','tasks','Aufgaben'],['termine','cal','Termine'],null,
+  ['zeiten','clock','Praxis & Zeiten'],['ansage','msg','Ansage & Telefon'],['notfall','alert','Notfall & Vertretung'],null,
+  ['integrationen','plug','Integrationen'],['auswertung','chart','Auswertung'],['einstellungen','gear','Einstellungen']
+];
+function panelFor(view){
+  const cnt=f=>CALLS.filter(f).length;
+  switch(view){
+    case 'dashboard':return null;
+    case 'anrufe':return {title:'Anrufe',sub:'Heute, '+long(TODAY).split(', ')[1],kind:'filter',groups:[
+      {items:[['alle','list','Alle',CALLS.length]]},
+      {label:'Ergebnis',items:Object.keys(OUT).map(k=>[k,OUT[k][2],OUT[k][0],cnt(c=>c.out===k)])}]};
+    case 'aufgaben':return {title:'Aufgaben',sub:'Was das Team übernehmen muss',kind:'filter',groups:[
+      {items:[['offen','list','Offen',openTasks().length],['meine','user','Mir zugewiesen',TASKS.filter(t=>t.owner===ME&&!['erledigt','storniert'].includes(t.status)).length]]},
+      {label:'Status',items:Object.keys(TST).map(k=>[k,TST[k][2],TST[k][0],TASKS.filter(t=>t.status===k).length])}]};
+    case 'termine':return {title:'Termine',sub:'Kalender-Anbindung',kind:'anchor',groups:[{items:[['status','sync','Verbindung'],['vorgaenge','list','Unterstützte Vorgänge'],['verlauf','history','Vorgangsverlauf']]}]};
+    case 'zeiten':return {title:'Praxis & Zeiten',sub:PRAXIS,kind:'anchor',groups:[{items:[['profil','building','Praxisprofil'],['zeiten','clock','Öffnungszeiten'],['urlaub','sun','Urlaub & Sonderzeiten',S.items.filter(i=>i.end>=TODAY).length]]}]};
+    case 'ansage':return {title:'Ansage & Telefon',sub:'Was Anrufer hören',kind:'anchor',groups:[{items:[['begruessung','msg','Begrüßung'],['sprache','globe','Sprache & Anrede'],['aufgaben','tasks','Was Vocia darf'],['uebergabe','forward','Übergabe ans Team'],['test','mic','Testanruf'],['geplant','cal','Geplante Ansagen']]}]};
+    case 'notfall':return {title:'Notfall & Vertretung',sub:'Kontakte für dringende Fälle',kind:'anchor',groups:[{items:[['standard','alert','Standard-Notdienst'],['vertretungen','users','Vertretungen']]}]};
+    case 'integrationen':return {title:'Integrationen',sub:'Verbundene Systeme',kind:'anchor',groups:[{items:[['kalender','cal','Kalender / PVS'],['telefon','phone','Telefonanlage'],['nachrichten','sms','SMS & E-Mail']]}]};
+    case 'auswertung':return {title:'Auswertung',sub:'Qualität & Volumen',kind:'anchor',groups:[{items:[['ueberblick','chart','Überblick'],['verlauf','list','Anrufe pro Tag'],['gruende','forward','Übergabegründe']]}]};
+    case 'einstellungen':return {title:'Einstellungen',sub:'Konto & Sicherheit',kind:'anchor',groups:[{items:[['team','users','Team & Rollen'],['sicherheit','shield','Sicherheit'],['daten','db','Datenaufbewahrung'],['plan','card','Plan & Rechnungen']]}]};
+  }
+}
+const DEF_SUB={anrufe:'alle',aufgaben:'offen'};
+const subOf=v=>S.sub[v]||DEF_SUB[v]||null;
+
+function rail(){
+  const act=S.view==='flow'?S.origin:S.view;
+  const badge=openTasks().filter(t=>t.status==='neu').length;
+  return `<nav class="rail" aria-label="Hauptnavigation">
+    <div class="logo"><img src="${LOGO}" alt="Vocia"></div>
+    ${NAV.map(n=>n?`<button class="rbtn" data-action="nav" data-view="${n[0]}" aria-label="${n[2]}" ${act===n[0]?'aria-current="page"':''}>${ic(n[1])}${n[0]==='aufgaben'&&badge?`<span class="badge" aria-hidden="true">${badge}</span>`:''}<span class="tip" aria-hidden="true">${n[2]}</span></button>`:'<span class="rsep" aria-hidden="true"></span>').join('')}
+    <span class="avatar" title="${ME}, Praxisleitung" aria-label="Angemeldet als ${ME}">AK</span>
+  </nav>`;
+}
+function panelItems(p,view){
+  return p.groups.map(g=>`<div class="pgroup">${g.label?`<p class="plabel">${g.label}</p>`:''}${g.items.map(([id,i,l,c])=>{
+    const cur=p.kind==='filter'?subOf(view)===id:S.sub[view]===id;
+    return `<button class="pitem" data-action="${p.kind==='filter'?'filter':'anchor'}" data-id="${id}" ${cur?'aria-current="true"':''}>${ic(i)}<span>${l}</span>${c!=null?`<span class="cnt">${c}</span>`:''}</button>`}).join('')}</div>`).join('');
+}
+function panel(){
+  if(S.view==='flow'){
+    return `<aside class="panel" aria-label="Schritte"><h2>${S.editingId?'Urlaub bearbeiten':'Urlaub planen'}</h2><p class="pp">Ein Zeitraum, alles andere wird abgeleitet.</p>
+      <div class="pgroup"><p class="plabel">Schritte</p>${STEPS.map((t,i)=>{const n=i+1,cur=n===S.step,done=!cur&&n<S.maxStep;
+        return `<button class="pitem ${done?'done':''}" data-action="step" data-step="${n}" ${n>S.maxStep?'disabled':''} ${cur?'aria-current="true"':''}><span class="dot">${done?ic('check'):n}</span><span>${t}</span></button>`}).join('')}</div>
+      <div class="pfoot">${notesSwitch()}</div></aside>`;
+  }
+  const p=panelFor(S.view);if(!p)return '';
+  return `<aside class="panel" aria-label="${p.title}"><h2>${p.title}</h2><p class="pp">${esc(p.sub)}</p>${panelItems(p,S.view)}<div class="pfoot">${notesSwitch()}</div></aside>`;
+}
+const notesSwitch=()=>`<label class="switch"><input type="checkbox" data-field="notes" ${S.notes?'checked':''}>Design-Notizen</label>`;
+function mchips(){
+  if(S.view==='flow')return `<div class="mchips">${STEPS.map((t,i)=>{const n=i+1;return `<button class="pitem" data-action="step" data-step="${n}" ${n>S.maxStep?'disabled':''} ${n===S.step?'aria-current="true"':''}>${n}. ${t}</button>`}).join('')}</div>`;
+  const p=panelFor(S.view);if(!p)return '';
+  return `<div class="mchips">${p.groups.flatMap(g=>g.items).map(([id,i,l,c])=>{const cur=p.kind==='filter'?subOf(S.view)===id:S.sub[S.view]===id;return `<button class="pitem" data-action="${p.kind==='filter'?'filter':'anchor'}" data-id="${id}" ${cur?'aria-current="true"':''}>${l}${c!=null?` <span class="cnt">${c}</span>`:''}</button>`}).join('')}</div>`;
+}
+
+/* ---------- Dashboard ---------- */
+function dashboardView(){
+  const solved=CALLS.filter(c=>c.out==='solved').length,hand=CALLS.filter(c=>['handoff','followup'].includes(c.out)).length,fail=CALLS.filter(c=>['failed','dropped'].includes(c.out)).length;
+  const ot=openTasks(),nh=nextHoliday();
+  return `<div class="page">
+    <div class="head"><div><p class="eyebrow">${long(TODAY)}</p><h1>Guten Tag</h1></div>
+      <div class="acts"><button class="btn" data-action="plan" data-origin="zeiten">${ic('sun')}Urlaub planen</button></div></div>
+    <div class="grid" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)">
+      <div class="hero">
+        <img class="mark" src="${LOGO}" alt="">
+        <span class="status">Vocia ist aktiv · nimmt Anrufe an</span>
+        <div><div class="huge num">${CALLS.length}</div><div class="sub">Anrufe heute, seit 00:00 Uhr</div></div>
+        <div class="row"><div><b class="num">${solved}</b><span>sicher gelöst</span></div><div><b class="num">${hand}</b><span>ans Team übergeben</span></div><div><b class="num">${fail}</b><span>abgebrochen / fehlgeschlagen</span></div></div>
+      </div>
+      <div class="grid g2">
+        <div class="stat green"><span class="lbl">Sicher gelöst</span><span class="big num">${pct(solved,CALLS.length)}<small>%</small></span><span class="def">Anteil heute, nur bestätigte Vorgänge</span></div>
+        <div class="stat"><span class="lbl">Offene Aufgaben</span><span class="big num">${ot.length}</span><span class="def">${ot.filter(t=>t.status==='neu').length} neu, ${ot.filter(t=>t.overdue).length} überfällig</span></div>
+        <div class="stat"><span class="lbl">Nicht bestätigt</span><span class="big num">${CALLS.filter(c=>c.op&&c.op.state==='no').length}</span><span class="def">Termin-Vorgänge heute ohne Kalenderbestätigung</span></div>
+        <div class="stat"><span class="lbl">Ø Gesprächsdauer</span><span class="big num">2:05<small>min</small></span><span class="def">Alle Anrufe heute</span></div>
+      </div>
+    </div>
+    <div class="grid g2 section" style="margin-top:var(--space-6)">
+      <div class="card pad">
+        <div class="shead"><h3>Offene Aufgaben</h3><button class="btn ghost sm" data-action="nav" data-view="aufgaben">Alle ansehen</button></div>
+        <div>${ot.slice(0,4).map(t=>`<button class="pitem" style="padding:12px 0;border-radius:0" data-action="openTask" data-id="${t.id}"><span style="flex:1;min-width:0"><span class="t1" style="display:block">${t.title}</span><span class="t2">${t.owner?esc(t.owner):'Nicht zugewiesen'} · fällig ${t.due}</span></span>${pill(t.overdue?['Überfällig','warn','clock']:TST[t.status])}</button>`).join('')}</div>
+      </div>
+      <div class="grid">
+        <div class="card pad">
+          <div class="shead"><h3>Systemstatus</h3><span class="cap">Geprüft vor 2 Min.</span></div>
+          <div class="health">${ic('cal')}<div class="body">Kalender / PVS</div>${pill(['Verbunden','ok','checkc'])}</div>
+          <div class="health">${ic('phone')}<div class="body">Telefonanlage</div>${pill(['Aktiv','ok','checkc'])}</div>
+          <div class="health">${ic('sms')}<div class="body">SMS & E-Mail<div class="t2">Zustellung verzögert seit 13:40</div></div>${pill(['Verzögert','warn','clock'])}</div>
+        </div>
+        <div class="card pad">
+          <div class="shead"><h3>Nächste Schließung</h3></div>
+          ${nh?`<p style="margin:0"><b>${fmt(nh.start)} – ${fmt(nh.end)}</b></p><p class="t2" style="margin:4px 0 12px">Wieder geöffnet ${long(nh.draft.reopen)}</p>${pill(hStatus(nh))}`
+            :`<p class="muted" style="margin:0 0 12px">Kein Urlaub geplant. Vocia nutzt durchgehend die Standard-Ansage.</p><button class="btn sm" data-action="plan" data-origin="zeiten">${ic('sun')}Urlaub planen</button>`}
+        </div>
+      </div>
+    </div>
+    <div class="note"><b>Dashboard per strategy §11.</b> Every metric names its time range and definition. "Sicher gelöst" counts only calendar-confirmed outcomes, so a low handoff rate can't look good on its own.</div>
+  </div>`;
+}
+
+/* ---------- Anrufe ---------- */
+function callsView(){
+  const f=subOf('anrufe');const rows=CALLS.filter(c=>f==='alle'||c.out===f);
+  return `<div class="page">${mchips()}
+    <div class="head"><div><p class="eyebrow">Heute</p><h1>Anrufe</h1><p class="lead">Ergebnis, Zusammenfassung und nächster Schritt je Anruf. Gesundheitsdaten erscheinen nicht in der Liste.</p></div></div>
+    <div class="card list calls">
+      <div class="row hd" aria-hidden="true"><span>Zeit</span><span>Anliegen</span><span class="c-topic2">Anrufer</span><span class="c-dur">Dauer</span><span>Ergebnis</span><span></span></div>
+      ${rows.length?rows.map(c=>`<button class="row" data-action="openCall" data-id="${c.id}" aria-label="Anruf ${c.t} Uhr, ${c.topic}, ${OUT[c.out][0]}">
+        <span class="t1 num c-time">${c.t}</span>
+        <span><span class="t1" style="display:block">${c.topic}</span><span class="t2">${c.reason?esc(c.reason):c.id}</span></span>
+        <span class="t2 c-topic2 num">··· ${c.caller}</span>
+        <span class="t2 num c-dur">${c.dur}</span>
+        <span>${pill(OUT[c.out])}</span>${ic('chev','chev')}</button>`).join('')
+      :`<div class="empty">${ic('phone')}<b>Keine Anrufe mit diesem Ergebnis</b>Wählen Sie einen anderen Filter.</div>`}
+    </div>
+  </div>`;
+}
+function callDrawer(c){
+  const t=c.task&&TASKS.find(x=>x.id===c.task);
+  return `<div class="dh"><div><p class="eyebrow">${c.id} · Heute, ${c.t} Uhr · ${c.dur} min</p><h2 id="dtitle" tabindex="-1">${c.topic}</h2><div style="margin-top:8px">${pill(OUT[c.out])}</div></div><button class="btn quiet icon" data-action="closeDrawer" aria-label="Schließen">${ic('x')}</button></div>
+  <div class="db">
+    <div class="dsec"><h3>Zusammenfassung</h3><p style="margin:0">${esc(c.summary)}</p></div>
+    ${c.op?`<div class="dsec"><h3>Termin-Vorgang</h3><dl class="kv"><dt>Aktion</dt><dd>${c.op.type}</dd><dt>Vorgangs-ID</dt><dd class="num">${c.op.id}</dd><dt>Status</dt><dd>${c.op.state==='ok'?pill(['Im Kalender bestätigt','ok','checkc']):pill(['Nicht bestätigt','err','err'])}</dd></dl></div>`:''}
+    ${c.reason?`<div class="dsec"><h3>Übergabe</h3><dl class="kv"><dt>Grund</dt><dd>${esc(c.reason)}</dd>${t?`<dt>Aufgabe</dt><dd>${t.id} · ${pill(TST[t.status])}</dd><dt>Zuständig</dt><dd>${t.owner?esc(t.owner):'Nicht zugewiesen'}</dd><dt>Nächster Schritt</dt><dd>${t.promise}</dd>`:''}</dl></div>`:''}
+    <div class="dsec"><h3>Anrufer</h3><dl class="kv"><dt>Nummer</dt><dd class="num">··· ${c.caller}</dd><dt>Identität</dt><dd>${c.op?'Über Geburtsdatum bestätigt':'Nicht erforderlich'}</dd></dl></div>
+    <div class="dsec"><h3>Transkript</h3><div class="locked">${ic('lock')}<span>Nur für die Rolle Praxisleitung sichtbar. Wird nach 30 Tagen gelöscht.</span></div></div>
+  </div>
+  <div class="df">${t?`<button class="btn primary" data-action="openTask" data-id="${t.id}">Aufgabe öffnen</button>`:''}<button class="btn" data-action="closeDrawer">Schließen</button></div>`;
+}
+
+/* ---------- Aufgaben ---------- */
+function tasksView(){
+  const f=subOf('aufgaben');
+  const rows=TASKS.filter(t=>f==='offen'?!['erledigt','storniert'].includes(t.status):f==='meine'?t.owner===ME&&!['erledigt','storniert'].includes(t.status):t.status===f)
+    .sort((a,b)=>(b.prio==='Hoch')-(a.prio==='Hoch'));
+  return `<div class="page">${mchips()}
+    <div class="head"><div><h1>Aufgaben</h1><p class="lead">Anliegen, die Vocia nicht sicher abschließen konnte. Jede Aufgabe enthält Kontext, damit niemand von vorn fragen muss.</p></div></div>
+    <div class="card list tasks">
+      <div class="row hd" aria-hidden="true"><span>Aufgabe</span><span class="t-prio">Priorität</span><span class="t-owner">Zuständig</span><span class="t-due">Fällig</span><span>Status</span><span></span></div>
+      ${rows.length?rows.map(t=>`<button class="row" data-action="openTask" data-id="${t.id}" aria-label="${t.title}, ${TST[t.status][0]}">
+        <span><span class="t1" style="display:block">${t.title}</span><span class="t2">${t.id} · seit ${t.age}</span></span>
+        <span class="t-prio">${t.prio==='Hoch'?pill(['Hoch','warn','alert']):'<span class="t2">Normal</span>'}</span>
+        <span class="t-owner ${t.owner?'':'t2'}">${t.owner?esc(t.owner):'Nicht zugewiesen'}</span>
+        <span class="t-due"><span class="${t.overdue?'':'t2'}">${t.due}</span>${t.overdue?'<span class="t2" style="display:block">überfällig</span>':''}</span>
+        <span>${pill(TST[t.status])}</span>${ic('chev','chev')}</button>`).join('')
+      :`<div class="empty">${ic('checkc')}<b>Nichts offen</b>Alle Aufgaben in dieser Ansicht sind erledigt.</div>`}
+    </div>
+    <div class="note"><b>Controlled statuses, reversible changes.</b> Assigning and closing are logged with owner and time; "Erledigt" can be undone from the toast.</div>
+  </div>`;
+}
+function taskDrawer(t){
+  const c=t.call&&CALLS.find(x=>x.id===t.call);
+  const closed=['erledigt','storniert'].includes(t.status);
+  return `<div class="dh"><div><p class="eyebrow">${t.id} · seit ${t.age}</p><h2 id="dtitle" tabindex="-1">${t.title}</h2><div class="acts" style="margin-top:8px">${pill(TST[t.status])}${t.prio==='Hoch'?pill(['Hoch','warn','alert']):''}${t.overdue&&!closed?pill(['Überfällig','warn','clock']):''}</div></div><button class="btn quiet icon" data-action="closeDrawer" aria-label="Schließen">${ic('x')}</button></div>
+  <div class="db">
+    <div class="dsec"><h3>Warum diese Aufgabe?</h3><p style="margin:0">${esc(t.reason)}</p></div>
+    <div class="dsec"><h3>Dem Anrufer zugesagt</h3><p style="margin:0">${esc(t.promise)}</p></div>
+    <div class="dsec"><h3>Details</h3><dl class="kv"><dt>Zuständig</dt><dd>${t.owner?esc(t.owner):'Nicht zugewiesen'}</dd><dt>Fällig</dt><dd>${t.due}</dd>${c?`<dt>Anruf</dt><dd><button class="btn ghost sm" style="margin-left:-12px" data-action="openCall" data-id="${c.id}">${c.id} · ${c.t} Uhr</button></dd>`:''}</dl></div>
+    ${c?`<div class="dsec"><h3>Zusammenfassung des Anrufs</h3><p style="margin:0">${esc(c.summary)}</p></div>`:''}
+  </div>
+  <div class="df">${closed?`<button class="btn" data-action="reopen" data-id="${t.id}">${ic('undo')}Wieder öffnen</button>`
+    :`${t.owner!==ME?`<button class="btn" data-action="assign" data-id="${t.id}">${ic('user')}Mir zuweisen</button>`:''}<button class="btn primary" data-action="done" data-id="${t.id}">${ic('check')}Als erledigt markieren</button>`}</div>`;
+}
+
+/* ---------- Termine ---------- */
+function termineView(){
+  const ops=CALLS.filter(c=>c.op);
+  return `<div class="page">${mchips()}
+    <div class="head"><div><h1>Termine</h1><p class="lead">Wie Vocia mit Ihrem Kalender arbeitet. Ein Termin gilt erst als bestätigt, wenn der Kalender den Eintrag zurückmeldet.</p></div></div>
+    <div id="sec-status" class="card pad irow" style="scroll-margin-top:24px"><span class="ibox">${ic('cal')}</span><div class="body"><h3>Praxiskalender (PVS)</h3><p class="t2" style="margin:2px 0 0">Letzte Synchronisation vor 2 Min. · liest Verfügbarkeit, schreibt Termine</p></div>${pill(['Verbunden','ok','checkc'])}</div>
+    <div class="section" id="sec-vorgaenge"><div class="shead"><h2>Unterstützte Vorgänge</h2></div>
+      <div class="card pad" style="padding-top:8px;padding-bottom:8px">
+        <div class="cando">${ic('checkc','ok')}<div><b>Termin vereinbaren</b><div class="t2">Nur Terminarten, die Ihre Praxis freigegeben hat. Bis zu drei Vorschläge.</div></div>${pill(['Aktiv','ok','checkc'])}</div>
+        <div class="cando">${ic('checkc','ok')}<div><b>Termin absagen</b><div class="t2">Erst nach Identitätsprüfung und ausdrücklicher Bestätigung durch den Anrufer.</div></div>${pill(['Aktiv','ok','checkc'])}</div>
+        <div class="cando">${ic('forward','no')}<div><b>Termin verschieben</b><div class="t2">Vocia sagt das offen und erstellt eine Aufgabe für das Team.</div></div>${pill(['Übergabe ans Team','muted','forward'])}</div>
+      </div></div>
+    <div class="section" id="sec-verlauf"><div class="shead"><h2>Vorgangsverlauf</h2><span class="cap">Heute</span></div>
+      <div class="card list ops"><div class="row hd" aria-hidden="true"><span>Vorgangs-ID</span><span>Aktion</span><span>Zeit</span><span>Status</span></div>
+      ${ops.map(c=>`<button class="row" data-action="openCall" data-id="${c.id}"><span class="t2 num">${c.op.id}</span><span class="t1">${c.op.type}</span><span class="t2 num">${c.t} Uhr</span><span>${c.op.state==='ok'?pill(['Bestätigt','ok','checkc']):pill(['Nicht bestätigt','err','err'])}</span></button>`).join('')}</div>
+      <div class="msg info">${ic('info')}<div class="body">Nicht bestätigte Vorgänge werden nie als Termin kommuniziert. Vocia nimmt stattdessen eine Rückrufbitte auf.</div></div></div>
+  </div>`;
+}
+
+/* ---------- Praxis & Zeiten ---------- */
+const HOURS=[['Mo','08:00–12:30','14:00–18:00'],['Di','08:00–12:30','14:00–18:00'],['Mi','08:00–13:00',''],['Do','08:00–12:30','14:00–19:00'],['Fr','08:00–14:00',''],['Sa','',''],['So','','']];
+function zeitenView(){
+  const rows=[...S.items].sort((a,b)=>a.start<b.start?1:-1).map(it=>{
+    const d=it.draft;
+    const chips=d?`<div class="chips">${d.block?`<span class="chip">${ic('lock')}Keine Buchungen</span>`:''}<span class="chip">${ic('msg')}Urlaubsansage</span><span class="chip">${ic('alert')}${d.emergency==='vertretung'?esc(d.vName):'Standard-Notdienst'}</span></div>`:'';
+    return `<div class="row"><div><div class="t1">${fmt(it.start)} – ${fmt(it.end)}</div>${d?`<div class="t2">Wieder geöffnet ${long(d.reopen)}</div>`:''}${chips}</div>
+      <div class="kind">${it.kind}</div><div>${pill(hStatus(it))}</div>
+      <div class="rowacts"><button class="btn ghost sm" data-action="${d?'edit':'stub'}" data-id="${it.id}" aria-label="${it.kind} ${fmt(it.start)} bearbeiten">${ic('pencil')}Bearbeiten</button>
+      <button class="btn quiet sm danger" data-action="delete" data-id="${it.id}" aria-label="${it.kind} ${fmt(it.start)} löschen">${ic('trash')}Löschen</button></div></div>`;
+  }).join('');
+  const b=S.banner?`<div class="msg ok banner" role="status">${ic('checkc')}<div class="body">${S.banner}</div><button class="btn quiet sm icon" data-action="dismiss" aria-label="Hinweis schließen">${ic('x')}</button></div>`:'';
+  return `<div class="page">${mchips()}${b}
+    <div class="head"><div><h1>Praxis & Zeiten</h1><p class="lead">Profil, Öffnungszeiten und Schließzeiten. Daraus weiß Vocia, wann die Praxis erreichbar ist.</p></div>
+      <div class="acts"><button class="btn primary" data-action="plan" data-origin="zeiten">${ic('sun')}Urlaub planen</button></div></div>
+    <div id="sec-profil" class="card pad" style="scroll-margin-top:24px"><div class="shead"><h3>Praxisprofil</h3><button class="btn ghost sm" data-action="stub">${ic('pencil')}Bearbeiten</button></div>
+      <dl class="kv"><dt>Name</dt><dd>${PRAXIS}</dd><dt>Fachrichtung</dt><dd>Kieferorthopädie</dd><dt>Adresse</dt><dd>Schönhauser Allee 84, 10439 Berlin</dd><dt>Telefon</dt><dd class="num">030 4471 2200</dd><dt>Zeitzone</dt><dd>Europe/Berlin</dd></dl></div>
+    <div class="section" id="sec-zeiten"><div class="shead"><h2>Öffnungszeiten</h2><button class="btn ghost sm" data-action="stub">${ic('pencil')}Bearbeiten</button></div>
+      <div class="hours">${HOURS.map(([d,a,p])=>`<div class="day ${a?'':'closed'}"><b>${d}</b>${a?`${a}${p?`<br>${p}`:''}`:'Geschlossen'}</div>`).join('')}</div>
+      <p class="cap" style="margin-top:8px">Gesetzliche Feiertage in Berlin werden automatisch berücksichtigt.</p></div>
+    <div class="section" id="sec-urlaub"><div class="shead"><h2>Urlaub & Sonderzeiten</h2><button class="btn sm" data-action="stub">${ic('plus')}Sonderzeit</button></div>
+      <div class="note"><b>One event, one flow.</b> A holiday is one object; bookings, announcement and emergency contact are derived from it and listed on the row.</div>
+      <div class="card list zt"><div class="row hd" aria-hidden="true"><span>Zeitraum</span><span>Art</span><span>Status</span><span></span></div>
+      ${rows||`<div class="empty">${ic('sun')}<b>Noch keine Schließzeiten</b>Planen Sie den ersten Urlaub, damit Vocia Anrufer richtig informiert.</div>`}</div></div>
+  </div>`;
+}
+
+const linkedFuture=()=>S.items.filter(i=>i.draft&&i.end>=TODAY).sort((a,b)=>a.start<b.start?-1:1);
+const hint=(origin,text)=>`<div class="hint"><p><b>Die Praxis macht Urlaub?</b> ${text}</p><button class="btn" data-action="plan" data-origin="${origin}">${ic('sun')}Urlaub planen</button></div>`;
+
+/* ---------- Ansage & Telefon ---------- */
+function ansageView(){
+  const lf=linkedFuture(),anyActive=lf.some(i=>i.start<=TODAY),T=S.test;
+  return `<div class="page">${mchips()}
+    <div class="head"><div><h1>Ansage & Telefon</h1><p class="lead">Was Vocia sagt, was sie darf und wann sie ans Team übergibt.</p></div></div>
+    <div id="sec-begruessung" class="card pad" style="scroll-margin-top:24px"><div class="shead"><h3>Begrüßung</h3>${anyActive?pill(['Pausiert während des Urlaubs','muted','pause']):pill(['Aktiv · Version 4','ok','checkc'])}</div>
+      <p style="margin:0;font-size:17px;line-height:1.6">„Willkommen bei der ${PRAXIS}. Hier spricht Vocia, die digitale Assistentin der Praxis. Wie kann ich Ihnen helfen?“</p>
+      <div class="toolrow"><button class="btn sm" data-action="say" data-text="Willkommen bei der ${PRAXIS}. Hier spricht Vocia, die digitale Assistentin der Praxis. Wie kann ich Ihnen helfen?">${ic('play')}Anhören</button><button class="btn quiet sm" data-action="stub">${ic('pencil')}Bearbeiten</button><button class="btn quiet sm" data-action="stub">${ic('history')}Version 3 wiederherstellen</button></div>
+      <p class="cap" style="margin:12px 0 0">Veröffentlicht am 02.10.2026 von A. Kaya</p></div>
+    <div class="grid g2 section" id="sec-sprache">
+      <div class="card pad"><h3 style="margin-bottom:12px">Sprache & Anrede</h3><dl class="kv"><dt>Sprache</dt><dd>Deutsch (Hochdeutsch)</dd><dt>Anrede</dt><dd>Sie</dd><dt>Andere Sprachen</dt><dd>Übergabe ans Team</dd></dl></div>
+      <div class="card pad" id="sec-uebergabe" style="scroll-margin-top:24px"><h3 style="margin-bottom:12px">Übergabe ans Team</h3><dl class="kv"><dt>In Sprechzeiten</dt><dd>Live-Weiterleitung an den Empfang</dd><dt>Wenn besetzt</dt><dd>Rückrufbitte als Aufgabe</dd><dt>Außerhalb</dt><dd>Rückrufbitte, Rückmeldung am nächsten Werktag</dd></dl></div>
+    </div>
+    <div class="section" id="sec-aufgaben"><div class="shead"><h2>Was Vocia darf</h2></div>
+      <div class="card pad" style="padding-top:8px;padding-bottom:8px">
+        ${[['checkc','ok','Öffnungszeiten, Adresse, Anfahrt','Aus Praxisprofil und Öffnungszeiten'],['checkc','ok','Termine vereinbaren und absagen','Mit Kalenderbestätigung und Identitätsprüfung'],['forward','no','Termine verschieben','Übergabe ans Team (noch nicht freigegeben)'],['lock','no','Medizinische Auskünfte','Nie. Vocia stellt keine Diagnosen und gibt keine Behandlungsempfehlungen.']]
+          .map(([i,c,t,s])=>`<div class="cando">${ic(i,c)}<div><b>${t}</b><div class="t2">${s}</div></div><span></span></div>`).join('')}
+      </div></div>
+    <div class="section" id="sec-test"><div class="card pad irow"><span class="ibox">${ic('mic')}</span><div class="body"><h3>Testanruf</h3>
+      ${T.state==='ok'?`<p class="t2" style="margin:2px 0 0">Zuletzt ${T.at} · Begrüßung nach 1,8 s · Weiterleitung an den Empfang erreichbar</p>`:T.state==='busy'?`<p class="t2" style="margin:2px 0 0">Vocia ruft die Praxisnummer an und prüft Begrüßung und Weiterleitung …</p>`:`<p class="t2" style="margin:2px 0 0">Prüft Begrüßung und Weiterleitung, bevor Änderungen live gehen.</p>`}</div>
+      ${T.state==='ok'?pill(['Erfolgreich','ok','checkc']):''}
+      <button class="btn ${T.state==='ok'?'':'primary'}" data-action="testcall" ${T.state==='busy'?'aria-busy="true" disabled':''}>${T.state==='busy'?'<span class="spin" aria-hidden="true"></span>Läuft …':`${ic('phone')}Testanruf starten`}</button></div></div>
+    <div class="section" id="sec-geplant"><div class="shead"><h2>Geplante Ansagen</h2></div>
+      ${hint('ansage','Richten Sie Ansage, Terminsperre und Vertretung in einem Schritt ein.')}
+      ${lf.length?`<div class="card">${lf.map(it=>`<div style="padding:20px 24px">
+        <div class="shead" style="margin-bottom:8px"><b>${fmt(it.start)} – ${fmt(it.end)}</b>${pill(hStatus(it))}</div><p style="margin:0">${esc(it.draft.ansage)}</p>
+        <div class="shead" style="margin:12px 0 0"><span class="chip">${ic('link')}Teil des Urlaubs ${fmtS(it.start)}–${fmtS(it.end)}</span><button class="btn sm" data-action="edit" data-id="${it.id}" data-step="3">Im Urlaub bearbeiten</button></div></div>`).join('')}</div>`
+      :`<div class="card soft empty">${ic('msg')}<b>Keine geplanten Ansagen</b>Es gilt durchgehend die Standard-Begrüßung.</div>`}</div>
+  </div>`;
+}
+
+/* ---------- Notfall ---------- */
+function notfallView(){
+  const lf=linkedFuture();
+  return `<div class="page">${mchips()}
+    <div class="head"><div><h1>Notfall & Vertretung</h1><p class="lead">Welche Kontakte Vocia nennt, wenn Patient:innen in dringenden Fällen anrufen. Vocia nennt nur geprüfte Kontaktdaten.</p></div></div>
+    <div id="sec-standard" class="card pad" style="scroll-margin-top:24px"><div class="shead"><h3>Standard-Notdienst</h3>${pill(['Aktiv','ok','checkc'])}</div>
+      <dl class="kv"><dt>Typ</dt><dd>${STD.type}</dd><dt>Telefon</dt><dd class="num">${STD.phone}</dd><dt>Geprüft am</dt><dd>${fmt(STD.checked)}</dd></dl>
+      <div class="msg info">${ic('info')}<div class="body">Notfalltexte werden von Ihrer Praxis und der verantwortlichen Stelle freigegeben. Vocia gibt keine medizinische Entwarnung.</div></div></div>
+    <div class="section" id="sec-vertretungen"><div class="shead"><h2>Vertretungen</h2></div>
+      ${hint('notfall','Vertretung, Ansage und Terminsperre gehören zusammen. Richten Sie alles in einem Schritt ein.')}
+      ${lf.length?`<div class="card">${lf.map(it=>{const d=it.draft;return `<div style="padding:20px 24px">
+        <div class="shead" style="margin-bottom:12px"><b>${fmt(it.start)} – ${fmt(it.end)}</b>${pill(hStatus(it))}</div>
+        <dl class="kv">${d.emergency==='vertretung'?`<dt>Vertretung</dt><dd>${esc(d.vName)}</dd><dt>Telefon</dt><dd>${esc(d.vPhone)}</dd>${d.vAddr?`<dt>Adresse</dt><dd>${esc(d.vAddr)}</dd>`:''}`:`<dt>Kontakt</dt><dd>Standard-Notdienst, ${STD.phone}</dd>`}<dt>Geprüft am</dt><dd>${fmt(d.verifiedOn)}</dd></dl>
+        <div class="shead" style="margin:12px 0 0"><span class="chip">${ic('link')}Teil des Urlaubs ${fmtS(it.start)}–${fmtS(it.end)}</span><button class="btn sm" data-action="edit" data-id="${it.id}" data-step="2">Im Urlaub bearbeiten</button></div></div>`}).join('')}</div>`
+      :`<div class="card soft empty">${ic('users')}<b>Keine Vertretungen geplant</b>Der Standard-Notdienst gilt durchgehend.</div>`}</div>
+  </div>`;
+}
+
+/* ---------- Integrationen ---------- */
+function intCard(id,icon,title,sub,status,fields,extra){
+  const c=S.intCheck[id];
+  return `<div class="card pad" id="sec-${id}" style="scroll-margin-top:24px"><div class="irow"><span class="ibox">${ic(icon)}</span><div class="body"><h3>${title}</h3><p class="t2" style="margin:2px 0 0">${sub}</p></div>${pill(status)}</div>
+    <dl class="kv" style="margin-top:20px">${fields.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>${extra||''}
+    <div class="toolrow" style="margin-top:16px"><button class="btn sm" data-action="intcheck" data-id="${id}" ${c==='busy'?'aria-busy="true" disabled':''}>${c==='busy'?'<span class="spin" aria-hidden="true"></span>Wird geprüft …':`${ic('refresh')}Verbindung prüfen`}</button>${c==='ok'?`<span class="t2" style="align-self:center">Gerade geprüft · keine Fehler</span>`:''}</div></div>`;
+}
+function intView(){
+  return `<div class="page">${mchips()}
+    <div class="head"><div><h1>Integrationen</h1><p class="lead">Verbundene Systeme und welche Daten Vocia liest oder schreibt.</p></div></div>
+    <div class="grid">
+      ${intCard('kalender','cal','Praxiskalender (PVS)','Letzte Synchronisation vor 2 Min.',['Verbunden','ok','checkc'],[['Liest','Freie Zeiten, Terminarten, bestehende Termine'],['Schreibt','Neue Termine, Absagen'],['Berechtigung','Läuft in 12 Tagen ab']],`<div class="msg warn">${ic('clock')}<div class="body"><b>Berechtigung läuft am ${fmt(addDays(TODAY,12))} ab.</b> Danach kann Vocia keine Termine mehr bestätigen und übergibt alle Terminwünsche ans Team.</div><button class="btn sm" data-action="stub">Erneuern</button></div>`)}
+      ${intCard('telefon','phone','Telefonanlage','Weiterleitung der Praxisnummer 030 4471 2200',['Aktiv','ok','checkc'],[['Weiterleitung','Nach 3 Klingeltönen und außerhalb der Sprechzeiten'],['Ausweichnummer','030 4471 2299 bei Störung'],['Letzter Testanruf',S.test.at||'02.10.2026, 09:14']])}
+      ${intCard('nachrichten','sms','SMS & E-Mail','Terminbestätigungen an Patient:innen',['Verzögert','warn','clock'],[['Seit','Heute, 13:40'],['Betroffen','2 Bestätigungen in der Warteschlange'],['Verhalten','Erneuter Versand, keine Doppelzustellung']],`<div class="msg info">${ic('info')}<div class="body">Termine bleiben im Kalender bestätigt. Nur die Benachrichtigung verzögert sich.</div></div>`)}
+    </div>
+  </div>`;
+}
+
+/* ---------- Auswertung ---------- */
+function auswView(){
+  const W=WEEK,tot=W.reduce((a,x)=>a+x.s+x.h+x.f,0),s=W.reduce((a,x)=>a+x.s,0),h=W.reduce((a,x)=>a+x.h,0),f=W.reduce((a,x)=>a+x.f,0);
+  const max=Math.max(...W.map(x=>x.s+x.h+x.f));
+  const rmax=REASONS[0][1];
+  return `<div class="page">${mchips()}
+    <div class="head"><div><h1>Auswertung</h1><p class="lead">Volumen und Qualität. Eine niedrige Übergabequote ist nur gut, wenn die sichere Lösungsquote hoch bleibt.</p></div>
+      <div class="tabs" role="tablist" aria-label="Zeitraum"><button class="tab" role="tab" aria-selected="true">7 Tage</button><button class="tab" role="tab" aria-selected="false" data-action="stub">30 Tage</button></div></div>
+    <div id="sec-ueberblick" class="grid g4" style="scroll-margin-top:24px">
+      <div class="stat"><span class="lbl">Anrufe</span><span class="big num">${tot}</span><span class="def">Letzte 7 Tage</span></div>
+      <div class="stat green"><span class="lbl">Sicher gelöst</span><span class="big num">${pct(s,tot)}<small>%</small></span><span class="def">Mit Bestätigung abgeschlossen</span></div>
+      <div class="stat"><span class="lbl">Übergeben</span><span class="big num">${pct(h,tot)}<small>%</small></span><span class="def">An das Team, mit Aufgabe</span></div>
+      <div class="stat"><span class="lbl">Fehlgeschlagen</span><span class="big num">${f}</span><span class="def">Abgebrochen oder Fehler</span></div>
+    </div>
+    <div class="section card pad" id="sec-verlauf">
+      <div class="shead"><h3>Anrufe pro Tag</h3><div class="legend"><span><i style="background:var(--vocia-primary-blue)"></i>Gelöst</span><span><i style="background:var(--blue-300)"></i>Übergeben</span><span><i style="background:var(--orange-600)"></i>Fehlgeschlagen</span></div></div>
+      <div class="chart" role="img" aria-label="${W.map(x=>`${WD[D(x.date).getDay()]}: ${x.s} gelöst, ${x.h} übergeben, ${x.f} fehlgeschlagen`).join('; ')}">
+        ${W.map(x=>{const t=x.s+x.h+x.f;return `<div class="bar" title="${x.s} gelöst · ${x.h} übergeben · ${x.f} fehlgeschlagen">${t?`<div class="seg f" style="height:${x.f/max*100}%"></div><div class="seg h" style="height:${x.h/max*100}%"></div><div class="seg s" style="height:${x.s/max*100}%"></div>`:''}</div>`}).join('')}
+      </div>
+      <div class="xl">${W.map(x=>{const t=x.s+x.h+x.f;return `<span><b class="num">${t||'–'}</b>${WD[D(x.date).getDay()].slice(0,2)}${x.d===0?' (heute)':''}</span>`}).join('')}</div>
+      <p class="cap" style="margin:12px 0 0">Wochenenden: Praxis geschlossen, Anrufe gehen an den Notdienst-Hinweis.</p>
+    </div>
+    <div class="section card pad" id="sec-gruende"><div class="shead"><h3>Übergabegründe</h3><span class="cap">Letzte 7 Tage</span></div>
+      <div class="rank">${REASONS.map(([l,n])=>`<div class="r"><span>${l}</span><b class="num" style="text-align:right">${n}</b><div class="track"><div style="width:${n/rmax*100}%"></div></div></div>`).join('')}</div>
+      <div class="note"><b>Actionable reasons.</b> "Verschieben nicht freigegeben" leads; enabling rescheduling end-to-end is the next roadmap candidate (§3.2).</div></div>
+  </div>`;
+}
+
+/* ---------- Einstellungen ---------- */
+function settingsView(){
+  return `<div class="page">${mchips()}
+    <div class="head"><div><h1>Einstellungen</h1><p class="lead">Team, Sicherheit und Datenaufbewahrung. Änderungen werden im Prüfprotokoll festgehalten.</p></div></div>
+    <div id="sec-team" style="scroll-margin-top:24px"><div class="shead"><h2>Team & Rollen</h2><button class="btn sm" data-action="stub">${ic('plus')}Person einladen</button></div>
+      <div class="card list team"><div class="row hd" aria-hidden="true"><span>Name</span><span>Rolle</span><span>2FA</span><span>Zuletzt aktiv</span></div>
+      ${TEAM.map(p=>`<div class="row" style="cursor:default"><span class="t1">${p.n}${p.n===ME?' <span class="t2">(Sie)</span>':''}</span><span>${p.r}</span><span>${p.twofa?pill(['Aktiv','ok','checkc']):pill(['Fehlt','warn','alert'])}</span><span class="t2">${p.last}</span></div>`).join('')}</div>
+      <div class="msg warn">${ic('alert')}<div class="body">S. Neumann hat noch keine Zwei-Faktor-Anmeldung eingerichtet. Ab ${fmt(addDays(TODAY,7))} ist sie Pflicht.</div></div></div>
+    <div class="grid g2 section" id="sec-sicherheit">
+      <div class="card pad"><h3 style="margin-bottom:12px">Sicherheit</h3><dl class="kv"><dt>Zwei-Faktor</dt><dd>Pflicht für alle</dd><dt>Sitzung</dt><dd>Abmeldung nach 30 Min. Inaktivität</dd><dt>Prüfprotokoll</dt><dd>Alle Zugriffe und Änderungen</dd></dl></div>
+      <div class="card pad" id="sec-daten" style="scroll-margin-top:24px"><h3 style="margin-bottom:12px">Datenaufbewahrung</h3><dl class="kv"><dt>Audioaufnahmen</dt><dd>Aus</dd><dt>Transkripte</dt><dd>30 Tage, nur Praxisleitung</dd><dt>Zusammenfassungen</dt><dd>12 Monate</dd></dl>
+        <p class="cap" style="margin:12px 0 0">Mit Ihrer Datenschutzbeauftragten abgestimmt am 12.08.2026.</p></div>
+    </div>
+    <div class="section card pad irow" id="sec-plan"><span class="ibox">${ic('card')}</span><div class="body"><h3>Plan „Praxis“</h3><p class="t2" style="margin:2px 0 0">Bis 1.500 Anrufe pro Monat · nächste Rechnung am ${fmt(addDays(TODAY,16))}</p></div><button class="btn sm" data-action="stub">Rechnungen</button></div>
+  </div>`;
+}
+
+/* ---------- Holiday flow ---------- */
+const STEPS=['Zeitraum & Termine','Notfall & Vertretung','Ansage','Prüfen & veröffentlichen'];
+function gen(d){
+  let t=`Willkommen bei der ${PRAXIS}. Hier spricht Vocia, die digitale Assistentin der Praxis. Die Praxis ist im Urlaub und ab ${long(d.reopen)} wieder für Sie da.`;
+  if(d.mention){
+    if(d.emergency==='vertretung'&&d.vName.trim()&&d.vPhone.trim())t+=` In dringenden Fällen wenden Sie sich bitte an unsere Vertretung, ${d.vName.trim()}, Telefon ${d.vPhone.trim()}.`;
+    else if(d.emergency==='standard')t+=` In dringenden Fällen erreichen Sie den zahnärztlichen Notdienst unter ${STD.phone}.`;
+  }
+  return t+' Gerne nehme ich Ihr Anliegen auf, damit sich das Praxisteam nach dem Urlaub bei Ihnen meldet.';
+}
+const ansageOf=d=>d.edited?d.ansage:gen(d);
+function errs1(d){const e={};
+  if(!d.start)e.start='Bitte wählen Sie den ersten geschlossenen Tag.';
+  else if(d.start<TODAY&&!S.editingId)e.start='Der Urlaub kann nicht in der Vergangenheit beginnen.';
+  if(!d.reopen)e.reopen='Bitte wählen Sie den Tag, an dem die Praxis wieder öffnet.';
+  else if(d.start&&d.reopen<=d.start)e.reopen='Der Tag der Wiedereröffnung muss nach dem ersten geschlossenen Tag liegen.';
+  return e}
+function errs2(d){const e={};
+  if(d.emergency==='vertretung'){if(!d.vName.trim())e.vName='Bitte geben Sie den Namen der Vertretungspraxis an.';if(!d.vPhone.trim())e.vPhone='Bitte geben Sie eine Telefonnummer an. Vocia nennt keine unbestätigten Kontaktdaten.'}
+  if(!d.verified)e.verified='Bitte bestätigen Sie, dass Sie die Angaben geprüft haben.';
+  return e}
+function warn3(d){const t=ansageOf(d),w=[];
+  if(!t.trim())return ['Die Ansage ist leer. Vocia braucht einen Text.'];
+  if(!/digitale Assistentin|KI|Vocia/.test(t))w.push('Der Hinweis, dass hier eine digitale Assistentin spricht, fehlt. Anrufer müssen darüber informiert werden.');
+  if(d.edited&&!t.includes(long(d.reopen))&&!t.includes(fmtS(d.reopen)))w.push(`Der Tag der Wiedereröffnung (${long(d.reopen)}) fehlt im Text.`);
+  if(d.edited&&d.mention&&d.emergency==='vertretung'&&d.vName.trim()&&!t.includes(d.vName.trim()))w.push(`Die Vertretung (${d.vName.trim()}) wird im Text nicht genannt.`);
+  return w}
+const stepErrs=n=>n===1?errs1(S.draft):n===2?errs2(S.draft):n===3&&!ansageOf(S.draft).trim()?{ansage:'Die Ansage ist leer.'}:{};
+const overlaps=d=>S.items.filter(i=>i.id!==S.editingId&&i.start<=lastDay(d)&&i.end>=d.start);
+const apptsIn=d=>APPTS.filter(a=>a.d>=d.start&&a.d<=lastDay(d));
+const fieldErr=(n,k,e)=>S.tried[n]&&e[k]?`<p class="ferr" id="e-${k}">${ic('err')}<span>${e[k]}</span></p>`:'';
+const inv=(n,k,e)=>S.tried[n]&&e[k]?`aria-invalid="true" aria-describedby="e-${k}"`:'';
+
+function step1(d){
+  const e=errs1(d);
+  let o=`<p class="eyebrow">Schritt 1 von 4</p><h1 id="steph" tabindex="-1">Wann ist die Praxis geschlossen?</h1>
+  <p class="lead" style="margin-bottom:32px">Geben Sie den Zeitraum einmal ein. Terminsperre, Ansage und Notfallkontakt werden daraus abgeleitet.</p>
+  <div class="grid2">
+    <div class="field"><label for="f-start">Erster geschlossener Tag</label><input id="f-start" type="date" value="${d.start}" data-field="start" ${inv(1,'start',e)}>${fieldErr(1,'start',e)}</div>
+    <div class="field"><label for="f-reopen">Wieder geöffnet am</label><input id="f-reopen" type="date" value="${d.reopen}" data-field="reopen" ${inv(1,'reopen',e)}>${fieldErr(1,'reopen',e)}</div>
+  </div>
+  <div class="note"><b>"Wieder geöffnet am" instead of an end date.</b> Teams think "we're back on Monday"; this removes off-by-one mismatches.</div>`;
+  if(!e.start&&!e.reopen){
+    o+=`<div class="derived"><div><small>Letzter Öffnungstag</small><b>${long(lastOpen(d.start))}</b></div>
+      <div class="mid"><small>Geschlossen</small><b>${fmtS(d.start)} – ${fmtS(lastDay(d))}</b><div class="t2">${workdays(d)} Werktage</div></div>
+      <div><small>Wieder geöffnet</small><b>${long(d.reopen)}</b></div></div>`;
+    const ov=overlaps(d);
+    if(ov.length)o+=`<div class="msg warn">${ic('alert')}<div class="body"><b>Überschneidung:</b> ${ov.map(x=>`${x.kind} ${fmtS(x.start)}–${fmtS(x.end)}`).join(', ')}. Bitte prüfen Sie, ob beide Einträge nötig sind.</div></div>`;
+    const a=apptsIn(d);
+    o+=`<div class="block"><h3>Termine</h3>
+      <label class="check boxed"><input type="checkbox" data-field="block" ${d.block?'checked':''}><span>Keine neuen Termine in diesem Zeitraum buchen<small>Vocia vergibt telefonisch keine Termine. Endet automatisch mit dem Urlaub.</small></span></label>
+      ${a.length?`<div class="msg warn">${ic('alert')}<div class="body"><b>${a.length} bestehende ${a.length===1?'Termin liegt':'Termine liegen'} im Zeitraum.</b> Vocia sagt sie nicht automatisch ab. Bitte buchen Sie sie um.
+        <ul class="appts">${a.map(x=>`<li><span>${WD[D(x.d).getDay()].slice(0,2)}, ${fmt(x.d)}</span><span>${x.t}</span><span>${x.what}</span></li>`).join('')}</ul></div></div>`
+      :`<div class="msg ok">${ic('checkc')}<div class="body">Keine bestehenden Termine im Zeitraum.</div></div>`}</div>`;
+  }
+  return o;
+}
+function step2(d){
+  const e=errs2(d);
+  return `<p class="eyebrow">Schritt 2 von 4</p><h1 id="steph" tabindex="-1">Wohin in dringenden Fällen?</h1>
+  <p class="lead" style="margin-bottom:32px">Vocia nennt diesen Kontakt, wenn Anrufer nach Notdienst oder Vertretung fragen.</p>
+  <fieldset style="border:0;padding:0;margin:0"><legend class="sr">Notfallkontakt</legend><div class="opts">
+    <label class="opt"><input type="radio" name="emergency" value="standard" data-field="emergency" ${d.emergency==='standard'?'checked':''}><div><b>Standard-Notdienst</b><span>${STD.type}, ${STD.phone}</span></div></label>
+    <label class="opt"><input type="radio" name="emergency" value="vertretung" data-field="emergency" ${d.emergency==='vertretung'?'checked':''}><div><b>Vertretungspraxis</b><span>Eine Kollegenpraxis übernimmt.</span></div></label>
+  </div></fieldset>
+  ${d.emergency==='vertretung'?`<div class="vform">
+    <div><button class="btn sm" data-action="useLast">${ic('refresh')}Zuletzt verwendet: ${LAST_V.name}</button></div>
+    <div class="grid2">
+      <div class="field"><label for="f-vName">Name der Praxis</label><input id="f-vName" type="text" autocomplete="off" value="${esc(d.vName)}" data-field="vName" data-live="1" ${inv(2,'vName',e)}>${fieldErr(2,'vName',e)}</div>
+      <div class="field"><label for="f-vPhone">Telefonnummer</label><input id="f-vPhone" type="tel" value="${esc(d.vPhone)}" data-field="vPhone" data-live="1" ${inv(2,'vPhone',e)}>${fieldErr(2,'vPhone',e)}</div>
+    </div>
+    <div class="field"><label for="f-vAddr">Adresse <em>(optional)</em></label><input id="f-vAddr" type="text" value="${esc(d.vAddr)}" data-field="vAddr" data-live="1"></div>
+  </div>`:''}
+  <div class="block grid" style="gap:8px">
+    <label class="check boxed"><input type="checkbox" data-field="mention" ${d.mention?'checked':''}><span>Notfallkontakt direkt in der Ansage nennen<small>Viele Anrufer fragen sonst trotzdem nach.</small></span></label>
+    <label class="check boxed ${S.tried[2]&&e.verified?'invalid':''}"><input id="f-verified" type="checkbox" data-field="verified" ${d.verified?'checked':''} ${inv(2,'verified',e)}><span>Ich habe die Angaben geprüft<small>Name, Telefonnummer und Erreichbarkeit während des Urlaubs. Das Prüfdatum wird gespeichert.</small></span></label>
+    ${fieldErr(2,'verified',e)}
+  </div>
+  <div class="note"><b>Emergency before announcement.</b> Once the contact is verified, the announcement names it automatically; no unverified number reaches a patient.</div>`;
+}
+function step3(d){
+  const w=warn3(d);
+  return `<p class="eyebrow">Schritt 3 von 4</p><h1 id="steph" tabindex="-1">Was hören Anrufer?</h1>
+  <p class="lead" style="margin-bottom:32px">Der Text wurde aus Zeitraum und Notfallkontakt erstellt. Sie können ihn anpassen.</p>
+  <div class="field"><label for="f-ansage">Urlaubsansage</label><textarea id="f-ansage" data-field="ansage" data-live="1">${esc(ansageOf(d))}</textarea></div>
+  <div class="toolrow"><button class="btn" data-action="listen">${ic('play')}Anhören</button><button class="btn ghost" id="regenBtn" data-action="regen" ${d.edited?'':'hidden'}>${ic('refresh')}Text neu erstellen</button></div>
+  <div id="ansWarn" aria-live="polite">${w.map(x=>`<div class="msg warn">${ic('alert')}<div class="body">${esc(x)}</div></div>`).join('')}</div>
+  <details class="legal"><summary>Datenschutz & Transparenz</summary><ul><li>Anrufer müssen erfahren, dass sie mit einer digitalen Assistentin sprechen.</li><li>Die genaue Formulierung stimmt Ihre Praxis mit der zuständigen Datenschutzstelle ab.</li></ul></details>`;
+}
+function step4(d){
+  const last=lastDay(d),a=apptsIn(d),active=d.start<=TODAY;
+  const emerg=d.emergency==='vertretung'?`Bitte wenden Sie sich an unsere Vertretung, <mark>${esc(d.vName)}</mark>, Telefon <mark>${esc(d.vPhone)}</mark>.`:`Bitte wenden Sie sich an den zahnärztlichen Notdienst unter <mark>${STD.phone}</mark>.`;
+  const book=d.block?`Die Praxis ist bis einschließlich <mark>${long(last)}</mark> geschlossen. Ich kann Ihren Terminwunsch aufnehmen. Das Praxisteam meldet sich ab <mark>${long(d.reopen)}</mark> bei Ihnen. Der Termin ist damit noch nicht bestätigt.`:`Ich schaue nach freien Terminen ab <mark>${long(d.reopen)}</mark>.`;
+  return `<p class="eyebrow">Schritt 4 von 4</p><h1 id="steph" tabindex="-1">So erlebt ein Anrufer Ihren Urlaub</h1>
+  <p class="lead" style="margin-bottom:32px">Ein Beispielgespräch mit Ihren Einstellungen. Prüfen Sie es und veröffentlichen Sie den Urlaub.</p>
+  <div class="sim"><div class="simhd"><span>Beispielanruf am ${long(active?TODAY:d.start)}</span><button class="btn sm" data-action="listen">${ic('play')}Ansage anhören</button></div>
+    <div class="conv">
+      <div class="m v"><div class="who">Vocia</div><div class="txt">${esc(ansageOf(d))}</div></div>
+      <div class="m c"><div class="who">Anrufer</div><div class="txt">Kann ich diese Woche noch einen Termin bekommen?</div></div>
+      <div class="m v"><div class="who">Vocia</div><div class="txt">${book}</div></div>
+      <div class="m c"><div class="who">Anrufer</div><div class="txt">Mir ist ein Bracket abgebrochen und es tut ziemlich weh.</div></div>
+      <div class="m v"><div class="who">Vocia</div><div class="txt">${emerg}</div></div>
+    </div></div>
+  <div class="note"><b>Honest status language.</b> Vocia says "I can note your request", never "your appointment is confirmed".</div>
+  <div class="block"><h3>Zusammenfassung</h3><div class="card summary">
+    <div class="ci">${ic('checkc','ok')}<div>Geschlossen ${fmt(d.start)} – ${fmt(last)}, wieder geöffnet ${long(d.reopen)}<small>${d.block?'Keine neuen Termine im Zeitraum':'Termine bleiben buchbar'}</small></div><button class="btn ghost sm" data-action="step" data-step="1">Ändern</button></div>
+    ${a.length?`<div class="ci">${ic('alert','wn')}<div>${a.length} bestehende ${a.length===1?'Termin':'Termine'} im Zeitraum<small>Werden nicht automatisch abgesagt. Bitte umbuchen.</small></div><button class="btn ghost sm" data-action="step" data-step="1">Ansehen</button></div>`:''}
+    <div class="ci">${ic('checkc','ok')}<div>Notfälle: ${d.emergency==='vertretung'?esc(d.vName):'Standard-Notdienst'}<small>Geprüft am ${fmt(d.verifiedOn||TODAY)}${d.mention?' · wird in der Ansage genannt':''}</small></div><button class="btn ghost sm" data-action="step" data-step="2">Ändern</button></div>
+    <div class="ci">${ic('checkc','ok')}<div>Urlaubsansage<small>Danach gilt automatisch wieder die Standard-Begrüßung</small></div><button class="btn ghost sm" data-action="step" data-step="3">Ändern</button></div>
+  </div>
+  <div class="msg info">${ic('info')}<div class="body">${active?'<b>Der Urlaub läuft bereits.</b> Änderungen gelten sofort nach dem Veröffentlichen.':`Wird am <b>${long(d.start)}</b> um 00:00 Uhr automatisch aktiv und endet vor der Öffnung am <b>${long(d.reopen)}</b>.`}</div></div></div>`;
+}
+function flowView(){
+  return `<div style="display:flex;flex-direction:column;min-height:100%"><div class="flowpage" style="flex:1;width:100%">${mchips()}${[step1,step2,step3,step4][S.step-1](S.draft)}</div>
+    <div class="flowfoot"><span class="pos">${S.editingId?'Urlaub bearbeiten':'Urlaub planen'}</span><div class="acts">
+      ${S.step>1?`<button class="btn" data-action="back">Zurück</button>`:`<button class="btn" data-action="cancel">Abbrechen</button>`}
+      ${S.step<4?`<button class="btn primary" data-action="next">Weiter</button>`:`<button class="btn primary" data-action="publish" ${S.busy?'aria-busy="true" disabled':''}>${S.busy?'<span class="spin" aria-hidden="true"></span>Wird veröffentlicht …':`${ic('check')}Urlaub veröffentlichen`}</button>`}
+    </div></div></div>`;
+}
+
+/* ---------- overlays ---------- */
+function modal(){
+  if(!S.modal)return '';
+  if(S.modal.type==='discard')return `<div class="overlay" data-action="closeModal"><div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="mh">
+    <h2 id="mh">Entwurf verwerfen?</h2><p>Der Urlaub ist noch nicht veröffentlicht. Ihre Eingaben gehen verloren und Vocia nutzt weiter die Standard-Begrüßung.</p>
+    <div class="acts"><button class="btn" data-action="closeModal" id="mfirst">Weiter bearbeiten</button><button class="btn primary" data-action="discard">Entwurf verwerfen</button></div></div></div>`;
+  const it=S.items.find(i=>i.id===S.modal.id);if(!it)return '';
+  const active=hStatus(it)[0]==='Aktiv';
+  return `<div class="overlay" data-action="closeModal"><div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="mh">
+    <h2 id="mh">${it.kind} ${fmtS(it.start)}–${fmtS(it.end)} löschen?</h2>
+    ${it.draft?`<p>Damit werden auch entfernt:</p><ul><li>Urlaubsansage</li>${it.draft.block?'<li>Terminsperre</li>':''}<li>Notfallkontakt für diesen Zeitraum</li></ul>${active?'<p><b style="color:var(--text-primary)">Der Urlaub ist gerade aktiv.</b> Vocia kehrt sofort zur Standard-Begrüßung zurück und nimmt wieder Termine an.</p>':''}`:'<p>Diese Sonderzeit wird entfernt.</p>'}
+    <div class="acts"><button class="btn" data-action="closeModal" id="mfirst">Abbrechen</button><button class="btn primary" data-action="confirmDelete">Löschen</button></div></div></div>`;
+}
+function drawer(){
+  if(!S.drawer)return '';
+  const body=S.drawer.type==='call'?callDrawer(CALLS.find(c=>c.id===S.drawer.id)):taskDrawer(TASKS.find(t=>t.id===S.drawer.id));
+  return `<div class="scrim" data-action="closeDrawer"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dtitle">${body}</aside>`;
+}
+
+/* ---------- render ---------- */
+const VIEWS={dashboard:dashboardView,anrufe:callsView,aufgaben:tasksView,termine:termineView,zeiten:zeitenView,ansage:ansageView,notfall:notfallView,integrationen:intView,auswertung:auswView,einstellungen:settingsView,flow:flowView};
+const app=document.getElementById('app');
+let animDrawer=true;
+function render(){
+  document.body.classList.toggle('notes',S.notes);
+  const prev=document.getElementById('main');const y=prev?prev.scrollTop:0;
+  const pn=panel();
+  const hadDrawer=!!document.querySelector('.drawer');
+  app.innerHTML=`<div class="shell ${pn?'':'nopanel'}">${rail()}${pn}<div class="mainwrap"><main class="main" id="main">${VIEWS[S.view]()}</main></div></div>${drawer()}${modal()}`;
+  if(hadDrawer&&S.drawer){const dw=document.querySelector('.drawer'),sc=document.querySelector('.scrim');dw.style.animation='none';sc.style.animation='none'}
+  const m=document.getElementById('main');m.scrollTop=S.top?0:y;
+  if(S.modal){const f=document.getElementById('mfirst');f&&f.focus()}
+  else if(S.focus){const f=document.querySelector(S.focus);f&&f.focus()}
+  const ac=document.querySelector('.rbtn[aria-current="page"]');if(ac&&window.innerWidth<=900)ac.scrollIntoView({block:'nearest',inline:'center'});
+  S.top=false;S.focus=null;
+}
+function refreshLive(){const d=S.draft;if(!d)return;
+  const aw=document.getElementById('ansWarn');if(aw)aw.innerHTML=warn3(d).map(x=>`<div class="msg warn">${ic('alert')}<div class="body">${esc(x)}</div></div>`).join('');
+  const rb=document.getElementById('regenBtn');if(rb)rb.hidden=!d.edited}
+let tt,undoFn=null;
+function toast(msg,undo){const t=document.getElementById('toast');undoFn=undo||null;
+  t.innerHTML=`<span>${esc(msg)}</span>${undo?`<button class="btn sm" data-action="undo">${ic('undo')}Rückgängig</button>`:''}`;
+  t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>{t.classList.remove('show');undoFn=null},undo?6000:2600)}
+function speak(text){try{if(!('speechSynthesis' in window))throw 0;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='de-DE';speechSynthesis.speak(u);toast('Wird vorgelesen')}catch(_){toast('Vorlesen wird in diesem Browser nicht unterstützt')}}
+const leaveFlow=()=>{S.view=S.origin;S.draft=null;S.editingId=null;S.dirty=false;S.tried={};S.top=true};
+const nowHM=()=>{const n=new Date();return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`};
+
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-action]');if(!el)return;
+  const a=el.dataset.action,d=S.draft;
+  switch(a){
+    case 'stub':toast('Nicht Teil dieses Prototyps');return;
+    case 'nav':{
+      const to=el.dataset.view;
+      if(S.view==='flow'&&S.dirty){S.modal={type:'discard',then:to};break}
+      if(S.view==='flow')leaveFlow();
+      S.drawer=null;S.view=to;S.origin=to;S.banner=null;S.top=true;break}
+    case 'filter':S.sub[S.view]=el.dataset.id;S.top=true;break;
+    case 'anchor':{S.sub[S.view]=el.dataset.id;render();const sec=document.getElementById('sec-'+el.dataset.id);if(sec){sec.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}return}
+    case 'plan':S.origin=el.dataset.origin||'zeiten';S.draft=newDraft();S.editingId=null;S.step=1;S.maxStep=1;S.dirty=false;S.tried={};S.banner=null;S.view='flow';S.top=true;S.focus='#steph';break;
+    case 'edit':{const it=S.items.find(i=>i.id===+el.dataset.id);if(!it||!it.draft)return;
+      S.origin=S.view;S.draft=JSON.parse(JSON.stringify(it.draft));S.editingId=it.id;S.step=+(el.dataset.step||4);S.maxStep=4;S.dirty=false;S.tried={};S.banner=null;S.view='flow';S.top=true;S.focus='#steph';break}
+    case 'delete':S.modal={type:'delete',id:+el.dataset.id,ret:`[data-action="delete"][data-id="${el.dataset.id}"]`};break;
+    case 'closeModal':if(el.classList.contains('overlay')&&e.target!==el)return;{const r=S.modal&&S.modal.ret;S.modal=null;S.focus=r||null}break;
+    case 'confirmDelete':{const it=S.items.find(i=>i.id===S.modal.id);S.items=S.items.filter(i=>i.id!==S.modal.id);S.modal=null;S.banner=`${it.kind} ${fmtS(it.start)}–${fmtS(it.end)} wurde gelöscht.`;S.focus='h1';break}
+    case 'discard':{const to=S.modal.then;S.modal=null;leaveFlow();if(to){S.view=to;S.origin=to}break}
+    case 'dismiss':S.banner=null;break;
+    case 'openCall':S.drawer={type:'call',id:el.dataset.id,ret:S.drawer?S.drawer.ret:`[data-id="${el.dataset.id}"]`};S.focus='#dtitle';break;
+    case 'openTask':
+      if(S.view!=='aufgaben'&&!S.drawer){S.view='aufgaben';S.origin='aufgaben'}
+      S.drawer={type:'task',id:el.dataset.id,ret:S.drawer?S.drawer.ret:`[data-action="openTask"][data-id="${el.dataset.id}"]`};S.focus='#dtitle';break;
+    case 'closeDrawer':{const r=S.drawer&&S.drawer.ret;S.drawer=null;S.focus=r;break}
+    case 'assign':{const t=TASKS.find(x=>x.id===el.dataset.id);t.owner=ME;if(t.status==='neu')t.status='zugewiesen';toast(`${t.id} ist Ihnen zugewiesen`);break}
+    case 'done':{const t=TASKS.find(x=>x.id===el.dataset.id);const prev={status:t.status,owner:t.owner};t.status='erledigt';t.owner=t.owner||ME;S.drawer=null;
+      toast(`${t.id} als erledigt markiert`,()=>{t.status=prev.status;t.owner=prev.owner;render()});S.focus='h1';break}
+    case 'reopen':{const t=TASKS.find(x=>x.id===el.dataset.id);t.status=t.owner?'zugewiesen':'neu';toast(`${t.id} wieder geöffnet`);break}
+    case 'undo':if(undoFn){undoFn();undoFn=null;document.getElementById('toast').classList.remove('show')}return;
+    case 'testcall':S.test={state:'busy',at:S.test.at};render();setTimeout(()=>{S.test={state:'ok',at:`Heute, ${nowHM()}`};render()},1400);return;
+    case 'intcheck':{const id=el.dataset.id;S.intCheck[id]='busy';render();setTimeout(()=>{S.intCheck[id]='ok';render()},1000);return}
+    case 'say':speak(el.dataset.text);return;
+    case 'step':{const n=+el.dataset.step;if(n>S.maxStep)return;S.step=n;S.top=true;S.focus='#steph';break}
+    case 'next':{const er=stepErrs(S.step);
+      if(Object.keys(er).length){S.tried[S.step]=true;render();const f=document.querySelector('[aria-invalid="true"]');if(f)f.focus();return}
+      if(S.step===2&&!d.verifiedOn)d.verifiedOn=TODAY;
+      S.step++;S.maxStep=Math.max(S.maxStep,S.step);S.top=true;S.focus='#steph';break}
+    case 'back':S.step=Math.max(1,S.step-1);S.top=true;S.focus='#steph';break;
+    case 'cancel':if(S.dirty){S.modal={type:'discard'};break}leaveFlow();break;
+    case 'useLast':d.vName=LAST_V.name;d.vPhone=LAST_V.phone;d.vAddr=LAST_V.addr;S.dirty=true;break;
+    case 'regen':d.edited=false;d.ansage='';break;
+    case 'listen':speak(ansageOf(d));return;
+    case 'publish':{if(S.busy)return;S.busy=true;render();
+      setTimeout(()=>{const saved=JSON.parse(JSON.stringify(d));saved.ansage=ansageOf(d);saved.verifiedOn=d.verifiedOn||TODAY;
+        const item={id:S.editingId||Date.now(),kind:'Urlaub',start:d.start,end:lastDay(d),draft:saved};
+        S.items=S.editingId?S.items.map(i=>i.id===S.editingId?item:i):[...S.items,item];
+        S.banner=item.start<=TODAY?`<b>Urlaub ${fmtS(item.start)}–${fmtS(item.end)} veröffentlicht.</b> Die Änderungen sind jetzt aktiv.`:`<b>Urlaub ${fmtS(item.start)}–${fmtS(item.end)} veröffentlicht.</b> Vocia übernimmt ihn automatisch am ${long(item.start)}.`;
+        S.busy=false;leaveFlow();S.view='zeiten';S.origin='zeiten';S.sub.zeiten='urlaub';S.focus='h1';render();
+        const sec=document.getElementById('sec-urlaub');if(sec)sec.scrollIntoView({block:'start'});
+      },700);return}
+    default:return;
+  }
+  render();
+});
+document.addEventListener('change',e=>{
+  const t=e.target,f=t.dataset&&t.dataset.field;if(!f)return;
+  if(f==='notes'){S.notes=t.checked;render();return}
+  const d=S.draft;if(!d||t.dataset.live)return;
+  S.dirty=true;
+  if(t.type==='checkbox'){d[f]=t.checked;if(f==='verified')d.verifiedOn=t.checked?TODAY:null}
+  else if(t.type==='radio'){d[f]=t.value;if(f==='emergency'){d.verified=false;d.verifiedOn=null}}
+  else if(t.type==='date'){d[f]=t.value;if(f==='start'&&d.start&&d.reopen&&d.reopen<=d.start)d.reopen=addDays(d.start,7)}
+  S.focus=t.type==='radio'?`input[name="${t.name}"][value="${t.value}"]`:'#'+t.id;
+  render();
+});
+document.addEventListener('input',e=>{
+  const t=e.target;if(!t.dataset||!t.dataset.live||!S.draft)return;
+  const d=S.draft;S.dirty=true;
+  if(t.dataset.field==='ansage'){d.ansage=t.value;d.edited=true}
+  else{d[t.dataset.field]=t.value;d.verified=false;d.verifiedOn=null;const v=document.getElementById('f-verified');if(v)v.checked=false}
+  refreshLive();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(S.modal){const r=S.modal.ret;S.modal=null;S.focus=r||null;render()}
+  else if(S.drawer){const r=S.drawer.ret;S.drawer=null;S.focus=r;render()}
+});
+window.addEventListener('beforeunload',e=>{if(S.view==='flow'&&S.dirty){e.preventDefault();e.returnValue=''}});
+render();
+})();
+</script>
+</body>
+</html>
