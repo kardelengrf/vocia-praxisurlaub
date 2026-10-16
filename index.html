@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vocia · Praxis-Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,363 +13,376 @@
   --vocia-deep-navy:#0D1B2A;--vocia-primary-blue:#1A73E8;--vocia-soft-gray:#E6E9EC;--vocia-fresh-green:#2BC48A;
   --text-primary:#262626;--text-secondary:#595959;--text-disabled:#8C8C8C;--outline:#D9D9D9;
   --state-error:#F5222D;--state-warning:#FAAD14;--state-success:#52C41A;
-  --blue-900:#003A8C;--blue-600:#1890FF;--blue-300:#91D5FF;--blue-100:#E6F7FF;
+  --blue-900:#003A8C;--blue-300:#91D5FF;--blue-100:#E6F7FF;
   --orange-900:#871400;--orange-600:#FA541C;--orange-300:#FFBB96;--orange-100:#FFF2E8;
   --green-900:#135200;--green-300:#B7EB8F;--green-100:#F6FFED;
-  --cyan-600:#13C2C2;--cyan-100:#E6FFFB;
-  /* Soft gray at 45% on white: canvas + panel tint */
   --canvas:#F4F5F6;--surface:#FFFFFF;
   --font-sans:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;
-  --radius-control:10px;--radius-card:16px;--radius-main:24px;
   --ease:cubic-bezier(0.2,0,0,1);
   --shadow-card:0 0 0 1px rgba(13,27,42,.06),0 1px 2px rgba(13,27,42,.04);
   --shadow-raised:0 0 0 1px rgba(13,27,42,.06),0 2px 4px rgba(13,27,42,.04),0 8px 24px rgba(13,27,42,.06);
   --shadow-float:0 0 0 1px rgba(13,27,42,.06),0 12px 32px rgba(13,27,42,.14),0 32px 64px rgba(13,27,42,.10);
-  box-sizing:border-box;
 }
-*,*::before,*::after{box-sizing:inherit}
-html,body{height:100%}
-body{margin:0;background:var(--canvas);color:var(--text-primary);font-family:var(--font-sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
-#app{height:100%}
-button,input,textarea,select{font-family:inherit;color:inherit;font-size:inherit}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--vocia-soft-gray);color:var(--text-primary);font-family:var(--font-sans);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+button,input,textarea{font-family:inherit;color:inherit;font-size:inherit}
 svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.btn svg.i,.pill svg.i,b svg.i{stroke-width:2}
+.btn svg.i,.pill svg.i{stroke-width:2}
 :focus-visible{outline:2px solid var(--vocia-primary-blue);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.muted{color:var(--text-secondary)}
-.num{font-variant-numeric:tabular-nums}
 
-/* ---------- Shell: rail | panel | main ---------- */
-.shell{display:grid;grid-template-columns:80px 264px minmax(0,1fr);height:100%}
-.shell.nopanel{grid-template-columns:80px minmax(0,1fr)}
-.rail{background:var(--vocia-deep-navy);display:flex;flex-direction:column;align-items:center;padding:var(--space-6) 0 var(--space-4);gap:var(--space-1);overflow-y:auto}
-.logo{display:grid;place-items:center;width:48px;height:48px;margin-bottom:var(--space-6)}
-.logo img{width:32px;height:auto;display:block}
-.rbtn{position:relative;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;border:0;background:transparent;color:rgba(230,233,236,.62);cursor:pointer;transition:background-color 150ms var(--ease),color 150ms var(--ease),scale 150ms var(--ease)}
-.rbtn svg.i{width:22px;height:22px}
-.rbtn:hover{color:#fff;background:rgba(230,233,236,.06)}
-.rbtn:active{scale:.96}
-.rbtn[aria-current="page"]{color:#fff;background:rgba(230,233,236,.14);box-shadow:inset 0 0 0 1px rgba(230,233,236,.10)}
-.rbtn[aria-current="page"]::after{content:"";position:absolute;right:-16px;top:14px;bottom:14px;width:3px;border-radius:2px;background:var(--vocia-primary-blue)}
-.rbtn:focus-visible{outline-color:#fff}
-.rbtn .tip{position:absolute;left:58px;top:50%;translate:0 -50%;background:var(--vocia-deep-navy);color:#fff;font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 150ms var(--ease);z-index:50;box-shadow:0 4px 12px rgba(13,27,42,.25)}
-.rbtn:hover .tip,.rbtn:focus-visible .tip{opacity:1}
-.rbtn .badge{position:absolute;top:8px;right:8px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--vocia-primary-blue);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;box-shadow:0 0 0 2px var(--vocia-deep-navy)}
-.rsep{width:32px;height:1px;background:rgba(230,233,236,.12);margin:var(--space-2) 0}
-.avatar{margin-top:auto;width:40px;height:40px;border-radius:50%;background:rgba(230,233,236,.14);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+/* ---------- 16:9 stage ---------- */
+.stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform:translate(-50%,-50%) scale(var(--s,1));background:var(--canvas);overflow:hidden;box-shadow:0 24px 64px rgba(13,27,42,.14)}
+.shell{display:grid;grid-template-columns:248px minmax(0,1fr);height:100%}
 
-.panel{padding:var(--space-8) var(--space-4) var(--space-4);display:flex;flex-direction:column;overflow-y:auto}
-.panel h2{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0 var(--space-3) var(--space-1)}
-.panel .pp{font-size:13px;color:var(--text-secondary);margin:0 var(--space-3) var(--space-6)}
-.pgroup+.pgroup{margin-top:var(--space-4);padding-top:var(--space-4);border-top:1px solid var(--outline)}
-.plabel{font-size:12px;font-weight:600;color:var(--text-secondary);margin:0 var(--space-3) var(--space-2)}
-.pitem{display:flex;align-items:center;gap:var(--space-3);width:100%;padding:10px var(--space-3);border-radius:12px;border:0;background:transparent;font-size:15px;font-weight:500;text-align:left;cursor:pointer;color:var(--text-primary);transition:background-color 150ms var(--ease),box-shadow 150ms var(--ease),scale 150ms var(--ease)}
-.pitem:hover{background:rgba(13,27,42,.04)}
-.pitem:active{scale:.98}
-.pitem[aria-current="true"]{background:var(--surface);box-shadow:var(--shadow-raised);font-weight:600}
-.pitem .cnt{margin-left:auto;font-size:14px;color:var(--text-secondary);font-weight:500}
-.pitem .i{color:var(--text-secondary)}
-.pitem[aria-current="true"] .i{color:var(--vocia-primary-blue)}
-.pitem:disabled{cursor:default;color:var(--text-disabled)}
-.pitem:disabled .i{color:var(--text-disabled)}
-.pitem .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--surface);box-shadow:0 0 0 1px var(--outline);flex:none;color:var(--text-secondary)}
-.pitem[aria-current="true"] .dot{background:var(--vocia-primary-blue);color:#fff;box-shadow:none}
-.pitem.done .dot{background:var(--green-100);color:var(--green-900);box-shadow:0 0 0 1px var(--green-300)}
-.pitem .dot .i{width:13px;height:13px;color:inherit;stroke-width:2.5}
-.pfoot{margin-top:auto;padding:var(--space-4) var(--space-3) 0}
-.switch{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary);cursor:pointer}
+/* Sidebar */
+.side{background:var(--canvas);border-right:1px solid #E9EBED;display:flex;flex-direction:column;padding:22px 14px 14px;min-height:0}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px 18px}
+.brand img{height:21px;width:auto;display:block}
+.brand b{font-size:19px;font-weight:700;letter-spacing:-.02em;color:var(--vocia-deep-navy)}
+.ws{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:var(--surface);box-shadow:0 0 0 1px #E6E9EC;margin-bottom:14px}
+.ws>div{min-width:0}
+.wsi{width:30px;height:30px;border-radius:8px;background:var(--vocia-deep-navy);color:#fff;display:grid;place-items:center;flex:none}
+.wsi .i{width:16px;height:16px}
+.ws small{display:block;font-size:11.5px;color:var(--text-secondary);line-height:1.3}
+.ws b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nlabel{font-size:12px;font-weight:500;color:var(--text-disabled);margin:16px 10px 4px}
+.nitem{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;margin:1px 0;border-radius:10px;border:0;background:transparent;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;text-align:left;transition:background-color 150ms var(--ease),color 150ms var(--ease),scale 150ms var(--ease)}
+.nitem:hover{color:var(--text-primary);background:rgba(13,27,42,.04)}
+.nitem:active{scale:.98}
+.nitem[aria-current="page"]{background:var(--surface);color:var(--text-primary);font-weight:600;box-shadow:0 0 0 1px #E6E9EC,0 1px 2px rgba(13,27,42,.04)}
+.nitem[aria-current="page"] .i{color:var(--vocia-primary-blue)}
+.nitem .cnt{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--vocia-primary-blue);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.sfoot{margin-top:auto;display:grid;gap:12px}
+.pnote{display:none;background:var(--orange-100);color:var(--orange-900);font-size:12.5px;line-height:1.45;padding:10px 12px;border-radius:10px;box-shadow:inset 3px 0 0 var(--orange-600)}
+.notes .pnote{display:block}
+.pnote b{display:block;font-weight:700;margin-bottom:2px}
+.switch{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary);cursor:pointer;padding:0 10px}
 .switch input{appearance:none;width:32px;height:18px;border-radius:9px;background:var(--outline);position:relative;cursor:pointer;margin:0;flex:none;transition:background-color 150ms var(--ease)}
 .switch input::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:translate 150ms var(--ease)}
 .switch input:checked{background:var(--vocia-primary-blue)}
 .switch input:checked::after{translate:14px 0}
-
-.mainwrap{padding:var(--space-2) var(--space-2) var(--space-2) 0;min-width:0;min-height:0}
-.nopanel .mainwrap{padding-left:var(--space-2)}
-.main{height:100%;overflow:auto;background:var(--surface);border-radius:var(--radius-main);box-shadow:var(--shadow-card);position:relative}
-.page{max-width:1040px;margin:0 auto;padding:var(--space-10) var(--space-10) 96px}
-.mchips{display:none}
-
-.eyebrow{font-size:13px;font-weight:600;color:var(--text-secondary);margin:0 0 var(--space-1)}
-h1{font-size:36px;line-height:1.15;font-weight:700;letter-spacing:-.025em;margin:0}
-h2{font-size:22px;line-height:1.25;font-weight:700;letter-spacing:-.01em;margin:0}
-h3{font-size:16px;font-weight:700;margin:0}
-.lead{color:var(--text-secondary);margin:var(--space-2) 0 0;max-width:62ch}
-.head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--space-4);margin-bottom:var(--space-8);flex-wrap:wrap}
-.acts{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center}
-.section{margin-top:var(--space-12);scroll-margin-top:var(--space-6)}
-.shead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
+.user{display:flex;align-items:center;gap:10px;padding:12px 10px 0;border-top:1px solid #E9EBED}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--vocia-soft-gray);font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}
+.mainwrap{min-width:0;min-height:0}
+.main{height:100%;overflow:auto;background:var(--surface)}
+.page{height:100%;display:flex;flex-direction:column;gap:22px;padding:30px 40px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex:none}
+.eyebrow{font-size:12.5px;font-weight:600;color:var(--text-secondary);margin:0 0 2px}
+h1{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.025em;margin:0}
+h3{font-size:15px;font-weight:700;margin:0}
+.lead{color:var(--text-secondary);margin:6px 0 0;max-width:72ch}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.body{flex:1;min-height:0;display:grid;gap:16px}
+.body>*{min-height:0;min-width:0}
+.col{display:flex;flex-direction:column;gap:16px;min-height:0}
+.t1{font-weight:600}
+.t2{font-size:12.5px;color:var(--text-secondary)}
 .cap{font-size:12px;color:var(--text-secondary)}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:40px;padding:0 var(--space-4);border-radius:var(--radius-control);border:0;background:var(--surface);box-shadow:0 0 0 1px var(--outline),0 1px 2px rgba(13,27,42,.04);color:var(--text-primary);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background-color 150ms var(--ease),box-shadow 150ms var(--ease),color 150ms var(--ease),scale 150ms var(--ease)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:0 14px;border-radius:10px;border:0;background:var(--surface);box-shadow:0 0 0 1px var(--outline),0 1px 2px rgba(13,27,42,.04);color:var(--text-primary);font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background-color 150ms var(--ease),box-shadow 150ms var(--ease),color 150ms var(--ease),scale 150ms var(--ease)}
 .btn:hover{box-shadow:0 0 0 1px var(--text-disabled),0 1px 2px rgba(13,27,42,.06)}
 .btn:active{scale:.96}
 .btn.primary{background:var(--vocia-primary-blue);color:#fff;box-shadow:0 1px 2px rgba(13,27,42,.12),inset 0 1px 0 rgba(255,255,255,.14)}
 .btn.primary:hover{background:#155FC0}
-.btn.dark{background:var(--vocia-deep-navy);color:#fff;box-shadow:none}
-.btn.dark:hover{background:#1B2B3D}
 .btn.ghost{background:transparent;box-shadow:none;color:var(--vocia-primary-blue)}
 .btn.ghost:hover{background:var(--blue-100)}
 .btn.quiet{background:transparent;box-shadow:none;color:var(--text-secondary)}
 .btn.quiet:hover{background:rgba(13,27,42,.04);color:var(--text-primary)}
-.btn.sm{min-height:32px;padding:0 var(--space-3);font-size:13px;border-radius:8px}
-.btn.icon{width:40px;padding:0}
-.btn.sm.icon{width:32px}
+.btn.sm{min-height:30px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.icon{width:36px;padding:0}
+.btn.sm.icon{width:30px}
 .btn[aria-busy="true"]{opacity:.75;cursor:progress}
-.btn:disabled{cursor:not-allowed}
 .danger .i{color:var(--state-error)}
-.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;opacity:.8}
+.spin{width:15px;height:15px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;opacity:.8}
 @keyframes sp{to{transform:rotate(360deg)}}
 
 /* Pills */
-.pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;font-size:13px;font-weight:600;white-space:nowrap}
-.pill .i{width:14px;height:14px}
+.pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:12px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.pill .i{width:13px;height:13px}
 .pill.ok{background:var(--green-100);color:var(--green-900);box-shadow:inset 0 0 0 1px var(--green-300)}
 .pill.info{background:var(--blue-100);color:var(--blue-900);box-shadow:inset 0 0 0 1px var(--blue-300)}
 .pill.warn{background:var(--orange-100);color:var(--orange-900);box-shadow:inset 0 0 0 1px var(--orange-300)}
 .pill.err{background:var(--surface);color:var(--text-primary);box-shadow:inset 0 0 0 1px var(--state-error)}
 .pill.err .i{color:var(--state-error)}
 .pill.muted{background:var(--vocia-soft-gray);color:var(--text-secondary)}
-.pill.dark{background:rgba(230,233,236,.12);color:#fff}
 
 /* Cards */
-.card{background:var(--surface);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}
-.card.pad{padding:var(--space-6)}
+.card{background:var(--surface);border-radius:16px;box-shadow:var(--shadow-card);padding:20px;display:flex;flex-direction:column;min-height:0}
+.card.flat{padding:0}
 .card.soft{background:var(--canvas);box-shadow:none}
-.grid{display:grid;gap:var(--space-4)}
-.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex:none}
+.scroll{overflow:auto;min-height:0;flex:1}
+.flash{animation:flash 1.4s var(--ease)}
+@keyframes flash{0%,30%{box-shadow:0 0 0 2px var(--vocia-primary-blue),var(--shadow-card)}100%{box-shadow:var(--shadow-card)}}
+.end{margin-top:auto}
 
 /* Stats */
-.stat{padding:var(--space-6);border-radius:20px;background:var(--surface);box-shadow:var(--shadow-card);display:flex;flex-direction:column;gap:var(--space-1);min-height:148px}
-.stat .lbl{font-size:14px;font-weight:600;color:var(--text-secondary)}
-.stat .big{font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-top:auto}
-.stat .big small{font-size:20px;font-weight:600;letter-spacing:0;margin-left:2px}
+.stats{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.stat{padding:18px 20px;border-radius:18px;background:var(--surface);box-shadow:var(--shadow-card);display:flex;flex-direction:column;gap:2px}
+.stat .lbl{font-size:13px;font-weight:600;color:var(--text-secondary)}
+.stat .big{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-top:auto;padding-top:12px}
+.stat .big small{font-size:17px;font-weight:600;letter-spacing:0;margin-left:2px}
 .stat .def{font-size:12px;color:var(--text-secondary)}
 .stat.green{background:var(--green-100);box-shadow:inset 0 0 0 1px var(--green-300)}
-.hero{background:var(--vocia-deep-navy);color:#fff;border-radius:20px;padding:var(--space-8);display:flex;flex-direction:column;gap:var(--space-4);min-height:100%;position:relative;overflow:hidden}
-.hero .status{display:flex;align-items:center;gap:var(--space-2);font-size:14px;font-weight:600;color:rgba(230,233,236,.82)}
-.hero .status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vocia-fresh-green);box-shadow:0 0 0 4px rgba(43,196,138,.18)}
-.hero .huge{font-size:88px;font-weight:700;letter-spacing:-.05em;line-height:.95;margin-top:auto}
-.hero .sub{font-size:15px;color:rgba(230,233,236,.72)}
-.hero .row{display:flex;gap:var(--space-6);padding-top:var(--space-4);border-top:1px solid rgba(230,233,236,.14);flex-wrap:wrap}
-.hero .row b{display:block;font-size:22px;font-weight:700}
-.hero .row span{font-size:13px;color:rgba(230,233,236,.72)}
-.hero .mark{position:absolute;right:-28px;top:-20px;width:220px;opacity:.06;pointer-events:none}
 
-/* Lists / tables */
-.list .row{display:grid;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-6);width:100%;border:0;background:transparent;text-align:left;cursor:pointer;transition:background-color 150ms var(--ease)}
+/* Lists */
+.list{display:flex;flex-direction:column}
+.list .row{display:grid;align-items:center;gap:16px;padding:0 20px;min-height:46px;width:100%;border:0;background:transparent;text-align:left;cursor:pointer;transition:background-color 150ms var(--ease)}
 .list .row+.row{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
 .list button.row:hover{background:var(--canvas)}
-.list .hd{cursor:default;font-size:12px;font-weight:600;color:var(--text-secondary);padding-top:var(--space-3);padding-bottom:var(--space-3)}
-.list .row:first-child{border-radius:var(--radius-card) var(--radius-card) 0 0}
-.list .row:last-child{border-radius:0 0 var(--radius-card) var(--radius-card)}
-.calls .row{grid-template-columns:64px minmax(0,1.6fr) minmax(0,1fr) 64px 170px 20px}
-.tasks .row{grid-template-columns:minmax(0,2fr) 110px minmax(0,1fr) 150px 180px 20px}
-.ops .row{grid-template-columns:110px minmax(0,1.4fr) 120px 160px}
-.zt .row{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) 120px 210px}
-.team .row{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 120px minmax(0,1fr)}
-.t1{font-weight:600}
-.t2{font-size:13px;color:var(--text-secondary)}
+.list .hd{cursor:default;font-size:12px;font-weight:600;color:var(--text-secondary);min-height:38px}
+.list .row:first-child{border-radius:16px 16px 0 0}
+.list .row:last-child{border-radius:0 0 16px 16px}
+.calls .row{grid-template-columns:56px minmax(0,1.8fr) minmax(0,1fr) 56px 160px 16px}
+.tasks .row{grid-template-columns:minmax(0,2fr) 100px minmax(0,1fr) 150px 170px 16px;min-height:54px}
+.ops .row{grid-template-columns:96px minmax(0,1fr) 80px 140px}
+.zt .row{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) 110px 200px;min-height:60px;padding-top:10px;padding-bottom:10px}
+.team .row{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 100px minmax(0,1fr)}
 .chev{color:var(--text-disabled);width:16px;height:16px}
-.empty{padding:var(--space-10) var(--space-6);text-align:center;color:var(--text-secondary)}
-.empty .i{width:28px;height:28px;color:var(--text-disabled);margin-bottom:var(--space-2)}
-.empty b{display:block;color:var(--text-primary);font-weight:700;margin-bottom:var(--space-1)}
-.rowacts{display:flex;gap:var(--space-1);justify-content:flex-end}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.empty{padding:28px 20px;text-align:center;color:var(--text-secondary)}
+.empty .i{width:26px;height:26px;color:var(--text-disabled);margin-bottom:6px}
+.empty b{display:block;color:var(--text-primary);font-weight:700;margin-bottom:2px}
+.rowacts{display:flex;gap:4px;justify-content:flex-end}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
 .chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)}
-.chip .i{width:14px;height:14px}
+.chip .i{width:13px;height:13px}
+.mini{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;border:0;background:transparent;text-align:left;cursor:pointer;border-radius:0}
+.mini+.mini{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
+.mini:hover .t1{color:var(--vocia-primary-blue)}
 
-.kv{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:var(--space-3) var(--space-6);margin:0}
-.kv dt{color:var(--text-secondary);font-size:14px}
+.kv{display:grid;grid-template-columns:minmax(110px,auto) 1fr;gap:8px 20px;margin:0}
+.kv dt{color:var(--text-secondary);font-size:13px}
 .kv dd{margin:0;font-weight:500}
-.hours{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-2)}
-.day{padding:var(--space-4) var(--space-3);border-radius:14px;background:var(--canvas);font-size:13px}
-.day b{display:block;font-size:14px;margin-bottom:var(--space-1)}
+.hours{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;flex:1}
+.day{padding:12px;border-radius:12px;background:var(--canvas);font-size:12.5px;line-height:1.5}
+.day b{display:block;font-size:13.5px;margin-bottom:4px}
 .day.closed{color:var(--text-disabled)}
 
-/* Integration / check rows */
-.irow{display:flex;gap:var(--space-4);align-items:flex-start}
-.ibox{width:44px;height:44px;border-radius:12px;background:var(--canvas);display:grid;place-items:center;flex:none}
-.ibox .i{width:22px;height:22px}
-.irow .body{flex:1;min-width:0}
-.health{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0}
+.irow{display:flex;gap:14px;align-items:flex-start}
+.ibox{width:40px;height:40px;border-radius:11px;background:var(--canvas);display:grid;place-items:center;flex:none}
+.ibox .i{width:20px;height:20px}
+.irow .bd{flex:1;min-width:0}
+.health{display:flex;align-items:center;gap:12px;padding:10px 0}
 .health+.health{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
-.health .body{flex:1}
-.cando{display:grid;grid-template-columns:24px 1fr auto;gap:var(--space-3);align-items:start;padding:var(--space-4) 0}
+.health .bd{flex:1}
+.cando{display:grid;grid-template-columns:22px 1fr auto;gap:12px;align-items:start;padding:12px 0}
 .cando+.cando{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
 .cando .i.ok{color:var(--state-success)}
 .cando .i.no{color:var(--text-disabled)}
 
 /* Messages */
-.msg{display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) var(--space-4);border-radius:12px;font-size:14px;margin-top:var(--space-3)}
-.msg .i{margin-top:2px}
+.msg{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:12px;font-size:13px;margin-top:12px}
+.msg .i{margin-top:1px;width:16px;height:16px}
 .msg.info{background:var(--blue-100);color:var(--blue-900)}
 .msg.warn{background:var(--orange-100);color:var(--orange-900)}
 .msg.ok{background:var(--green-100);color:var(--green-900)}
-.msg.err{background:var(--surface);box-shadow:inset 0 0 0 1px var(--state-error)}
-.msg.err .i{color:var(--state-error)}
-.msg .body{flex:1}
-.banner{margin:0 0 var(--space-6);align-items:center}
-.hint{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap;padding:var(--space-4) var(--space-6);border-radius:var(--radius-card);background:var(--canvas);margin-bottom:var(--space-4)}
-.hint p{margin:0;max-width:52ch}
+.msg .bd{flex:1}
+.msg.banner{margin:0 0 12px;align-items:center}
+.hint{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--canvas);margin-bottom:12px;font-size:13px}
+.hint p{margin:0}
 
-/* Tabs */
-.tabs{display:flex;gap:var(--space-1);padding:4px;border-radius:12px;background:var(--canvas)}
-.tab{border:0;background:transparent;padding:6px 14px;border-radius:8px;font-size:14px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:background-color 150ms var(--ease),color 150ms var(--ease),box-shadow 150ms var(--ease)}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--canvas)}
+.tab{border:0;background:transparent;padding:6px 14px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--text-secondary);cursor:pointer}
 .tab[aria-selected="true"]{background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow-card)}
 
 /* Chart */
-.chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-4);align-items:end;height:220px;padding-top:var(--space-4)}
+.chart{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:16px;align-items:end;padding-top:8px}
 .bar{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px}
 .bar .seg{border-radius:4px;min-height:3px}
 .bar .seg:first-child{border-radius:8px 8px 4px 4px}
 .seg.s{background:var(--vocia-primary-blue)}
 .seg.h{background:var(--blue-300)}
 .seg.f{background:var(--orange-600)}
-.xl{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-4);margin-top:var(--space-2);font-size:12px;color:var(--text-secondary);text-align:center}
+.xl{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:16px;margin-top:8px;font-size:12px;color:var(--text-secondary);text-align:center}
 .xl b{display:block;color:var(--text-primary);font-size:13px}
-.legend{display:flex;gap:var(--space-4);flex-wrap:wrap;font-size:13px;color:var(--text-secondary)}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--text-secondary)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
-.rank{display:grid;gap:var(--space-3)}
-.rank .r{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:var(--space-3);align-items:center;font-size:14px}
+.rank{display:grid;gap:14px}
+.rank .r{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:6px 10px;align-items:center;font-size:13.5px}
 .rank .track{grid-column:1 / -1;height:8px;border-radius:4px;background:var(--canvas);overflow:hidden}
 .rank .track div{height:100%;border-radius:4px;background:var(--blue-300)}
 
-/* Forms (flow) */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
-.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+/* Flow */
+.page.flow{padding-bottom:0}
+.flowfoot{flex:none;margin:0 -40px;padding:12px 40px;box-shadow:inset 0 1px 0 var(--vocia-soft-gray);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.flowfoot .pos{font-size:12.5px;color:var(--text-secondary)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
 .field label em{font-style:normal;font-weight:400;color:var(--text-secondary)}
-.field input,.field textarea{width:100%;min-height:48px;border:0;border-radius:12px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);padding:0 var(--space-4);font-size:15px;transition:box-shadow 150ms var(--ease),background-color 150ms var(--ease)}
-.field textarea{min-height:160px;padding:var(--space-4);line-height:1.6;resize:vertical}
+.field input,.field textarea{width:100%;min-height:44px;border:0;border-radius:11px;background:var(--canvas);box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);padding:0 14px;font-size:14px;transition:box-shadow 150ms var(--ease),background-color 150ms var(--ease)}
+.field textarea{min-height:0;height:210px;padding:14px;line-height:1.6;resize:none}
 .field input:focus,.field textarea:focus{outline:none;background:var(--surface);box-shadow:inset 0 0 0 2px var(--vocia-primary-blue)}
 .field [aria-invalid="true"]{background:var(--surface);box-shadow:inset 0 0 0 2px var(--state-error)}
-.ferr{display:flex;gap:6px;align-items:flex-start;font-size:13px;margin:6px 0 0}
-.ferr .i{width:16px;height:16px;color:var(--state-error);margin-top:1px}
-.derived{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2);margin-top:var(--space-4)}
-.derived>div{padding:var(--space-4);border-radius:14px;background:var(--canvas)}
+.ferr{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;margin:6px 0 0}
+.ferr .i{width:15px;height:15px;color:var(--state-error);margin-top:1px}
+.derived{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.derived>div{padding:14px;border-radius:13px;background:var(--canvas)}
 .derived>div.mid{background:var(--vocia-deep-navy);color:#fff}
 .derived small{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:2px}
 .derived .mid small,.derived .mid .t2{color:rgba(230,233,236,.72)}
-.derived b{font-weight:700;font-size:16px}
-.check{display:flex;gap:var(--space-3);align-items:flex-start;cursor:pointer;font-size:15px}
-.check input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--vocia-primary-blue);flex:none}
-.check small{display:block;color:var(--text-secondary);font-size:13px}
-.boxed{padding:var(--space-4);border-radius:14px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray)}
+.derived b{font-weight:700;font-size:15px}
+.check{display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:14px}
+.check input{margin:2px 0 0;width:18px;height:18px;accent-color:var(--vocia-primary-blue);flex:none}
+.check small{display:block;color:var(--text-secondary);font-size:12.5px}
+.boxed{padding:14px;border-radius:13px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray)}
 .boxed.invalid{box-shadow:inset 0 0 0 2px var(--state-error)}
-.opts{display:grid;gap:var(--space-2);grid-template-columns:1fr 1fr}
-.opt{display:grid;grid-template-columns:18px 1fr;gap:var(--space-3);padding:var(--space-4);border-radius:14px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);cursor:pointer;transition:box-shadow 150ms var(--ease),background-color 150ms var(--ease)}
-.opt input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--vocia-primary-blue)}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:18px 1fr;gap:12px;padding:14px;border-radius:13px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);cursor:pointer;transition:box-shadow 150ms var(--ease),background-color 150ms var(--ease)}
+.opt input{margin:2px 0 0;width:18px;height:18px;accent-color:var(--vocia-primary-blue)}
 .opt b{font-weight:700;display:block}
-.opt span{display:block;color:var(--text-secondary);font-size:14px}
+.opt span{display:block;color:var(--text-secondary);font-size:13px}
 .opt:has(input:checked){background:var(--blue-100);box-shadow:inset 0 0 0 2px var(--vocia-primary-blue)}
-.vform{margin-top:var(--space-3);display:grid;gap:var(--space-4);padding:var(--space-4);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-card)}
-.appts{margin:var(--space-2) 0 0;padding:0;list-style:none;font-size:14px}
-.appts li{display:grid;grid-template-columns:120px 56px 1fr;gap:var(--space-2);padding:6px 0;box-shadow:inset 0 1px 0 var(--orange-300)}
-.block{margin-top:var(--space-8)}
-.block>h3{margin-bottom:var(--space-3)}
-.toolrow{display:flex;gap:var(--space-2);margin-top:var(--space-3);flex-wrap:wrap}
-details.legal{margin-top:var(--space-6);border-radius:14px;box-shadow:inset 0 0 0 1px var(--vocia-soft-gray);font-size:14px}
-details.legal summary{padding:var(--space-3) var(--space-4);cursor:pointer;font-weight:600}
-details.legal ul{margin:0;padding:0 var(--space-4) var(--space-3) var(--space-8);color:var(--text-secondary)}
-.flowfoot{position:sticky;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 var(--vocia-soft-gray);padding:var(--space-3) var(--space-10);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);border-radius:0 0 var(--radius-main) var(--radius-main)}
-.flowfoot .pos{font-size:13px;color:var(--text-secondary)}
-.flowpage{max-width:780px;margin:0 auto;padding:var(--space-10) var(--space-10) var(--space-12)}
+.vform{display:grid;gap:12px;padding:14px;border-radius:14px;background:var(--surface);box-shadow:var(--shadow-card)}
+.appts{margin:8px 0 0;padding:0;list-style:none;font-size:13px}
+.appts li{display:grid;grid-template-columns:116px 48px 1fr;gap:8px;padding:6px 0;box-shadow:inset 0 1px 0 var(--orange-300)}
+.toolrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.legal ul{margin:0;padding-left:18px;color:var(--text-secondary);font-size:13px;display:grid;gap:6px}
 
-/* Caller preview */
-.sim{padding:var(--space-6);border-radius:20px;background:var(--canvas)}
-.simhd{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);font-size:13px;color:var(--text-secondary);flex-wrap:wrap}
-.conv{display:flex;flex-direction:column;gap:var(--space-3)}
-.m{max-width:86%;font-size:15px;line-height:1.55}
-.m .who{font-size:12px;font-weight:600;color:var(--text-secondary);margin:0 0 4px;display:flex;align-items:center;gap:6px}
-.m .txt{padding:12px 16px;border-radius:18px}
+.sim{padding:18px;border-radius:18px;background:var(--canvas);display:flex;flex-direction:column;min-height:0}
+.simhd{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;font-size:12.5px;color:var(--text-secondary)}
+.conv{display:flex;flex-direction:column;gap:8px}
+.m{max-width:90%;font-size:13.5px;line-height:1.5}
+.m .who{font-size:11.5px;font-weight:600;color:var(--text-secondary);margin:0 0 3px;display:flex;align-items:center;gap:6px}
+.m .txt{padding:9px 13px;border-radius:16px}
 .m.v{align-self:flex-start}
-.m.v .who::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vocia-fresh-green)}
-.m.v .txt{background:var(--surface);border-top-left-radius:6px;box-shadow:var(--shadow-card)}
+.m.v .who::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--vocia-fresh-green)}
+.m.v .txt{background:var(--surface);border-top-left-radius:5px;box-shadow:var(--shadow-card)}
 .m.c{align-self:flex-end}
 .m.c .who{justify-content:flex-end}
-.m.c .txt{background:var(--vocia-deep-navy);color:#fff;border-top-right-radius:6px}
+.m.c .txt{background:var(--vocia-deep-navy);color:#fff;border-top-right-radius:5px}
 .m mark{background:var(--blue-100);color:var(--blue-900);padding:0 4px;border-radius:4px;font-weight:600}
-.summary .ci{display:grid;grid-template-columns:22px 1fr auto;gap:var(--space-3);align-items:start;padding:var(--space-4) var(--space-6)}
+.summary .ci{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;padding:12px 0}
 .summary .ci+.ci{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
 .summary .ci .i.ok{color:var(--state-success)}
 .summary .ci .i.wn{color:var(--orange-600)}
-.summary .ci small{display:block;font-size:13px;color:var(--text-secondary)}
+.summary .ci small{display:block;font-size:12.5px;color:var(--text-secondary)}
 
-/* Drawer */
-.scrim{position:fixed;inset:0;background:rgba(13,27,42,.32);z-index:30;animation:fade 200ms var(--ease)}
-.drawer{position:fixed;top:8px;right:8px;bottom:8px;width:min(480px,calc(100vw - 16px));background:var(--surface);border-radius:var(--radius-main);box-shadow:var(--shadow-float);z-index:31;display:flex;flex-direction:column;animation:slide 240ms var(--ease)}
-.drawer .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-3);padding:var(--space-6) var(--space-6) var(--space-4)}
-.drawer .db{padding:0 var(--space-6) var(--space-6);overflow:auto;flex:1}
-.drawer .df{padding:var(--space-4) var(--space-6);box-shadow:inset 0 1px 0 var(--vocia-soft-gray);display:flex;gap:var(--space-2);justify-content:flex-end;flex-wrap:wrap}
-.dsec{margin-top:var(--space-6)}
-.dsec h3{font-size:13px;color:var(--text-secondary);font-weight:600;margin-bottom:var(--space-2)}
-.locked{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-4);border-radius:12px;background:var(--canvas);font-size:14px;color:var(--text-secondary)}
+/* Overlays (contained in the stage) */
+.scrim{position:absolute;inset:0;background:rgba(13,27,42,.32);z-index:30;animation:fade 200ms var(--ease)}
+.drawer{position:absolute;top:10px;right:10px;bottom:10px;width:460px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow-float);z-index:31;display:flex;flex-direction:column;animation:slide 240ms var(--ease)}
+.drawer .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:24px 24px 4px}
+.drawer h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0}
+.drawer .db{padding:0 24px 20px;overflow:auto;flex:1}
+.drawer .df{padding:14px 24px;box-shadow:inset 0 1px 0 var(--vocia-soft-gray);display:flex;gap:8px;justify-content:flex-end}
+.dsec{margin-top:20px}
+.dsec h3{font-size:12.5px;color:var(--text-secondary);font-weight:600;margin-bottom:8px}
+.dsec p{margin:0}
+.locked{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--canvas);font-size:13px;color:var(--text-secondary)}
 @keyframes slide{from{translate:24px 0;opacity:0}to{translate:0 0;opacity:1}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-
-/* Notes, modal, toast */
-.note{display:none;background:var(--orange-100);color:var(--orange-900);font-size:13px;line-height:1.45;padding:var(--space-2) var(--space-3);border-radius:10px;margin:var(--space-3) 0;box-shadow:inset 3px 0 0 var(--orange-600)}
-.note b{font-weight:700}
-body.notes .note{display:block}
-.overlay{position:fixed;inset:0;background:rgba(13,27,42,.45);display:grid;place-items:center;z-index:40;padding:var(--space-4);animation:fade 150ms var(--ease)}
-.modal{background:var(--surface);border-radius:var(--radius-main);width:min(460px,100%);padding:var(--space-8);box-shadow:var(--shadow-float)}
-.modal h2{font-size:20px;margin-bottom:var(--space-2)}
-.modal p{margin:0 0 var(--space-3);color:var(--text-secondary)}
-.modal ul{margin:0 0 var(--space-6);padding-left:20px;color:var(--text-secondary);font-size:14px}
-.modal .acts{justify-content:flex-end;margin-top:var(--space-6)}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));translate:-50% 8px;background:var(--vocia-deep-navy);color:#fff;padding:8px 8px 8px 16px;border-radius:14px;font-size:14px;display:flex;gap:var(--space-3);align-items:center;opacity:0;pointer-events:none;transition:opacity 150ms var(--ease),translate 150ms var(--ease);z-index:60;max-width:calc(100vw - 32px);box-shadow:var(--shadow-float);min-height:44px}
+.overlay{position:absolute;inset:0;background:rgba(13,27,42,.45);display:grid;place-items:center;z-index:40;animation:fade 150ms var(--ease)}
+.modal{background:var(--surface);border-radius:20px;width:460px;padding:28px;box-shadow:var(--shadow-float)}
+.modal h2{font-size:20px;font-weight:700;margin:0 0 8px}
+.modal p{margin:0 0 10px;color:var(--text-secondary)}
+.modal ul{margin:0;padding-left:20px;color:var(--text-secondary);font-size:13.5px}
+.modal .acts{justify-content:flex-end;margin-top:24px}
+.toast{position:absolute;left:50%;bottom:24px;translate:-50% 8px;background:var(--vocia-deep-navy);color:#fff;padding:7px 7px 7px 16px;border-radius:13px;font-size:13.5px;display:flex;gap:12px;align-items:center;opacity:0;pointer-events:none;transition:opacity 150ms var(--ease),translate 150ms var(--ease);z-index:60;box-shadow:var(--shadow-float);min-height:42px}
 .toast.show{opacity:1;translate:-50% 0;pointer-events:auto}
-.toast .btn{min-height:32px;background:rgba(230,233,236,.14);color:#fff;box-shadow:none}
-
-@media (max-width:1100px){
-  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .calls .row{grid-template-columns:56px minmax(0,1fr) 150px 20px}
-  .calls .row .c-dur,.calls .row .c-topic2{display:none}
-  .tasks .row{grid-template-columns:minmax(0,1fr) 150px 20px}
-  .tasks .row .t-prio,.tasks .row .t-owner,.tasks .row .t-due{display:none}
-}
-@media (max-width:900px){
-  .shell,.shell.nopanel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
-  .rail{flex-direction:row;justify-content:flex-start;padding:var(--space-2) var(--space-3);overflow-x:auto;gap:2px}
-  .logo{margin:0 var(--space-2) 0 0;width:40px;height:40px;flex:none}
-  .logo img{width:26px}
-  .rbtn{flex:none;width:44px;height:44px}
-  .rbtn .tip,.rsep,.avatar{display:none}
-  .rbtn[aria-current="page"]::after{right:12px;left:12px;top:auto;bottom:-6px;width:auto;height:3px}
-  .panel{display:none}
-  .mainwrap,.nopanel .mainwrap{padding:0}
-  .main{border-radius:0;box-shadow:none}
-  .mchips{display:flex;gap:var(--space-2);overflow-x:auto;margin:calc(var(--space-4) * -1) calc(var(--space-4) * -1) var(--space-6);padding:0 var(--space-4) 2px}
-  .mchips .pitem{width:auto;flex:none;white-space:nowrap;padding:6px 12px;background:var(--canvas)}
-  .mchips .pitem[aria-current="true"]{background:var(--vocia-deep-navy);color:#fff;box-shadow:none}
-  .mchips .pitem[aria-current="true"] .i,.mchips .pitem[aria-current="true"] .cnt{color:#fff}
-  .page,.flowpage{padding:var(--space-8) var(--space-4) 96px}
-  h1{font-size:30px}
-  .g2,.g3,.g4{grid-template-columns:minmax(0,1fr)}
-  .hero .huge{font-size:64px}
-  .flowfoot{padding:var(--space-3) var(--space-4);border-radius:0}
-  .grid2,.opts,.derived{grid-template-columns:minmax(0,1fr)}
-  .hours{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .list .hd{display:none}
-  .calls .row,.tasks .row{grid-template-columns:minmax(0,1fr) auto;padding:var(--space-4)}
-  .calls .row .c-time,.list .row .chev{display:none}
-  .ops .row,.zt .row,.team .row{grid-template-columns:minmax(0,1fr) auto;padding:var(--space-4)}
-  .ops .row>:nth-child(1),.team .row>:nth-child(4){display:none}
-  .zt .row .kind{display:none}
-  .zt .row .rowacts{grid-column:1 / -1;justify-content:flex-start}
-  .chart{gap:var(--space-2)}
-  .xl{gap:var(--space-2)}
-}
+.toast .btn{min-height:30px;background:rgba(230,233,236,.14);color:#fff;box-shadow:none}
+/* Dashboard */
+.qcard{display:flex;flex-direction:column}
+.qh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 20px 8px}
+.qi{display:grid;grid-template-columns:34px minmax(0,1fr) auto 108px;gap:14px;align-items:center;padding:0 20px;min-height:50px}
+.qi+.qi{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
+.qi .btn{justify-self:end}
+.qic{width:34px;height:34px;border-radius:10px;background:var(--canvas);display:grid;place-items:center;color:var(--text-secondary)}
+.qic.warn{background:var(--orange-100);color:var(--orange-600)}
+.qic .i{width:17px;height:17px}
+.qt{border:0;background:none;padding:2px 0;text-align:left;cursor:pointer;min-width:0;border-radius:6px}
+.qt b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color 150ms var(--ease)}
+.qt span{display:block;font-size:12.5px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qt:hover b{color:var(--vocia-primary-blue)}
+.qf{margin-top:auto;padding:4px 20px 10px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:10px}
+.kpi{display:flex;flex-direction:column;gap:1px}
+.kpi b{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.kpi b small{font-size:15px;font-weight:600;margin-left:1px}
+.kpi .lbl{font-size:13px;font-weight:600}
+.seg.z{background:var(--canvas);height:3px}
+.health.sm{padding:7px 0}
+.enter .qi{animation:rise 240ms var(--ease) both;animation-delay:calc(var(--i) * 40ms)}
+.enter .bar{transform-origin:bottom;animation:grow 360ms var(--ease) both;animation-delay:calc(var(--i) * 18ms)}
+@keyframes rise{from{opacity:0;translate:0 6px}to{opacity:1;translate:0 0}}
+@keyframes grow{from{transform:scaleY(.2);opacity:0}to{transform:scaleY(1);opacity:1}}
+.lkv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;font-size:13px}
+.lkv dt{color:rgba(230,233,236,.6)}
+.lkv dd{margin:0;color:#fff}
+/* Questions */
+.qs .row{grid-template-columns:minmax(0,1fr) 70px 110px 16px;min-height:56px}
+/* Callback */
+.callbox{padding:14px;border-radius:14px;background:var(--canvas);margin-top:16px}
+.callbox.on{background:var(--blue-100);box-shadow:inset 0 0 0 1px var(--blue-300)}
+.callbox .num{font-size:19px;font-weight:700;letter-spacing:.01em}
+.att{display:grid;grid-template-columns:22px 130px 1fr;font-size:13px;padding:6px 0}
+.att+.att{box-shadow:inset 0 1px 0 var(--vocia-soft-gray)}
+/* Tagesnotiz */
+.addon{margin:12px 0 0;display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--orange-100);color:var(--orange-900);font-size:13.5px}
+.addon .i{width:16px;height:16px;margin-top:2px}
+.modal.wide{width:580px}
+.modal .dsec{margin-top:16px}
+.sugs{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.sugs .bchip{background:var(--canvas);box-shadow:none}
+.sugs .bchip:hover{background:var(--vocia-soft-gray)}
+.ferow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:6px;min-height:18px}
+.ferow .ferr{margin:0}
+.seglbl{font-size:13px;font-weight:600;margin:14px 0 6px}
+.seg{display:flex;gap:4px;padding:4px;background:var(--canvas);border-radius:12px}
+.seg label{flex:1;position:relative}
+.seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.seg span{display:block;text-align:center;padding:8px 10px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text-secondary);transition:background-color 150ms var(--ease),color 150ms var(--ease)}
+.seg input:checked+span{background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow-card)}
+.seg input:focus-visible+span{outline:2px solid var(--vocia-primary-blue);outline-offset:1px}
+/* Simplified surface language */
+:root{--shadow-card:0 0 0 1px #E9EBED;--shadow-raised:0 0 0 1px #E6E9EC,0 1px 2px rgba(13,27,42,.05)}
+.stage{background:var(--surface)}
+h1{font-size:26px;font-weight:600;letter-spacing:-.02em}
+h3{font-size:15px;font-weight:600}
+.lead{font-size:14px}
+.card{border-radius:14px}
+.stat{border-radius:14px}
+.stat .big{font-weight:600}
+.btn{border-radius:9px;min-height:34px;font-weight:600}
+.pill{height:22px;padding:0 9px 0 8px;gap:6px;font-weight:500;box-shadow:none!important}
+.pill .i{display:none}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.pill.err{background:var(--canvas)}
+.pill.err::before{background:var(--state-error)}
+.pill.muted::before{background:var(--text-disabled)}
+.list .row+.row{box-shadow:inset 0 1px 0 #F0F1F3}
+.list .hd{min-height:36px}
+.tabs2{display:flex;gap:26px;border-bottom:1px solid #E9EBED;flex:none;margin-top:-6px}
+.tab2{border:0;background:none;padding:10px 0;margin-bottom:-1px;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent;display:inline-flex;gap:7px;align-items:center;transition:color 150ms var(--ease)}
+.tab2:hover{color:var(--text-primary)}
+.tab2[aria-selected="true"]{color:var(--text-primary);font-weight:600;border-bottom-color:var(--text-primary)}
+.tab2 .c{font-size:12px;color:var(--text-disabled);font-weight:500}
+.stepper{display:flex;gap:2px;list-style:none;margin:0;padding:4px;background:var(--canvas);border-radius:12px}
+.stp{display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:6px 12px 6px 7px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:background-color 150ms var(--ease)}
+.stp:disabled{color:var(--text-disabled);cursor:default}
+.stp[aria-current="step"]{background:var(--surface);color:var(--text-primary);box-shadow:0 0 0 1px #E6E9EC}
+.stp .sd{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:var(--surface);box-shadow:0 0 0 1px var(--outline)}
+.stp .sd .i{width:11px;height:11px;stroke-width:2.5}
+.stp[aria-current="step"] .sd{background:var(--vocia-primary-blue);color:#fff;box-shadow:none}
+.stp.done .sd{background:var(--green-100);color:var(--green-900);box-shadow:none}
+.kstrip{display:flex;gap:64px;flex:none}
+.ks span{display:block;font-size:13px;color:var(--text-secondary);margin-bottom:2px}
+.ks b{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.2}
+.ks b small{font-size:16px;font-weight:600;margin-left:1px}
+.ks em{font-style:normal;font-size:12.5px;color:var(--text-secondary);margin-left:8px}
+.livedot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--vocia-fresh-green);margin-right:8px;box-shadow:0 0 0 3px rgba(43,196,138,.18);vertical-align:1px}
+.qcard .qi{min-height:58px}
+.body{align-items:start}
+.derived>div.mid{background:var(--blue-100);color:var(--blue-900)}
+.derived .mid small,.derived .mid .t2{color:var(--blue-900)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div id="app"></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="stage" id="stage"><div id="app" style="height:100%"></div><div class="toast" id="toast" role="status" aria-live="polite"></div></div>
 <script>
 (function(){
 "use strict";
@@ -440,6 +453,7 @@ const TEAM=[
   {n:'S. Neumann',r:'Empfang',twofa:false,last:'Gestern, 17:40'}
 ];
 
+
 /* ---------- icons ---------- */
 const P={
   home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
@@ -488,347 +502,406 @@ const ic=(n,c)=>`<svg class="i${c?' '+c:''}" viewBox="0 0 24 24" aria-hidden="tr
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pill=([t,c,i])=>`<span class="pill ${c}">${ic(i)}${t}</span>`;
 
+
+const LOGOD="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABhCAYAAAAeJqnsAAAMUElEQVR42u2de4xcdRXHP3PnbmthWwqlRVJF4qPCRqWFSPEBVkV5a1UEA4Q3DQoiki2IosFoRZRHaghGqFHqg1DUSC0lxWoBW1Aqj4K2CjYipdoCpbS0S9udmesf5xzmt8Nsd3bmzr2/O3t/yWQ3s5uZe+/5nu95/s6vMHZyD/nychWAIlDRl60QOACYAvQAbwPeAuwH7AnsAUTAK8BW4DngUeBPwMNAGQjsMws5ALxbgQq/7Lx3IHAUMAM4HHgzMG6Yn1sGVgE3AL/Q78gB4LHgJwInAacAR6pmu6uimh6ZMJ2ftiLnZ9H5+zxgFhCE+XP3guoDR/DvBs5Xwb/R+b+SCtKAUqgj8HqfXcsCZf389cDVOQOku4qO4A8CrgQ+B4xyhO6yQxzLWKMfOLQ4etzEXAzpOXhlYCwwB7gVeK8Ku+QwQ5zCt++uKMj6cgCkY+tNC08AFgCfVIH0O+AoJADCMPcB0qH8LuA64BJ9v1//lpQ8zH84IAdAcitUaj8QmK+evVF9WnJ4Qw6AZIU/A/glsL9qfdrPf0eQyyYx4X8WuMcT4Vt+4JkcAMkI/2x19karD5C25hsAlodDJA6iXIaxCP8nTrzvg9JZJHJXWJNoKNcBhP0topp+zFdjwj/VQ+EbA90PPBTiVIZU0GP191fVVpXrhDLkYNhtqFcCPqrefoXG0rZJUn8ZuAKohHqBhwOfBw4D9tGL3Q5sBNYCj+jrb0iJMQfD4NRaRkq1C5DkTtkTzUeBOQroBf4CFAtjJ/ecBPyKav55d2sdsBxYDCwFNtSAYSQDwbR8T31G79EHXvTk+vpVxrcilcAQKBfGTu55HDgE2Ol4p2bzI0egQc3NbAKWILXle6kWLop1zMZIsvt3IJU8H+J8V/O7gN8BM6nWA6IA6SSJ9B/c4oMJPNSX0Vu/fuAE4DTgbmAlcAEwxhF+cQQJ3+z+bI+F/yBSaRyg2IHa+AID2452Z+NCh+5LKvCpwC3qJ5zpRBRJFDV8EH5Z/ag5ntG+1R3+AXwC6KuVdQBc22TMb1UrY4YScDBwm9rAj+j7UQezgZnKMRrudXnk8VdUWTeo8Dc5iltF7+hxE58CJgFHALuaFFbBCScrSJPiWcC+wEMaUoYNskzW7H4Z+D7SvtXvCdhNmXcCJyK9gGE936w4etzEojpzPUg7UqkFFNe2N00HPgU8Cfy7w5jAqP9o4GaH+gseCN+SPWdrxBY6TvrrAGB0cacywXRe32zYTDxc0C+dBJyhLLDCAUmWw0V7Lt3qWe/t3Lcvdv97wI27E74LALuhu4GXFdVhDEmMwMmEHYPUwhfrBWUZBGZLv6XUX/aE3Uz4i4BzB6P9AUh2mkJd+j5KnZq3xhTSRE4WaqmGSpszmjOwa56m/k3oieNX0WtbjTSbbG4kugsGsR0PAO8HlimiSjFQZpeC6Wjg95p/8EVzhkv9IXATUt6NPBF+AdgGnAy8xMAaT0MAcBMHRaQOcJxmtuIAgT24XUjNYYlGCVkCgTHkaaogvsT8tl9gFrCmEepnCKfFhLJLs0c/UhDEQdfGBIeoPzARvwomQ8X8e6vtr3gS75dU4NcAtw/l9DUKABhYw76wEY9ymEzQj/TBLwbGOyj2WfsrwNeQzZkVD67XnL4/Al9txqdqdF9AiPSzjQc+4HjxrT7QErLRcRrSLOm78A9G9tW1Y8NGs07fRuB4ZDcww42sGgWApXPvQbJ8h8UMgin6ub/11B+wkHW+giBt7Y8cxvwM8Dh10rytmoDaLzTEnQcsjNkx7Nes1XUeOoVGq8erU+yD42fR2jc1omrY6WuWAWrDoEXAx4E3xeTAGRN8ENiClC67SL92YPc7SqOhSTXvp233z2tF+DQhOPN8X0EaC9Y1Sz2DaFpJnc1T8aOmbvf2JaTDJ+1oxUzPC8qY9l6UFABc5+M54HSqJd8oBm2zOPs2ZZhSiiCwa3m7ev4+hKpm989X5QtaVb6gBRoKkbkzva3S0CCUu0BzBWnYXLdg9QNkHEvaGT9ThpvUB4vlmQcxXNBcTUDE5RSa5u2lUcc7UnAMzRzN8sTxM7u/Bmk7C2JSuJZnBBmAupG+wCkxUqWxzD+BDwP/I5nikX3HQXpPY0i32ONuyDkSbeeO6zm0KihzCrciNf8dzSQjhtDCdyoTTEqACYz2u5XVuj2gflOEb6jwwziVIE5NXQl8JWYtLVKtG9yL7Kxt1+ZK0/IKUgqfSvotXkb9y4DvtoMBg5hROhep93fFeKGhA4I/IIMR444O3L2RNyIlVR+2cNsOrVnOe5GPAIgcc3COxqkthyg1ILCu4wfUJ7BUdBDDZ1sz683ApZ7kICzcvgz4V4z5loEUG+OQKKsXbEFm0J1MvDlzNzo4Helxf1C/N2zC9wicz9xHcw9neSJ8Y9SF6vXHavfbBQAcYawC3qWvcswgMFAdg2zGWIVUxCxJ4nbmFmpe7vY286yPBX6tHrYvmh8ALyLTw5qq8iVtAurZrkup9qVFbbjmElKgWYlseOxh4G4l115Gjpkq6c+pSAnacg2+bOcyAHwZyba2hfrjygMMFUtfgGwZa1cixY0IdgD3Ia1mK4BnkA5ncxjHIY0c05FO3o9RLTj50oxi97NIr7HteY92joq1i1+oN9MuEEROuOSuF9UZ7UO2bE9AehDdmN6nfXzGVpuVndbT+J5NLwFgSZX9kcESe7VZ09yMWThI8sba093RN74s0/5zgJ+SUMt8O0fFWlSwFdmjdhzt7aQp1ISFkRPeVer8j4/CX4SMbglJaL9Eu6eFu5q2XO2vT7Trw7L8yRakN/LZJKi/nVFAPbtWAi5SVMcdFWR9mVm8AvhPu73+JE1AbW5gvTphR5CNfQBJUv99yODoxLfKJXVghDtA6TFkz2FlhIPAPbhhGjLFIyDhPsggwZu1XsLZuRl4zfYXge+o8Iuk0ASb5IERFhWsBg5FCjsj1RQY9T+GNHcWSKkDOumHb0xwmbLBSGUCE/hFagJI6zkkDQCjvbXIBIsinTc3aKhlYfBcZL5AqjMS0jg1zBzCMUglbyQ5hHaf65B5TNtoQ5OHzwzgmoHtwOUjzAzYvV+MZEhTv/e0tM6aO3+DtHkllvr0wPG7HRks5cV4nLR3uILUvXd0OBO4W7p68WhAVtr73IrIDMEfdrhDaAD4OvDfNMM+H5zAegCcAPxdf5qj2GnUvwL4kAMILxgg7ZNDrRCyTZ3CE+ms5JBbDJuJzO0N8IjpfHjQZgpuAR7tMIfQ7u164Akf7y3wTEt68WPuXpzCfwr4NjFu6Ow0ALhh4TINDTvh1BE37d3na5QTePjArkIGS2c5LDTH705k/rK3gPbp+HirFr4A7KEecxYdQgv5NgOfps0bOzqJAdyHdy3xzh9KI7K5Mgv3EHj48GzewNUZNANG/Q8DP6Y644AcAMNngfnAXzMUFhp4d1FtgPUevIHHD7KkNJq1sO8GBW4mzJdPTmA9h3At2Wgfc2P+Mxi4GSVngBaZYDb+t4/ZtV6CpLQhI76LzwBwtWqux5Rqjt8dyByjTCWx0q4GNgrQ8Ui1cD/8ah+zbV2bkFGyG/Go1Jt1BnAf8EvIZGzfzIDF/LPxsNLXCQBww8J5yFx8X8JCo/4lyHyhTNYvsgAANyycbabLk2vaDnyRDNctspJnt2rhUnW20tY2u56rgKezSP1ZcQJrwRoh49ufIL2Tuo36lyEnpGe6dO1rImgw2i0is39GAzNIPjlkNL8VmXv0cpZi/iybgFqH8BpkinjSR9Ib9fciWcrMUn9WAWDO16vIMS5Jap9NIvs5UunriN7FLJmAWlPwNDI4eloCpsDs/hqkyaOfDtnDkNX2a0vAXA48T3vTxMY6O5AZxV7s6RvpALAM4QbgC7Qv/Ro5dv9CZKBDR+1jzKIJcIUTIjWCfYH3Ec9ppu4qIQdYzSHes5NzBmiDV/5n4ju4yhX+PCTh05E7mLMOABuusBM4BRkQ3eppJTZOtgv4GXJahyV7ohwAfvoDRaQD9wTkdLFmqdqA04Wcz3em41905Nb1TtmEaaZgNXKQxLOOOag0CCL3HKJepMgTkPIIlxwAwwfBk8jpH0sUBBYiuodIuAdIGIN0AY8g+f3rR4LwOw0ABoJAGeBY4FwkZVxU7Q5qXkWHOS5Gxtje74Cm42cXZakaOFxgm/Z2I6PqZyIHMUxS4T6PnGNwF3KoRZ+FxnT+vKLX1v8BNKWQ7XubAukAAAAASUVORK5CYII=";
+/* ---------- feature data ---------- */
+P.help='<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>';
+P.bolt='<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>';
+const isOpen=t=>!['erledigt','storniert'].includes(t.status);
+const CB={'T-512':1,'T-511':1,'T-510':1,'T-509':1,'T-508':1,'T-503':1};
+TASKS.forEach(t=>{const c=t.call&&CALLS.find(x=>x.id===t.call);t.cb=!!CB[t.id];t.phone=c?`0151 2384 ${c.caller}`:'0176 5512 0931';t.attempts=t.id==='T-503'?[{t:'Gestern, 16:40',r:'Nicht erreicht'}]:[]});
+let QUESTIONS=[
+  {id:'Q1',q:'Gibt es Parkplätze in der Nähe der Praxis?',n:6,last:'Heute, 11:02',status:'open',call:'A-2311'},
+  {id:'Q2',q:'Nehmen Sie noch neue Patient:innen auf?',n:4,last:'Heute, 10:26',status:'open',call:'A-2310'},
+  {id:'Q3',q:'Ist die Praxis barrierefrei erreichbar?',n:3,last:'Gestern, 15:12',status:'open'},
+  {id:'Q4',q:'Ist ein Druckgefühl nach dem Nachstellen normal?',n:2,last:'Heute, 09:48',status:'open',medical:true},
+  {id:'Q5',q:'Bekomme ich eine Terminerinnerung?',n:2,last:'Montag, 08:40',status:'open'},
+  {id:'Q6',q:'Kann ich mit Karte bezahlen?',n:5,last:'Montag, 12:15',status:'answered',a:'Ja, Sie können bei uns mit EC-Karte und Kreditkarte bezahlen.'},
+  {id:'Q7',q:'Gibt es eine Abendsprechstunde?',n:3,last:'Dienstag, 17:30',status:'answered',a:'Donnerstags haben wir bis 19 Uhr geöffnet.'}
+];
+const openQ=()=>QUESTIONS.filter(q=>q.status==='open');
+const SUGG=['Heute ab 15 Uhr geschlossen wegen einer Fortbildung.','Dr. Immerda ist heute nicht in der Praxis.','Heute kann es am Telefon zu Wartezeiten kommen.'];
+const UNTIL=[['Heute, Praxisschluss','bis Praxisschluss'],['Heute, 23:59 Uhr','bis heute Abend'],['Morgen, 12:00 Uhr','bis morgen 12:00 Uhr']];
+const GREET=`Willkommen bei der ${PRAXIS}. Hier spricht Vocia, die digitale Assistentin der Praxis.`;
+const noteSpeech=t=>{t=(t||'').trim();return `${GREET} ${t?'Bitte beachten Sie: '+t+(/[.!?]$/.test(t)?'':'.'):'…'} Wie kann ich Ihnen helfen?`};
+function plus2h(){const n=new Date(Date.now()+2*3600e3);const hm=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;return (iso(n)===TODAY?'Heute, ':'Morgen, ')+hm}
+
 /* ---------- state ---------- */
 let S={
-  view:'dashboard',sub:{},origin:'zeiten',step:1,maxStep:1,draft:null,editingId:null,dirty:false,tried:{},
-  items:[
-    {id:1,start:addDays(TODAY,-60),end:addDays(TODAY,-60),kind:'Sonderöffnungszeit'},
-    {id:2,start:addDays(TODAY,-42),end:addDays(TODAY,-36),kind:'Urlaub'}
-  ],
-  banner:null,notes:false,modal:null,drawer:null,busy:false,focus:null,top:false,
-  range:'7',test:{state:'idle',at:null},intCheck:{}
+  view:'dashboard',sub:{},flash:null,origin:'zeiten',step:1,maxStep:1,draft:null,editingId:null,dirty:false,tried:{},
+  items:[{id:1,start:addDays(TODAY,-60),end:addDays(TODAY,-60),kind:'Sonderöffnungszeit'},{id:2,start:addDays(TODAY,-42),end:addDays(TODAY,-36),kind:'Urlaub'}],
+  banner:null,notes:false,enter:true,note:null,noteDraft:null,noteErr:false,calling:null,qDraft:'',qErr:false,modal:null,drawer:null,busy:false,focus:null,test:{state:'idle',at:null},intCheck:{}
 };
 const newDraft=()=>({start:DEF_START,reopen:DEF_REOPEN,block:true,emergency:'standard',vName:'',vPhone:'',vAddr:'',mention:true,verified:false,verifiedOn:null,ansage:'',edited:false});
 function hStatus(it){if(it.end<TODAY)return['Beendet','muted','dash'];if(it.start<=TODAY)return['Aktiv','ok','checkc'];return['Geplant','info','clock']}
 const openTasks=()=>TASKS.filter(t=>!['erledigt','storniert'].includes(t.status));
 const nextHoliday=()=>S.items.filter(i=>i.draft&&i.end>=TODAY).sort((a,b)=>a.start<b.start?-1:1)[0];
+const linkedFuture=()=>S.items.filter(i=>i.draft&&i.end>=TODAY).sort((a,b)=>a.start<b.start?-1:1);
+const fl=id=>S.flash===id?' flash':'';
 
-/* ---------- navigation model ---------- */
+/* ---------- nav ---------- */
 const NAV=[
   ['dashboard','home','Dashboard'],['anrufe','phone','Anrufe'],['aufgaben','tasks','Aufgaben'],['termine','cal','Termine'],null,
   ['zeiten','clock','Praxis & Zeiten'],['ansage','msg','Ansage & Telefon'],['notfall','alert','Notfall & Vertretung'],null,
   ['integrationen','plug','Integrationen'],['auswertung','chart','Auswertung'],['einstellungen','gear','Einstellungen']
 ];
-function panelFor(view){
-  const cnt=f=>CALLS.filter(f).length;
-  switch(view){
-    case 'dashboard':return null;
-    case 'anrufe':return {title:'Anrufe',sub:'Heute, '+long(TODAY).split(', ')[1],kind:'filter',groups:[
-      {items:[['alle','list','Alle',CALLS.length]]},
-      {label:'Ergebnis',items:Object.keys(OUT).map(k=>[k,OUT[k][2],OUT[k][0],cnt(c=>c.out===k)])}]};
-    case 'aufgaben':return {title:'Aufgaben',sub:'Was das Team übernehmen muss',kind:'filter',groups:[
-      {items:[['offen','list','Offen',openTasks().length],['meine','user','Mir zugewiesen',TASKS.filter(t=>t.owner===ME&&!['erledigt','storniert'].includes(t.status)).length]]},
-      {label:'Status',items:Object.keys(TST).map(k=>[k,TST[k][2],TST[k][0],TASKS.filter(t=>t.status===k).length])}]};
-    case 'termine':return {title:'Termine',sub:'Kalender-Anbindung',kind:'anchor',groups:[{items:[['status','sync','Verbindung'],['vorgaenge','list','Unterstützte Vorgänge'],['verlauf','history','Vorgangsverlauf']]}]};
-    case 'zeiten':return {title:'Praxis & Zeiten',sub:PRAXIS,kind:'anchor',groups:[{items:[['profil','building','Praxisprofil'],['zeiten','clock','Öffnungszeiten'],['urlaub','sun','Urlaub & Sonderzeiten',S.items.filter(i=>i.end>=TODAY).length]]}]};
-    case 'ansage':return {title:'Ansage & Telefon',sub:'Was Anrufer hören',kind:'anchor',groups:[{items:[['begruessung','msg','Begrüßung'],['sprache','globe','Sprache & Anrede'],['aufgaben','tasks','Was Vocia darf'],['uebergabe','forward','Übergabe ans Team'],['test','mic','Testanruf'],['geplant','cal','Geplante Ansagen']]}]};
-    case 'notfall':return {title:'Notfall & Vertretung',sub:'Kontakte für dringende Fälle',kind:'anchor',groups:[{items:[['standard','alert','Standard-Notdienst'],['vertretungen','users','Vertretungen']]}]};
-    case 'integrationen':return {title:'Integrationen',sub:'Verbundene Systeme',kind:'anchor',groups:[{items:[['kalender','cal','Kalender / PVS'],['telefon','phone','Telefonanlage'],['nachrichten','sms','SMS & E-Mail']]}]};
-    case 'auswertung':return {title:'Auswertung',sub:'Qualität & Volumen',kind:'anchor',groups:[{items:[['ueberblick','chart','Überblick'],['verlauf','list','Anrufe pro Tag'],['gruende','forward','Übergabegründe']]}]};
-    case 'einstellungen':return {title:'Einstellungen',sub:'Konto & Sicherheit',kind:'anchor',groups:[{items:[['team','users','Team & Rollen'],['sicherheit','shield','Sicherheit'],['daten','db','Datenaufbewahrung'],['plan','card','Plan & Rechnungen']]}]};
-  }
-}
+const NOTES={
+  dashboard:['Less, but answered','One status line, four numbers with a comparison, one work list with its own actions. Everything else is one click away in the sidebar.'],
+  anrufe:['Outcome first, details behind access','The list shows outcome and reason only. Health details and transcripts stay in the detail view behind role access.'],
+  aufgaben:['Callback mode','One click starts the call with the summary on screen. "Nicht erreicht" reschedules the next attempt automatically; every attempt is logged.'],
+  termine:['Confirmed means written back','A booking is "confirmed" only after the calendar writes it back. Unconfirmed operations are never told to a patient as appointments.'],
+  zeiten:['One event, one flow','A holiday is one object. Bookings, announcement and emergency contact are derived from it and shown on the row.'],
+  ansage:['Tagesnotiz','The everyday version of the holiday flow: one sentence, an end time, a preview. It removes itself, so nobody has to remember to undo it.'],
+  notfall:['Only verified contacts','Vocia names no unconfirmed numbers. Each holiday stores the date its contact was checked.'],
+  integrationen:['Read vs. write','Each system shows what is read, what is written and what degrades if the connection fails.'],
+  auswertung:['Quality over deflection','A low handoff rate only counts if the safe-resolution rate stays high. Handoff reasons point to the next roadmap item.'],
+  einstellungen:['Trust settings in one place','Roles, 2FA and data retention are visible together; changes land in the audit log.'],
+  fragen:['Learning loop','A question answered once is answered by Vocia from then on. Medical questions are never answered by Vocia, only acknowledged by the team.'],
+  flow1:['"Wieder geöffnet am"','Teams think "we\'re back on Monday". Asking for the reopening day removes off-by-one mismatches.'],
+  flow2:['Emergency before announcement','Once the contact is verified, the announcement names it automatically. No unverified number reaches a patient.'],
+  flow3:['One source of truth','The text is generated from dates and contact. Edits are checked against them and against the AI disclosure.'],
+  flow4:['Honest status language','Vocia says "I can note your request", never "your appointment is confirmed", during a closure.']
+};
 const DEF_SUB={anrufe:'alle',aufgaben:'offen'};
 const subOf=v=>S.sub[v]||DEF_SUB[v]||null;
 
-function rail(){
-  const act=S.view==='flow'?S.origin:S.view;
-  const badge=openTasks().filter(t=>t.status==='neu').length;
-  return `<nav class="rail" aria-label="Hauptnavigation">
-    <div class="logo"><img src="${LOGO}" alt="Vocia"></div>
-    ${NAV.map(n=>n?`<button class="rbtn" data-action="nav" data-view="${n[0]}" aria-label="${n[2]}" ${act===n[0]?'aria-current="page"':''}>${ic(n[1])}${n[0]==='aufgaben'&&badge?`<span class="badge" aria-hidden="true">${badge}</span>`:''}<span class="tip" aria-hidden="true">${n[2]}</span></button>`:'<span class="rsep" aria-hidden="true"></span>').join('')}
-    <span class="avatar" title="${ME}, Praxisleitung" aria-label="Angemeldet als ${ME}">AK</span>
+const NAVG=[['',[['dashboard','home','Dashboard'],['anrufe','phone','Anrufe'],['aufgaben','tasks','Aufgaben'],['termine','cal','Termine']]],['Einrichtung',[['zeiten','clock','Praxis & Zeiten'],['ansage','msg','Ansage & Telefon'],['notfall','alert','Notfall & Vertretung']]],['System',[['integrationen','plug','Integrationen'],['auswertung','chart','Auswertung'],['einstellungen','gear','Einstellungen']]]];
+function sidebar(){
+  const act=S.view==='flow'?S.origin:S.view,badge=openTasks().filter(t=>t.status==='neu').length;
+  const key=S.view==='flow'?'flow'+S.step:S.view==='anrufe'&&subOf('anrufe')==='fragen'?'fragen':S.view,n=NOTES[key];
+  return `<nav class="side" aria-label="Hauptnavigation">
+    <div class="brand"><img src="${LOGOD}" alt=""><b>Vocia</b></div>
+    <div class="ws"><span class="wsi">${ic('building')}</span><div><small>Praxis</small><b>${PRAXIS}</b></div></div>
+    ${NAVG.map(([g,items])=>`${g?`<p class="nlabel">${g}</p>`:''}${items.map(([v,i,l])=>`<button class="nitem" data-action="nav" data-view="${v}" ${act===v?'aria-current="page"':''}>${ic(i)}<span>${l}</span>${v==='aufgaben'&&badge?`<span class="cnt" aria-label="${badge} neue Aufgaben">${badge}</span>`:''}</button>`).join('')}`).join('')}
+    <div class="sfoot">${n?`<div class="pnote"><b>${n[0]}</b>${n[1]}</div>`:''}<label class="switch"><input type="checkbox" data-field="notes" ${S.notes?'checked':''}>Design-Notizen</label>
+      <div class="user"><span class="avatar">AK</span><div><b style="display:block;font-size:13px">${ME}</b><span class="t2">Praxisleitung</span></div></div></div>
   </nav>`;
 }
-function panelItems(p,view){
-  return p.groups.map(g=>`<div class="pgroup">${g.label?`<p class="plabel">${g.label}</p>`:''}${g.items.map(([id,i,l,c])=>{
-    const cur=p.kind==='filter'?subOf(view)===id:S.sub[view]===id;
-    return `<button class="pitem" data-action="${p.kind==='filter'?'filter':'anchor'}" data-id="${id}" ${cur?'aria-current="true"':''}>${ic(i)}<span>${l}</span>${c!=null?`<span class="cnt">${c}</span>`:''}</button>`}).join('')}</div>`).join('');
-}
-function panel(){
-  if(S.view==='flow'){
-    return `<aside class="panel" aria-label="Schritte"><h2>${S.editingId?'Urlaub bearbeiten':'Urlaub planen'}</h2><p class="pp">Ein Zeitraum, alles andere wird abgeleitet.</p>
-      <div class="pgroup"><p class="plabel">Schritte</p>${STEPS.map((t,i)=>{const n=i+1,cur=n===S.step,done=!cur&&n<S.maxStep;
-        return `<button class="pitem ${done?'done':''}" data-action="step" data-step="${n}" ${n>S.maxStep?'disabled':''} ${cur?'aria-current="true"':''}><span class="dot">${done?ic('check'):n}</span><span>${t}</span></button>`}).join('')}</div>
-      <div class="pfoot">${notesSwitch()}</div></aside>`;
-  }
-  const p=panelFor(S.view);if(!p)return '';
-  return `<aside class="panel" aria-label="${p.title}"><h2>${p.title}</h2><p class="pp">${esc(p.sub)}</p>${panelItems(p,S.view)}<div class="pfoot">${notesSwitch()}</div></aside>`;
-}
-const notesSwitch=()=>`<label class="switch"><input type="checkbox" data-field="notes" ${S.notes?'checked':''}>Design-Notizen</label>`;
-function mchips(){
-  if(S.view==='flow')return `<div class="mchips">${STEPS.map((t,i)=>{const n=i+1;return `<button class="pitem" data-action="step" data-step="${n}" ${n>S.maxStep?'disabled':''} ${n===S.step?'aria-current="true"':''}>${n}. ${t}</button>`}).join('')}</div>`;
-  const p=panelFor(S.view);if(!p)return '';
-  return `<div class="mchips">${p.groups.flatMap(g=>g.items).map(([id,i,l,c])=>{const cur=p.kind==='filter'?subOf(S.view)===id:S.sub[S.view]===id;return `<button class="pitem" data-action="${p.kind==='filter'?'filter':'anchor'}" data-id="${id}" ${cur?'aria-current="true"':''}>${l}${c!=null?` <span class="cnt">${c}</span>`:''}</button>`}).join('')}</div>`;
-}
+const tabs=(items,cur)=>`<div class="tabs2" role="tablist">${items.map(([id,l,c])=>`<button class="tab2" role="tab" aria-selected="${cur===id}" data-action="filter" data-id="${id}">${l}${c!=null?`<span class="c">${c}</span>`:''}</button>`).join('')}</div>`;
+const head=(o)=>`<header class="head"><div>${o.eyebrow?`<p class="eyebrow">${o.eyebrow}</p>`:''}<h1 ${o.hid?`id="${o.hid}" tabindex="-1"`:''}>${o.title}</h1>${o.lead?`<p class="lead">${o.lead}</p>`:''}</div>${o.actions?`<div class="acts">${o.actions}</div>`:''}</header>`;
+const planBtn=(origin,primary)=>`<button class="btn ${primary?'primary':''}" data-action="plan" data-origin="${origin}">${ic('sun')}Urlaub planen</button>`;
 
 /* ---------- Dashboard ---------- */
+const DEMO_NOW=15*60+10; /* Demo-Uhrzeit 15:10, passend zu den heutigen Beispielanrufen */
+const LAST={calls:15,solved:9,hand:3};
+const hm=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+const toM=s=>{const [h,m]=s.split(':').map(Number);return h*60+m};
+function liveState(){
+  const row=HOURS[(D(TODAY).getDay()+6)%7],segs=[row[1],row[2]].filter(Boolean).map(x=>x.split('–').map(toM)),n=DEMO_NOW;
+  if(!segs.length)return {segs,title:'Praxis heute geschlossen',sub:'Vocia nimmt alle Anrufe an und notiert Rückrufbitten.'};
+  const cur=segs.find(([a,b])=>n>=a&&n<b),next=segs.find(([a])=>n<a);
+  if(cur)return {segs,title:'Sprechzeit',sub:`Vocia leitet an den Empfang weiter, wenn besetzt nimmt sie Rückrufbitten auf. Bis ${hm(cur[1])} Uhr.`};
+  if(next)return {segs,title:n<segs[0][0]?'Vor der Sprechzeit':'Mittagspause',sub:`Vocia nimmt alle Anrufe an. Der Empfang ist ab ${hm(next[0])} Uhr wieder besetzt.`};
+  return {segs,title:'Nach der Sprechzeit',sub:'Vocia nimmt alle Anrufe an und notiert Rückrufbitten für den nächsten Werktag.'};
+}
+function queue(){
+  const q=[];
+  TASKS.filter(t=>isOpen(t)&&t.cb).sort((a,b)=>(!!b.overdue-!!a.overdue)||((b.prio==='Hoch')-(a.prio==='Hoch'))).slice(0,3).forEach(t=>{
+    const c=t.call&&CALLS.find(x=>x.id===t.call);
+    q.push({icon:'phone',tone:t.overdue||t.prio==='Hoch'?'warn':'',title:t.title,sub:c&&c.op&&c.op.state==='no'?'Kalender war nicht erreichbar · Termin nicht bestätigt':t.reason,
+      due:t.overdue?['Überfällig','warn','clock']:t.due.startsWith('Heute')?[t.due.replace('Heute, ','bis '),'info','clock']:['Morgen','muted','clock'],
+      open:['openTask',t.id],btn:[`${ic('phone')}Anrufen`,'callTask',t.id,q.length===0]})});
+  const oq=openQ().filter(x=>!x.medical).sort((a,b)=>b.n-a.n);
+  if(oq.length)q.push({icon:'help',title:`${openQ().length} offene Fragen`,sub:`Am häufigsten: „${oq[0].q}“ (${oq[0].n}×)`,open:['go','anrufe','fragen'],btn:['Beantworten','openQ',oq[0].id]});
+  q.push({icon:'cal',title:'Kalender-Berechtigung läuft ab',sub:'Danach übergibt Vocia alle Terminwünsche ans Team.',due:['In 12 Tagen','muted','clock'],open:['go','integrationen','kalender'],btn:['Erneuern','stub','']});
+  return q;
+}
+const delta=(v,l,unit)=>{const d=v-l;return d===0?'wie Vorwoche':`${d>0?'+':'−'}${Math.abs(d)}${unit||''} ggü. Vorwoche`};
 function dashboardView(){
-  const solved=CALLS.filter(c=>c.out==='solved').length,hand=CALLS.filter(c=>['handoff','followup'].includes(c.out)).length,fail=CALLS.filter(c=>['failed','dropped'].includes(c.out)).length;
-  const ot=openTasks(),nh=nextHoliday();
-  return `<div class="page">
-    <div class="head"><div><p class="eyebrow">${long(TODAY)}</p><h1>Guten Tag</h1></div>
-      <div class="acts"><button class="btn" data-action="plan" data-origin="zeiten">${ic('sun')}Urlaub planen</button></div></div>
-    <div class="grid" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)">
-      <div class="hero">
-        <img class="mark" src="${LOGO}" alt="">
-        <span class="status">Vocia ist aktiv · nimmt Anrufe an</span>
-        <div><div class="huge num">${CALLS.length}</div><div class="sub">Anrufe heute, seit 00:00 Uhr</div></div>
-        <div class="row"><div><b class="num">${solved}</b><span>sicher gelöst</span></div><div><b class="num">${hand}</b><span>ans Team übergeben</span></div><div><b class="num">${fail}</b><span>abgebrochen / fehlgeschlagen</span></div></div>
+  const L=liveState(),N=S.note,q=queue(),cb=TASKS.filter(t=>isOpen(t)&&t.cb);
+  const solved=CALLS.filter(c=>c.out==='solved').length,hand=CALLS.filter(c=>['handoff','followup'].includes(c.out)).length;
+  const H=[];for(let h=7;h<=19;h++){const cs=CALLS.filter(c=>+c.t.slice(0,2)===h);H.push({h,s:cs.filter(c=>c.out==='solved').length,o:cs.filter(c=>c.out!=='solved').length})}
+  const hmax=Math.max(4,...H.map(x=>x.s+x.o));
+  return `<div class="page">${head({title:'Guten Tag',lead:`<span class="livedot" aria-hidden="true"></span>Vocia ist aktiv · ${L.title}. ${N?`Tagesnotiz ${UNTIL[N.until][1]}: „${esc(N.text)}“`:L.sub}`,actions:`<button class="btn" data-action="noteEdit">${ic('bolt')}Tagesnotiz</button>${planBtn('zeiten')}`})}
+  <div class="kstrip">
+    <div class="ks"><span>Anrufe heute</span><b>${CALLS.length}</b><em>${delta(CALLS.length,LAST.calls)}</em></div>
+    <div class="ks"><span>Sicher gelöst</span><b>${pct(solved,CALLS.length)}<small>%</small></b><em>${delta(pct(solved,CALLS.length),pct(LAST.solved,LAST.calls),' Pkt.')}</em></div>
+    <div class="ks"><span>Übergeben</span><b>${hand}</b><em>${delta(hand,LAST.hand)}</em></div>
+    <div class="ks"><span>Offene Rückrufe</span><b>${cb.length}</b><em>${cb.filter(t=>t.overdue).length} überfällig</em></div>
+  </div>
+  <div class="body" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
+    <section class="col" id="sec-jetzt" style="align-self:start">
+      <div class="ch" style="margin:0"><h3>Jetzt erledigen <span class="t2" style="font-weight:500;font-size:14px">${q.length}</span></h3><button class="btn ghost sm" style="margin-right:-10px" data-action="go" data-view="aufgaben" data-sub="rueckrufe">Alle Rückrufe</button></div>
+      <div class="card flat qcard">${q.length?q.map((x,i)=>`<div class="qi" style="--i:${i}"><span class="qic ${x.tone}">${ic(x.icon)}</span>
+        <button class="qt" data-action="${x.open[0]}" ${x.open[0]==='go'?`data-view="${x.open[1]}" data-sub="${x.open[2]}"`:`data-id="${x.open[1]}"`}><b>${x.title}</b><span>${esc(x.sub)}</span></button>
+        ${x.due?pill(x.due):'<span></span>'}<button class="btn sm ${x.btn[3]?'primary':''}" data-action="${x.btn[1]}" data-id="${x.btn[2]}">${x.btn[0]}</button></div>`).join('')
+      :`<div class="empty">${ic('checkc')}<b>Alles erledigt</b>Neue Rückrufe und Fragen erscheinen hier automatisch.</div>`}</div>
+      <p class="cap" style="margin:0">Seit gestern 18:00 Uhr: 4 Anrufe außerhalb der Sprechzeiten, alle mit Rückrufbitte.</p>
+    </section>
+    <section class="col" style="align-self:start">
+      <div class="card" id="sec-heute">
+        <div class="ch"><h3>Anrufe pro Stunde</h3><div class="legend"><span><i style="background:var(--vocia-primary-blue)"></i>Gelöst</span><span><i style="background:var(--blue-300)"></i>Übrige</span></div></div>
+        <div class="chart" style="grid-template-columns:repeat(13,minmax(0,1fr));gap:10px;flex:none;height:190px" role="img" aria-label="Anrufe pro Stunde: ${H.filter(x=>x.s+x.o).map(x=>`${x.h} Uhr ${x.s+x.o}`).join(', ')}">
+          ${H.map((x,i)=>{const t=x.s+x.o;return `<div class="bar" style="--i:${i}" title="${x.h}:00 · ${x.s} gelöst, ${x.o} übrige">${t?`<div class="seg h" style="height:${x.o/hmax*100}%"></div><div class="seg s" style="height:${x.s/hmax*100}%"></div>`:'<div class="seg z"></div>'}</div>`}).join('')}</div>
+        <div class="xl" style="grid-template-columns:repeat(13,minmax(0,1fr));gap:10px">${H.map(x=>`<span>${x.h%3===1?String(x.h).padStart(2,'0'):''}</span>`).join('')}</div>
       </div>
-      <div class="grid g2">
-        <div class="stat green"><span class="lbl">Sicher gelöst</span><span class="big num">${pct(solved,CALLS.length)}<small>%</small></span><span class="def">Anteil heute, nur bestätigte Vorgänge</span></div>
-        <div class="stat"><span class="lbl">Offene Aufgaben</span><span class="big num">${ot.length}</span><span class="def">${ot.filter(t=>t.status==='neu').length} neu, ${ot.filter(t=>t.overdue).length} überfällig</span></div>
-        <div class="stat"><span class="lbl">Nicht bestätigt</span><span class="big num">${CALLS.filter(c=>c.op&&c.op.state==='no').length}</span><span class="def">Termin-Vorgänge heute ohne Kalenderbestätigung</span></div>
-        <div class="stat"><span class="lbl">Ø Gesprächsdauer</span><span class="big num">2:05<small>min</small></span><span class="def">Alle Anrufe heute</span></div>
+      <div class="card" id="sec-system">
+        <div class="ch" style="margin-bottom:2px"><h3>Systemstatus</h3><button class="btn ghost sm" style="margin-right:-10px" data-action="nav" data-view="integrationen">Details</button></div>
+        <div class="health sm">${ic('cal')}<div class="bd">Kalender / PVS</div>${pill(['Verbunden','ok','checkc'])}</div>
+        <div class="health sm">${ic('phone')}<div class="bd">Telefonanlage</div>${pill(['Aktiv','ok','checkc'])}</div>
+        <div class="health sm">${ic('sms')}<div class="bd">SMS & E-Mail</div>${pill(['Verzögert','warn','clock'])}</div>
       </div>
-    </div>
-    <div class="grid g2 section" style="margin-top:var(--space-6)">
-      <div class="card pad">
-        <div class="shead"><h3>Offene Aufgaben</h3><button class="btn ghost sm" data-action="nav" data-view="aufgaben">Alle ansehen</button></div>
-        <div>${ot.slice(0,4).map(t=>`<button class="pitem" style="padding:12px 0;border-radius:0" data-action="openTask" data-id="${t.id}"><span style="flex:1;min-width:0"><span class="t1" style="display:block">${t.title}</span><span class="t2">${t.owner?esc(t.owner):'Nicht zugewiesen'} · fällig ${t.due}</span></span>${pill(t.overdue?['Überfällig','warn','clock']:TST[t.status])}</button>`).join('')}</div>
-      </div>
-      <div class="grid">
-        <div class="card pad">
-          <div class="shead"><h3>Systemstatus</h3><span class="cap">Geprüft vor 2 Min.</span></div>
-          <div class="health">${ic('cal')}<div class="body">Kalender / PVS</div>${pill(['Verbunden','ok','checkc'])}</div>
-          <div class="health">${ic('phone')}<div class="body">Telefonanlage</div>${pill(['Aktiv','ok','checkc'])}</div>
-          <div class="health">${ic('sms')}<div class="body">SMS & E-Mail<div class="t2">Zustellung verzögert seit 13:40</div></div>${pill(['Verzögert','warn','clock'])}</div>
-        </div>
-        <div class="card pad">
-          <div class="shead"><h3>Nächste Schließung</h3></div>
-          ${nh?`<p style="margin:0"><b>${fmt(nh.start)} – ${fmt(nh.end)}</b></p><p class="t2" style="margin:4px 0 12px">Wieder geöffnet ${long(nh.draft.reopen)}</p>${pill(hStatus(nh))}`
-            :`<p class="muted" style="margin:0 0 12px">Kein Urlaub geplant. Vocia nutzt durchgehend die Standard-Ansage.</p><button class="btn sm" data-action="plan" data-origin="zeiten">${ic('sun')}Urlaub planen</button>`}
-        </div>
-      </div>
-    </div>
-    <div class="note"><b>Dashboard per strategy §11.</b> Every metric names its time range and definition. "Sicher gelöst" counts only calendar-confirmed outcomes, so a low handoff rate can't look good on its own.</div>
-  </div>`;
+    </section>
+  </div></div>`;
 }
 
 /* ---------- Anrufe ---------- */
+const CF={alle:()=>true,gel:c=>c.out==='solved',ueb:c=>['handoff','followup'].includes(c.out),nicht:c=>['failed','dropped'].includes(c.out)};
+const callTabs=()=>tabs([['alle','Alle',CALLS.length],['gel','Gelöst',CALLS.filter(CF.gel).length],['ueb','Übergeben',CALLS.filter(CF.ueb).length],['nicht','Nicht gelöst',CALLS.filter(CF.nicht).length],['fragen','Offene Fragen',openQ().length]],subOf('anrufe'));
 function callsView(){
-  const f=subOf('anrufe');const rows=CALLS.filter(c=>f==='alle'||c.out===f);
-  return `<div class="page">${mchips()}
-    <div class="head"><div><p class="eyebrow">Heute</p><h1>Anrufe</h1><p class="lead">Ergebnis, Zusammenfassung und nächster Schritt je Anruf. Gesundheitsdaten erscheinen nicht in der Liste.</p></div></div>
-    <div class="card list calls">
-      <div class="row hd" aria-hidden="true"><span>Zeit</span><span>Anliegen</span><span class="c-topic2">Anrufer</span><span class="c-dur">Dauer</span><span>Ergebnis</span><span></span></div>
-      ${rows.length?rows.map(c=>`<button class="row" data-action="openCall" data-id="${c.id}" aria-label="Anruf ${c.t} Uhr, ${c.topic}, ${OUT[c.out][0]}">
-        <span class="t1 num c-time">${c.t}</span>
-        <span><span class="t1" style="display:block">${c.topic}</span><span class="t2">${c.reason?esc(c.reason):c.id}</span></span>
-        <span class="t2 c-topic2 num">··· ${c.caller}</span>
-        <span class="t2 num c-dur">${c.dur}</span>
-        <span>${pill(OUT[c.out])}</span>${ic('chev','chev')}</button>`).join('')
-      :`<div class="empty">${ic('phone')}<b>Keine Anrufe mit diesem Ergebnis</b>Wählen Sie einen anderen Filter.</div>`}
-    </div>
-  </div>`;
+  if(subOf('anrufe')==='fragen')return fragenView();
+  const f=subOf('anrufe');const rows=CALLS.filter(CF[f]||CF.alle);
+  return `<div class="page">${head({title:'Anrufe',lead:'Heute. Ergebnis und nächster Schritt je Anruf; Gesundheitsdaten erscheinen nicht in der Liste.'})}${callTabs()}
+  <div class="body" style="grid-template-rows:auto"><div class="card flat list calls" style="align-self:start">
+    <div class="row hd" aria-hidden="true"><span>Zeit</span><span>Anliegen</span><span>Anrufer</span><span>Dauer</span><span>Ergebnis</span><span></span></div>
+    ${rows.length?rows.map(c=>`<button class="row" data-action="openCall" data-id="${c.id}" aria-label="Anruf ${c.t} Uhr, ${c.topic}, ${OUT[c.out][0]}">
+      <span class="t1">${c.t}</span><span style="display:flex;gap:10px;align-items:baseline;min-width:0"><span class="t1">${c.topic}</span><span class="t2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.reason?esc(c.reason):''}</span></span>
+      <span class="t2">··· ${c.caller}</span><span class="t2">${c.dur}</span><span>${pill(OUT[c.out])}</span>${ic('chev','chev')}</button>`).join('')
+    :`<div class="empty">${ic('phone')}<b>Keine Anrufe mit diesem Ergebnis</b>Wählen Sie oben eine andere Ansicht.</div>`}
+  </div></div></div>`;
 }
 function callDrawer(c){
   const t=c.task&&TASKS.find(x=>x.id===c.task);
   return `<div class="dh"><div><p class="eyebrow">${c.id} · Heute, ${c.t} Uhr · ${c.dur} min</p><h2 id="dtitle" tabindex="-1">${c.topic}</h2><div style="margin-top:8px">${pill(OUT[c.out])}</div></div><button class="btn quiet icon" data-action="closeDrawer" aria-label="Schließen">${ic('x')}</button></div>
   <div class="db">
-    <div class="dsec"><h3>Zusammenfassung</h3><p style="margin:0">${esc(c.summary)}</p></div>
-    ${c.op?`<div class="dsec"><h3>Termin-Vorgang</h3><dl class="kv"><dt>Aktion</dt><dd>${c.op.type}</dd><dt>Vorgangs-ID</dt><dd class="num">${c.op.id}</dd><dt>Status</dt><dd>${c.op.state==='ok'?pill(['Im Kalender bestätigt','ok','checkc']):pill(['Nicht bestätigt','err','err'])}</dd></dl></div>`:''}
+    <div class="dsec"><h3>Zusammenfassung</h3><p>${esc(c.summary)}</p></div>
+    ${c.op?`<div class="dsec"><h3>Termin-Vorgang</h3><dl class="kv"><dt>Aktion</dt><dd>${c.op.type}</dd><dt>Vorgangs-ID</dt><dd>${c.op.id}</dd><dt>Status</dt><dd>${c.op.state==='ok'?pill(['Im Kalender bestätigt','ok','checkc']):pill(['Nicht bestätigt','err','err'])}</dd></dl></div>`:''}
     ${c.reason?`<div class="dsec"><h3>Übergabe</h3><dl class="kv"><dt>Grund</dt><dd>${esc(c.reason)}</dd>${t?`<dt>Aufgabe</dt><dd>${t.id} · ${pill(TST[t.status])}</dd><dt>Zuständig</dt><dd>${t.owner?esc(t.owner):'Nicht zugewiesen'}</dd><dt>Nächster Schritt</dt><dd>${t.promise}</dd>`:''}</dl></div>`:''}
-    <div class="dsec"><h3>Anrufer</h3><dl class="kv"><dt>Nummer</dt><dd class="num">··· ${c.caller}</dd><dt>Identität</dt><dd>${c.op?'Über Geburtsdatum bestätigt':'Nicht erforderlich'}</dd></dl></div>
+    <div class="dsec"><h3>Anrufer</h3><dl class="kv"><dt>Nummer</dt><dd>··· ${c.caller}</dd><dt>Identität</dt><dd>${c.op?'Über Geburtsdatum bestätigt':'Nicht erforderlich'}</dd></dl></div>
     <div class="dsec"><h3>Transkript</h3><div class="locked">${ic('lock')}<span>Nur für die Rolle Praxisleitung sichtbar. Wird nach 30 Tagen gelöscht.</span></div></div>
   </div>
   <div class="df">${t?`<button class="btn primary" data-action="openTask" data-id="${t.id}">Aufgabe öffnen</button>`:''}<button class="btn" data-action="closeDrawer">Schließen</button></div>`;
 }
 
-/* ---------- Aufgaben ---------- */
-function tasksView(){
-  const f=subOf('aufgaben');
-  const rows=TASKS.filter(t=>f==='offen'?!['erledigt','storniert'].includes(t.status):f==='meine'?t.owner===ME&&!['erledigt','storniert'].includes(t.status):t.status===f)
-    .sort((a,b)=>(b.prio==='Hoch')-(a.prio==='Hoch'));
-  return `<div class="page">${mchips()}
-    <div class="head"><div><h1>Aufgaben</h1><p class="lead">Anliegen, die Vocia nicht sicher abschließen konnte. Jede Aufgabe enthält Kontext, damit niemand von vorn fragen muss.</p></div></div>
-    <div class="card list tasks">
-      <div class="row hd" aria-hidden="true"><span>Aufgabe</span><span class="t-prio">Priorität</span><span class="t-owner">Zuständig</span><span class="t-due">Fällig</span><span>Status</span><span></span></div>
-      ${rows.length?rows.map(t=>`<button class="row" data-action="openTask" data-id="${t.id}" aria-label="${t.title}, ${TST[t.status][0]}">
-        <span><span class="t1" style="display:block">${t.title}</span><span class="t2">${t.id} · seit ${t.age}</span></span>
-        <span class="t-prio">${t.prio==='Hoch'?pill(['Hoch','warn','alert']):'<span class="t2">Normal</span>'}</span>
-        <span class="t-owner ${t.owner?'':'t2'}">${t.owner?esc(t.owner):'Nicht zugewiesen'}</span>
-        <span class="t-due"><span class="${t.overdue?'':'t2'}">${t.due}</span>${t.overdue?'<span class="t2" style="display:block">überfällig</span>':''}</span>
-        <span>${pill(TST[t.status])}</span>${ic('chev','chev')}</button>`).join('')
-      :`<div class="empty">${ic('checkc')}<b>Nichts offen</b>Alle Aufgaben in dieser Ansicht sind erledigt.</div>`}
+function fragenView(){
+  const open=openQ().sort((a,b)=>b.n-a.n),ans=QUESTIONS.filter(q=>q.status==='answered');
+  return `<div class="page">${head({title:'Anrufe',lead:'Fragen, die Vocia nicht beantworten konnte. Einmal beantwortet, antwortet Vocia ab dann selbst.'})}${callTabs()}
+  <div class="body" style="grid-template-columns:1.45fr 1fr">
+    <div class="card flat list qs" style="align-self:start">
+      <div class="row hd" aria-hidden="true"><span>Frage</span><span>Gefragt</span><span>Zuletzt</span><span></span></div>
+      ${open.length?open.map(q=>`<button class="row" data-action="openQ" data-id="${q.id}" aria-label="${esc(q.q)}, ${q.n} mal gefragt">
+        <span style="display:flex;gap:10px;align-items:center;min-width:0"><span class="t1">${esc(q.q)}</span>${q.medical?pill(['Medizinisch','warn','lock']):''}</span>
+        <span class="t1">${q.n}×</span><span class="t2">${q.last}</span>${ic('chev','chev')}</button>`).join('')
+      :`<div class="empty">${ic('checkc')}<b>Keine offenen Fragen</b>Vocia konnte zuletzt alle Fragen beantworten oder sicher übergeben.</div>`}
     </div>
-    <div class="note"><b>Controlled statuses, reversible changes.</b> Assigning and closing are logged with owner and time; "Erledigt" can be undone from the toast.</div>
-  </div>`;
+    <section class="card"><div class="ch"><h3>Beantwortet</h3><span class="cap">${ans.length} Antworten</span></div>
+      <div class="scroll">${ans.length?ans.map(q=>`<div class="mini" style="display:block;cursor:default"><div class="ch" style="margin-bottom:4px"><span class="t1">${esc(q.q)}</span><button class="btn ghost sm" data-action="openQ" data-id="${q.id}">Bearbeiten</button></div>
+        <p class="t2" style="margin:0">${esc(q.a)}</p></div>`).join(''):`<div class="empty">${ic('help')}<b>Noch keine Antworten</b>Beantworten Sie links die häufigste Frage.</div>`}</div></section>
+  </div></div>`;
+}
+function qDrawer(q){
+  const err=S.qErr&&!S.qDraft.trim();
+  return `<div class="dh"><div><p class="eyebrow">${q.n}× gefragt · zuletzt ${q.last}</p><h2 id="dtitle" tabindex="-1" style="font-size:20px">${esc(q.q)}</h2>
+    <div class="acts" style="margin-top:8px">${q.medical?pill(['Medizinisch','warn','lock']):q.status==='answered'?pill(['Beantwortet','ok','checkc']):pill(['Offen','info','help'])}</div></div><button class="btn quiet icon" data-action="closeDrawer" aria-label="Schließen">${ic('x')}</button></div>
+  <div class="db">${q.medical?`
+    <div class="msg warn" style="margin-top:16px">${ic('lock')}<div class="bd"><b>Medizinische Frage.</b> Vocia beantwortet sie nie selbst und übergibt sie immer ans Praxisteam.</div></div>
+    <div class="dsec"><h3>So reagiert Vocia</h3><div class="m v" style="max-width:100%"><div class="txt">Dazu kann ich Ihnen keine Auskunft geben. Ich gebe Ihre Frage mit einer kurzen Zusammenfassung an das Praxisteam weiter.</div></div></div>`
+  :`<div class="dsec"><div class="field"><label for="qa">Ihre Antwort</label><textarea id="qa" data-qa="1" maxlength="240" style="height:130px" ${err?'aria-invalid="true" aria-describedby="e-qa"':''}>${esc(S.qDraft)}</textarea>
+      <div class="ferow"><span>${err?`<span class="ferr" id="e-qa">${ic('err')}Bitte geben Sie eine Antwort ein.</span>`:''}</span><span class="cap" id="qac">${S.qDraft.length}/240</span></div></div></div>
+    <div class="dsec"><h3>So antwortet Vocia</h3><div class="m v" style="max-width:100%"><div class="txt" id="qprev">${S.qDraft.trim()?esc(S.qDraft):'<span class="t2">Ihre Antwort erscheint hier.</span>'}</div></div>
+      <p class="t2" style="margin:10px 0 0">Vocia nutzt die Antwort nur, wenn die Frage eindeutig passt. Sonst übergibt sie ans Team.</p></div>`}
+  </div>
+  <div class="df">${q.medical?`<button class="btn" data-action="closeDrawer">Schließen</button><button class="btn primary" data-action="ackQ" data-id="${q.id}">${ic('check')}Zur Kenntnis genommen</button>`
+    :`${q.status==='open'?`<button class="btn" data-action="ignoreQ" data-id="${q.id}">Ignorieren</button>`:''}<button class="btn primary" data-action="saveQ" data-id="${q.id}">${ic('check')}Antwort speichern</button>`}</div>`;
+}
+
+/* ---------- Aufgaben ---------- */
+const TVIEWS={offen:t=>isOpen(t),meine:t=>isOpen(t)&&t.owner===ME,heute:t=>isOpen(t)&&t.due.startsWith('Heute'),ueberfaellig:t=>isOpen(t)&&!!t.overdue,rueckrufe:t=>isOpen(t)&&t.cb};
+const TTITLE={offen:'Offen',meine:'Mir zugewiesen',heute:'Heute fällig',ueberfaellig:'Überfällig',rueckrufe:'Rückrufe'};
+function tasksView(){
+  const f=TVIEWS[subOf('aufgaben')]?subOf('aufgaben'):'offen',fn=TVIEWS[f];
+  const rows=TASKS.filter(fn).sort((a,b)=>(!!b.overdue-!!a.overdue)||((b.prio==='Hoch')-(a.prio==='Hoch')));
+  return `<div class="page">${head({title:'Aufgaben',lead:'Anliegen, die Vocia nicht sicher abschließen konnte, mit Kontext, damit niemand von vorn fragen muss.'})}${tabs(Object.keys(TTITLE).map(k=>[k,TTITLE[k],TASKS.filter(TVIEWS[k]).length]),f)}
+  <div class="body" style="grid-template-rows:auto"><div class="card flat list tasks" style="align-self:start">
+    <div class="row hd" aria-hidden="true"><span>Aufgabe</span><span>Priorität</span><span>Zuständig</span><span>Fällig</span><span>Status</span><span></span></div>
+    ${rows.length?rows.map(t=>`<button class="row" data-action="openTask" data-id="${t.id}" aria-label="${t.title}, ${TST[t.status][0]}">
+      <span><span class="t1" style="display:flex;gap:8px;align-items:center">${t.cb?`<span style="color:var(--text-secondary);display:inline-flex">${ic('phone')}</span>`:''}${t.title}</span><span class="t2">${t.id} · seit ${t.age}${t.attempts.length?` · ${t.attempts.length} ${t.attempts.length===1?'Versuch':'Versuche'}`:''}</span></span>
+      <span>${t.prio==='Hoch'?pill(['Hoch','warn','alert']):'<span class="t2">Normal</span>'}</span>
+      <span class="${t.owner?'':'t2'}">${t.owner?esc(t.owner):'Nicht zugewiesen'}</span>
+      <span><span class="${t.overdue?'t1':'t2'}">${t.due}</span>${t.overdue&&isOpen(t)?'<span class="t2" style="display:block">überfällig</span>':''}</span>
+      <span>${pill(TST[t.status])}</span>${ic('chev','chev')}</button>`).join('')
+    :`<div class="empty">${ic('checkc')}<b>Nichts in dieser Ansicht</b>Alle Aufgaben hier sind erledigt.</div>`}
+  </div></div></div>`;
 }
 function taskDrawer(t){
-  const c=t.call&&CALLS.find(x=>x.id===t.call);
-  const closed=['erledigt','storniert'].includes(t.status);
+  const c=t.call&&CALLS.find(x=>x.id===t.call),closed=!isOpen(t),calling=S.calling===t.id;
   return `<div class="dh"><div><p class="eyebrow">${t.id} · seit ${t.age}</p><h2 id="dtitle" tabindex="-1">${t.title}</h2><div class="acts" style="margin-top:8px">${pill(TST[t.status])}${t.prio==='Hoch'?pill(['Hoch','warn','alert']):''}${t.overdue&&!closed?pill(['Überfällig','warn','clock']):''}</div></div><button class="btn quiet icon" data-action="closeDrawer" aria-label="Schließen">${ic('x')}</button></div>
   <div class="db">
-    <div class="dsec"><h3>Warum diese Aufgabe?</h3><p style="margin:0">${esc(t.reason)}</p></div>
-    <div class="dsec"><h3>Dem Anrufer zugesagt</h3><p style="margin:0">${esc(t.promise)}</p></div>
-    <div class="dsec"><h3>Details</h3><dl class="kv"><dt>Zuständig</dt><dd>${t.owner?esc(t.owner):'Nicht zugewiesen'}</dd><dt>Fällig</dt><dd>${t.due}</dd>${c?`<dt>Anruf</dt><dd><button class="btn ghost sm" style="margin-left:-12px" data-action="openCall" data-id="${c.id}">${c.id} · ${c.t} Uhr</button></dd>`:''}</dl></div>
-    ${c?`<div class="dsec"><h3>Zusammenfassung des Anrufs</h3><p style="margin:0">${esc(c.summary)}</p></div>`:''}
+    ${t.cb&&!closed?`<div class="callbox ${calling?'on':''}"><div class="irow"><span class="ibox" style="background:var(--surface)">${ic('phone')}</span><div class="bd"><div class="t2">${calling?'Anruf läuft über das Praxistelefon':'Rückrufnummer'}</div><div class="num">${t.phone}</div></div>${calling?pill(['Verbunden','info','phone']):''}</div>
+      ${calling?'<p class="t2" style="margin:10px 0 0">Wie ist der Rückruf ausgegangen? Wählen Sie unten das Ergebnis.</p>':''}</div>`:''}
+    <div class="dsec"><h3>Warum diese Aufgabe?</h3><p>${esc(t.reason)}</p></div>
+    <div class="dsec"><h3>Dem Anrufer zugesagt</h3><p>${esc(t.promise)}</p></div>
+    ${c?`<div class="dsec"><h3>Zusammenfassung des Anrufs</h3><p>${esc(c.summary)}</p></div>`:''}
+    <div class="dsec"><h3>Details</h3><dl class="kv"><dt>Zuständig</dt><dd>${t.owner?esc(t.owner):'Nicht zugewiesen'}</dd><dt>Fällig</dt><dd>${t.due}</dd>${c?`<dt>Anruf</dt><dd><button class="btn ghost sm" style="margin:-6px 0 -6px -10px" data-action="openCall" data-id="${c.id}">${c.id} · ${c.t} Uhr</button></dd>`:''}</dl></div>
+    ${t.attempts.length?`<div class="dsec"><h3>Rückrufversuche</h3>${t.attempts.map((a,i)=>`<div class="att"><span class="t2">${i+1}.</span><span class="t2">${a.t}</span><span>${a.r}</span></div>`).join('')}</div>`:''}
+    ${t.attempts.filter(a=>a.r==='Nicht erreicht').length>=3&&!closed?`<div class="msg warn">${ic('alert')}<div class="bd">Dreimal nicht erreicht. Bitten Sie per SMS um Rückruf.</div></div>`:''}
   </div>
   <div class="df">${closed?`<button class="btn" data-action="reopen" data-id="${t.id}">${ic('undo')}Wieder öffnen</button>`
-    :`${t.owner!==ME?`<button class="btn" data-action="assign" data-id="${t.id}">${ic('user')}Mir zuweisen</button>`:''}<button class="btn primary" data-action="done" data-id="${t.id}">${ic('check')}Als erledigt markieren</button>`}</div>`;
+    :calling?`<button class="btn" data-action="cbres" data-r="nicht" data-id="${t.id}">Nicht erreicht</button><button class="btn" data-action="cbres" data-r="mailbox" data-id="${t.id}">Mailbox</button><button class="btn primary" data-action="cbres" data-r="ok" data-id="${t.id}">${ic('check')}Erreicht, erledigt</button>`
+    :`${t.owner!==ME?`<button class="btn" data-action="assign" data-id="${t.id}">${ic('user')}Mir zuweisen</button>`:''}<button class="btn ${t.cb?'':'primary'}" data-action="done" data-id="${t.id}">${ic('check')}Erledigt</button>${t.cb?`<button class="btn primary" data-action="callnow" data-id="${t.id}">${ic('phone')}Jetzt anrufen</button>`:''}`}</div>`;
 }
 
 /* ---------- Termine ---------- */
 function termineView(){
   const ops=CALLS.filter(c=>c.op);
-  return `<div class="page">${mchips()}
-    <div class="head"><div><h1>Termine</h1><p class="lead">Wie Vocia mit Ihrem Kalender arbeitet. Ein Termin gilt erst als bestätigt, wenn der Kalender den Eintrag zurückmeldet.</p></div></div>
-    <div id="sec-status" class="card pad irow" style="scroll-margin-top:24px"><span class="ibox">${ic('cal')}</span><div class="body"><h3>Praxiskalender (PVS)</h3><p class="t2" style="margin:2px 0 0">Letzte Synchronisation vor 2 Min. · liest Verfügbarkeit, schreibt Termine</p></div>${pill(['Verbunden','ok','checkc'])}</div>
-    <div class="section" id="sec-vorgaenge"><div class="shead"><h2>Unterstützte Vorgänge</h2></div>
-      <div class="card pad" style="padding-top:8px;padding-bottom:8px">
-        <div class="cando">${ic('checkc','ok')}<div><b>Termin vereinbaren</b><div class="t2">Nur Terminarten, die Ihre Praxis freigegeben hat. Bis zu drei Vorschläge.</div></div>${pill(['Aktiv','ok','checkc'])}</div>
-        <div class="cando">${ic('checkc','ok')}<div><b>Termin absagen</b><div class="t2">Erst nach Identitätsprüfung und ausdrücklicher Bestätigung durch den Anrufer.</div></div>${pill(['Aktiv','ok','checkc'])}</div>
-        <div class="cando">${ic('forward','no')}<div><b>Termin verschieben</b><div class="t2">Vocia sagt das offen und erstellt eine Aufgabe für das Team.</div></div>${pill(['Übergabe ans Team','muted','forward'])}</div>
-      </div></div>
-    <div class="section" id="sec-verlauf"><div class="shead"><h2>Vorgangsverlauf</h2><span class="cap">Heute</span></div>
-      <div class="card list ops"><div class="row hd" aria-hidden="true"><span>Vorgangs-ID</span><span>Aktion</span><span>Zeit</span><span>Status</span></div>
-      ${ops.map(c=>`<button class="row" data-action="openCall" data-id="${c.id}"><span class="t2 num">${c.op.id}</span><span class="t1">${c.op.type}</span><span class="t2 num">${c.t} Uhr</span><span>${c.op.state==='ok'?pill(['Bestätigt','ok','checkc']):pill(['Nicht bestätigt','err','err'])}</span></button>`).join('')}</div>
-      <div class="msg info">${ic('info')}<div class="body">Nicht bestätigte Vorgänge werden nie als Termin kommuniziert. Vocia nimmt stattdessen eine Rückrufbitte auf.</div></div></div>
-  </div>`;
+  return `<div class="page">${head({title:'Termine',lead:'Ein Termin gilt erst als bestätigt, wenn der Kalender den Eintrag zurückmeldet.'})}
+  <div class="body" style="grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr)">
+    <section class="card${fl('status')}" id="sec-status"><div class="irow"><span class="ibox">${ic('cal')}</span><div class="bd"><h3>Praxiskalender (PVS)</h3><p class="t2" style="margin:2px 0 0">Letzte Synchronisation vor 2 Min. · liest Verfügbarkeit, schreibt Termine</p></div>${pill(['Verbunden','ok','checkc'])}</div></section>
+    <section class="card${fl('verlauf')}" id="sec-verlauf" style="grid-row:1 / 3;grid-column:2;padding:0">
+      <div class="ch" style="padding:20px 20px 0"><h3>Vorgangsverlauf</h3><span class="cap">Heute</span></div>
+      <div class="list ops"><div class="row hd" aria-hidden="true"><span>Vorgangs-ID</span><span>Aktion</span><span>Zeit</span><span>Status</span></div>
+      ${ops.map(c=>`<button class="row" data-action="openCall" data-id="${c.id}"><span class="t2">${c.op.id}</span><span class="t1">${c.op.type}</span><span class="t2">${c.t} Uhr</span><span>${c.op.state==='ok'?pill(['Bestätigt','ok','checkc']):pill(['Nicht bestätigt','err','err'])}</span></button>`).join('')}</div>
+      <div class="msg info end" style="margin:16px 20px 20px">${ic('info')}<div class="bd">Nicht bestätigte Vorgänge werden nie als Termin kommuniziert. Vocia nimmt stattdessen eine Rückrufbitte auf.</div></div></section>
+    <section class="card${fl('vorgaenge')}" id="sec-vorgaenge"><div class="ch" style="margin-bottom:4px"><h3>Unterstützte Vorgänge</h3></div>
+      <div class="cando">${ic('checkc','ok')}<div><b>Termin vereinbaren</b><div class="t2">Nur freigegebene Terminarten, bis zu drei Vorschläge.</div></div>${pill(['Aktiv','ok','checkc'])}</div>
+      <div class="cando">${ic('checkc','ok')}<div><b>Termin absagen</b><div class="t2">Nach Identitätsprüfung und ausdrücklicher Bestätigung.</div></div>${pill(['Aktiv','ok','checkc'])}</div>
+      <div class="cando">${ic('forward','no')}<div><b>Termin verschieben</b><div class="t2">Vocia sagt das offen und erstellt eine Aufgabe.</div></div>${pill(['Übergabe','muted','forward'])}</div>
+    </section>
+  </div></div>`;
 }
 
 /* ---------- Praxis & Zeiten ---------- */
 const HOURS=[['Mo','08:00–12:30','14:00–18:00'],['Di','08:00–12:30','14:00–18:00'],['Mi','08:00–13:00',''],['Do','08:00–12:30','14:00–19:00'],['Fr','08:00–14:00',''],['Sa','',''],['So','','']];
 function zeitenView(){
-  const rows=[...S.items].sort((a,b)=>a.start<b.start?1:-1).map(it=>{
-    const d=it.draft;
-    const chips=d?`<div class="chips">${d.block?`<span class="chip">${ic('lock')}Keine Buchungen</span>`:''}<span class="chip">${ic('msg')}Urlaubsansage</span><span class="chip">${ic('alert')}${d.emergency==='vertretung'?esc(d.vName):'Standard-Notdienst'}</span></div>`:'';
-    return `<div class="row"><div><div class="t1">${fmt(it.start)} – ${fmt(it.end)}</div>${d?`<div class="t2">Wieder geöffnet ${long(d.reopen)}</div>`:''}${chips}</div>
-      <div class="kind">${it.kind}</div><div>${pill(hStatus(it))}</div>
+  const rows=[...S.items].sort((a,b)=>a.start<b.start?1:-1).map(it=>{const d=it.draft;
+    return `<div class="row"><div><div class="t1">${fmt(it.start)} – ${fmt(it.end)}${d?` <span class="t2" style="font-weight:400">· wieder geöffnet ${long(d.reopen)}</span>`:''}</div>
+      ${d?`<div class="chips">${d.block?`<span class="chip">${ic('lock')}Keine Buchungen</span>`:''}<span class="chip">${ic('msg')}Urlaubsansage</span><span class="chip">${ic('alert')}${d.emergency==='vertretung'?esc(d.vName):'Standard-Notdienst'}</span></div>`:''}</div>
+      <div>${it.kind}</div><div>${pill(hStatus(it))}</div>
       <div class="rowacts"><button class="btn ghost sm" data-action="${d?'edit':'stub'}" data-id="${it.id}" aria-label="${it.kind} ${fmt(it.start)} bearbeiten">${ic('pencil')}Bearbeiten</button>
-      <button class="btn quiet sm danger" data-action="delete" data-id="${it.id}" aria-label="${it.kind} ${fmt(it.start)} löschen">${ic('trash')}Löschen</button></div></div>`;
-  }).join('');
-  const b=S.banner?`<div class="msg ok banner" role="status">${ic('checkc')}<div class="body">${S.banner}</div><button class="btn quiet sm icon" data-action="dismiss" aria-label="Hinweis schließen">${ic('x')}</button></div>`:'';
-  return `<div class="page">${mchips()}${b}
-    <div class="head"><div><h1>Praxis & Zeiten</h1><p class="lead">Profil, Öffnungszeiten und Schließzeiten. Daraus weiß Vocia, wann die Praxis erreichbar ist.</p></div>
-      <div class="acts"><button class="btn primary" data-action="plan" data-origin="zeiten">${ic('sun')}Urlaub planen</button></div></div>
-    <div id="sec-profil" class="card pad" style="scroll-margin-top:24px"><div class="shead"><h3>Praxisprofil</h3><button class="btn ghost sm" data-action="stub">${ic('pencil')}Bearbeiten</button></div>
-      <dl class="kv"><dt>Name</dt><dd>${PRAXIS}</dd><dt>Fachrichtung</dt><dd>Kieferorthopädie</dd><dt>Adresse</dt><dd>Schönhauser Allee 84, 10439 Berlin</dd><dt>Telefon</dt><dd class="num">030 4471 2200</dd><dt>Zeitzone</dt><dd>Europe/Berlin</dd></dl></div>
-    <div class="section" id="sec-zeiten"><div class="shead"><h2>Öffnungszeiten</h2><button class="btn ghost sm" data-action="stub">${ic('pencil')}Bearbeiten</button></div>
+      <button class="btn quiet sm danger" data-action="delete" data-id="${it.id}" aria-label="${it.kind} ${fmt(it.start)} löschen">${ic('trash')}Löschen</button></div></div>`}).join('');
+  return `<div class="page">${head({title:'Praxis & Zeiten',lead:'Profil, Öffnungszeiten und Schließzeiten. Daraus weiß Vocia, wann die Praxis erreichbar ist.',actions:planBtn('zeiten',true)})}
+  <div class="body" style="grid-template-columns:1fr 2fr;grid-template-rows:auto minmax(0,1fr)">
+    <section class="card${fl('profil')}" id="sec-profil"><div class="ch"><h3>Praxisprofil</h3><button class="btn ghost sm" data-action="stub">${ic('pencil')}Bearbeiten</button></div>
+      <dl class="kv"><dt>Name</dt><dd>${PRAXIS}</dd><dt>Adresse</dt><dd>Schönhauser Allee 84, 10439 Berlin</dd><dt>Telefon</dt><dd>030 4471 2200</dd><dt>Zeitzone</dt><dd>Europe/Berlin</dd></dl></section>
+    <section class="card${fl('zeiten')}" id="sec-zeiten"><div class="ch"><h3>Öffnungszeiten</h3><button class="btn ghost sm" data-action="stub">${ic('pencil')}Bearbeiten</button></div>
       <div class="hours">${HOURS.map(([d,a,p])=>`<div class="day ${a?'':'closed'}"><b>${d}</b>${a?`${a}${p?`<br>${p}`:''}`:'Geschlossen'}</div>`).join('')}</div>
-      <p class="cap" style="margin-top:8px">Gesetzliche Feiertage in Berlin werden automatisch berücksichtigt.</p></div>
-    <div class="section" id="sec-urlaub"><div class="shead"><h2>Urlaub & Sonderzeiten</h2><button class="btn sm" data-action="stub">${ic('plus')}Sonderzeit</button></div>
-      <div class="note"><b>One event, one flow.</b> A holiday is one object; bookings, announcement and emergency contact are derived from it and listed on the row.</div>
-      <div class="card list zt"><div class="row hd" aria-hidden="true"><span>Zeitraum</span><span>Art</span><span>Status</span><span></span></div>
-      ${rows||`<div class="empty">${ic('sun')}<b>Noch keine Schließzeiten</b>Planen Sie den ersten Urlaub, damit Vocia Anrufer richtig informiert.</div>`}</div></div>
-  </div>`;
+      <p class="cap" style="margin:10px 0 0">Gesetzliche Feiertage in Berlin werden automatisch berücksichtigt.</p></section>
+    <section class="card${fl('urlaub')}" id="sec-urlaub" style="grid-column:1 / 3;padding:0">
+      <div class="ch" style="padding:20px 20px 0"><h3>Urlaub & Sonderzeiten</h3><button class="btn sm" data-action="stub">${ic('plus')}Sonderzeit</button></div>
+      ${S.banner?`<div class="msg ok banner" role="status" style="margin:0 20px 12px">${ic('checkc')}<div class="bd">${S.banner}</div><button class="btn quiet sm icon" data-action="dismiss" aria-label="Hinweis schließen">${ic('x')}</button></div>`:''}
+      <div class="list zt scroll"><div class="row hd" aria-hidden="true"><span>Zeitraum</span><span>Art</span><span>Status</span><span></span></div>
+      ${rows||`<div class="empty">${ic('sun')}<b>Noch keine Schließzeiten</b>Planen Sie den ersten Urlaub, damit Vocia Anrufer richtig informiert.</div>`}</div></section>
+  </div></div>`;
 }
-
-const linkedFuture=()=>S.items.filter(i=>i.draft&&i.end>=TODAY).sort((a,b)=>a.start<b.start?-1:1);
-const hint=(origin,text)=>`<div class="hint"><p><b>Die Praxis macht Urlaub?</b> ${text}</p><button class="btn" data-action="plan" data-origin="${origin}">${ic('sun')}Urlaub planen</button></div>`;
+const hint=(origin,text)=>`<div class="hint"><p><b>Die Praxis macht Urlaub?</b> ${text}</p>${planBtn(origin)}</div>`;
 
 /* ---------- Ansage & Telefon ---------- */
 function ansageView(){
-  const lf=linkedFuture(),anyActive=lf.some(i=>i.start<=TODAY),T=S.test;
-  return `<div class="page">${mchips()}
-    <div class="head"><div><h1>Ansage & Telefon</h1><p class="lead">Was Vocia sagt, was sie darf und wann sie ans Team übergibt.</p></div></div>
-    <div id="sec-begruessung" class="card pad" style="scroll-margin-top:24px"><div class="shead"><h3>Begrüßung</h3>${anyActive?pill(['Pausiert während des Urlaubs','muted','pause']):pill(['Aktiv · Version 4','ok','checkc'])}</div>
-      <p style="margin:0;font-size:17px;line-height:1.6">„Willkommen bei der ${PRAXIS}. Hier spricht Vocia, die digitale Assistentin der Praxis. Wie kann ich Ihnen helfen?“</p>
-      <div class="toolrow"><button class="btn sm" data-action="say" data-text="Willkommen bei der ${PRAXIS}. Hier spricht Vocia, die digitale Assistentin der Praxis. Wie kann ich Ihnen helfen?">${ic('play')}Anhören</button><button class="btn quiet sm" data-action="stub">${ic('pencil')}Bearbeiten</button><button class="btn quiet sm" data-action="stub">${ic('history')}Version 3 wiederherstellen</button></div>
-      <p class="cap" style="margin:12px 0 0">Veröffentlicht am 02.10.2026 von A. Kaya</p></div>
-    <div class="grid g2 section" id="sec-sprache">
-      <div class="card pad"><h3 style="margin-bottom:12px">Sprache & Anrede</h3><dl class="kv"><dt>Sprache</dt><dd>Deutsch (Hochdeutsch)</dd><dt>Anrede</dt><dd>Sie</dd><dt>Andere Sprachen</dt><dd>Übergabe ans Team</dd></dl></div>
-      <div class="card pad" id="sec-uebergabe" style="scroll-margin-top:24px"><h3 style="margin-bottom:12px">Übergabe ans Team</h3><dl class="kv"><dt>In Sprechzeiten</dt><dd>Live-Weiterleitung an den Empfang</dd><dt>Wenn besetzt</dt><dd>Rückrufbitte als Aufgabe</dd><dt>Außerhalb</dt><dd>Rückrufbitte, Rückmeldung am nächsten Werktag</dd></dl></div>
-    </div>
-    <div class="section" id="sec-aufgaben"><div class="shead"><h2>Was Vocia darf</h2></div>
-      <div class="card pad" style="padding-top:8px;padding-bottom:8px">
-        ${[['checkc','ok','Öffnungszeiten, Adresse, Anfahrt','Aus Praxisprofil und Öffnungszeiten'],['checkc','ok','Termine vereinbaren und absagen','Mit Kalenderbestätigung und Identitätsprüfung'],['forward','no','Termine verschieben','Übergabe ans Team (noch nicht freigegeben)'],['lock','no','Medizinische Auskünfte','Nie. Vocia stellt keine Diagnosen und gibt keine Behandlungsempfehlungen.']]
-          .map(([i,c,t,s])=>`<div class="cando">${ic(i,c)}<div><b>${t}</b><div class="t2">${s}</div></div><span></span></div>`).join('')}
-      </div></div>
-    <div class="section" id="sec-test"><div class="card pad irow"><span class="ibox">${ic('mic')}</span><div class="body"><h3>Testanruf</h3>
-      ${T.state==='ok'?`<p class="t2" style="margin:2px 0 0">Zuletzt ${T.at} · Begrüßung nach 1,8 s · Weiterleitung an den Empfang erreichbar</p>`:T.state==='busy'?`<p class="t2" style="margin:2px 0 0">Vocia ruft die Praxisnummer an und prüft Begrüßung und Weiterleitung …</p>`:`<p class="t2" style="margin:2px 0 0">Prüft Begrüßung und Weiterleitung, bevor Änderungen live gehen.</p>`}</div>
-      ${T.state==='ok'?pill(['Erfolgreich','ok','checkc']):''}
-      <button class="btn ${T.state==='ok'?'':'primary'}" data-action="testcall" ${T.state==='busy'?'aria-busy="true" disabled':''}>${T.state==='busy'?'<span class="spin" aria-hidden="true"></span>Läuft …':`${ic('phone')}Testanruf starten`}</button></div></div>
-    <div class="section" id="sec-geplant"><div class="shead"><h2>Geplante Ansagen</h2></div>
-      ${hint('ansage','Richten Sie Ansage, Terminsperre und Vertretung in einem Schritt ein.')}
-      ${lf.length?`<div class="card">${lf.map(it=>`<div style="padding:20px 24px">
-        <div class="shead" style="margin-bottom:8px"><b>${fmt(it.start)} – ${fmt(it.end)}</b>${pill(hStatus(it))}</div><p style="margin:0">${esc(it.draft.ansage)}</p>
-        <div class="shead" style="margin:12px 0 0"><span class="chip">${ic('link')}Teil des Urlaubs ${fmtS(it.start)}–${fmtS(it.end)}</span><button class="btn sm" data-action="edit" data-id="${it.id}" data-step="3">Im Urlaub bearbeiten</button></div></div>`).join('')}</div>`
-      :`<div class="card soft empty">${ic('msg')}<b>Keine geplanten Ansagen</b>Es gilt durchgehend die Standard-Begrüßung.</div>`}</div>
-  </div>`;
+  const lf=linkedFuture(),anyActive=lf.some(i=>i.start<=TODAY),T=S.test,N=S.note;
+  return `<div class="page">${head({title:'Ansage & Telefon',lead:'Was Vocia sagt, was sie darf und wann sie ans Team übergibt.'})}
+  <div class="body" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto minmax(0,1fr)">
+    <section class="card${fl('begruessung')}" id="sec-begruessung" style="grid-column:1 / 3"><div class="ch"><h3>Begrüßung</h3>${anyActive?pill(['Pausiert während des Urlaubs','muted','pause']):pill([N?'Aktiv · mit Tagesnotiz':'Aktiv · Version 4','ok','checkc'])}</div>
+      <p style="margin:0;font-size:16px;line-height:1.55">„${GREET} Wie kann ich Ihnen helfen?“</p>
+      ${N?`<p class="addon">${ic('bolt')}<span><b>Tagesnotiz:</b> Bitte beachten Sie: ${esc(N.text)}</span></p>`:''}
+      <div class="toolrow" style="margin-top:14px;align-items:center"><button class="btn sm" data-action="sayGreet">${ic('play')}Anhören</button>
+        <button class="btn sm" data-action="testcall" ${T.state==='busy'?'aria-busy="true" disabled':''}>${T.state==='busy'?'<span class="spin" aria-hidden="true"></span>Testanruf läuft …':`${ic('phone')}Testanruf starten`}</button>
+        ${T.state==='ok'?pill([`Test erfolgreich · ${T.at.replace('Heute, ','')}`,'ok','checkc']):''}
+        <button class="btn quiet sm" data-action="stub">${ic('pencil')}Bearbeiten</button><button class="btn quiet sm" data-action="stub">${ic('history')}Version 3</button></div>
+      <p class="cap" style="margin:10px 0 0">Veröffentlicht am 02.10.2026 von A. Kaya. Der Testanruf prüft Begrüßung und Weiterleitung, bevor Änderungen live gehen.</p></section>
+    <section class="card${fl('notiz')}" id="sec-notiz"><div class="ch"><h3>Tagesnotiz</h3>${N?pill(['Aktiv','ok','bolt']):''}</div>
+      ${N?`<p style="margin:0;font-size:15px;line-height:1.5">„${esc(N.text)}“</p><p class="t2" style="margin:8px 0 0">Gilt ${UNTIL[N.until][1]}. Danach entfernt Vocia sie automatisch.</p>
+        <div class="toolrow end"><button class="btn sm" data-action="noteEdit">${ic('pencil')}Bearbeiten</button><button class="btn quiet sm" data-action="noteEnd">Jetzt beenden</button></div>`
+      :`<p class="t2" style="margin:0;font-size:13px">Ein kurzer Hinweis für heute, z. B. geänderte Sprechzeiten. Vocia sagt ihn nach der Begrüßung und entfernt ihn automatisch.</p>
+        <button class="btn primary end" style="align-self:flex-start;margin-top:14px" data-action="noteEdit">${ic('plus')}Tagesnotiz hinzufügen</button>`}</section>
+    <section class="card${fl('aufgaben')}" id="sec-aufgaben"><div class="ch" style="margin-bottom:0"><h3>Was Vocia darf</h3></div>
+      ${[['checkc','ok','Auskünfte zur Praxis','Öffnungszeiten, Adresse, beantwortete Fragen'],['checkc','ok','Termine vereinbaren und absagen','Mit Kalenderbestätigung und Identitätsprüfung'],['forward','no','Termine verschieben','Übergabe ans Team, noch nicht freigegeben'],['lock','no','Medizinische Auskünfte','Nie. Keine Diagnosen, keine Behandlungsempfehlungen.']]
+        .map(([i,c,t,x])=>`<div class="cando">${ic(i,c)}<div><b>${t}</b><div class="t2">${x}</div></div><span></span></div>`).join('')}</section>
+    <section class="card${fl('sprache')}" id="sec-sprache"><h3 style="margin-bottom:12px">Sprache & Anrede</h3>
+      <dl class="kv"><dt>Sprache</dt><dd>Deutsch (Hochdeutsch)</dd><dt>Anrede</dt><dd>Sie</dd><dt>Andere Sprachen</dt><dd>Übergabe ans Team</dd></dl>
+      <h3 style="margin:22px 0 12px">Übergabe ans Team</h3>
+      <dl class="kv"><dt>In Sprechzeiten</dt><dd>Live-Weiterleitung an den Empfang</dd><dt>Wenn besetzt</dt><dd>Rückrufbitte als Aufgabe</dd><dt>Außerhalb</dt><dd>Rückrufbitte, Antwort am nächsten Werktag</dd></dl></section>
+    <section class="card${fl('geplant')}" id="sec-geplant"><div class="ch"><h3>Geplante Ansagen</h3></div>
+      ${hint('ansage','Ansage, Terminsperre und Vertretung in einem Schritt.')}
+      <div class="scroll">${lf.length?lf.map(it=>`<div class="mini" style="display:block;cursor:default"><div class="ch" style="margin-bottom:6px"><b>${fmtS(it.start)} – ${fmtS(it.end)}</b>${pill(hStatus(it))}</div>
+        <p class="t2" style="margin:0 0 8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${esc(it.draft.ansage)}</p><button class="btn sm" data-action="edit" data-id="${it.id}" data-step="3">Im Urlaub bearbeiten</button></div>`).join('')
+      :`<div class="empty" style="padding:16px 0">${ic('msg')}<b>Keine geplanten Ansagen</b>Es gilt die Standard-Begrüßung.</div>`}</div></section>
+  </div></div>`;
+}
+function noteModal(){
+  const n=S.noteDraft,err=S.noteErr&&!n.text.trim();
+  return `<div class="overlay" data-action="closeModal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="mh">
+    <h2 id="mh">${S.note?'Tagesnotiz bearbeiten':'Tagesnotiz hinzufügen'}</h2><p>Ein kurzer Hinweis, den Vocia allen Anrufern nach der Begrüßung sagt.</p>
+    <div class="sugs">${SUGG.map((x,i)=>`<button class="bchip" data-action="sugg" data-i="${i}">${x}</button>`).join('')}</div>
+    <div class="field" style="margin-top:14px"><label for="nt">Hinweis</label><textarea id="nt" data-nf="text" data-autofocus maxlength="160" style="height:80px" ${err?'aria-invalid="true" aria-describedby="e-nt"':''}>${esc(n.text)}</textarea>
+      <div class="ferow"><span>${err?`<span class="ferr" id="e-nt">${ic('err')}Bitte geben Sie einen Hinweis ein.</span>`:''}</span><span class="cap" id="ntc">${n.text.length}/160</span></div></div>
+    <p class="seglbl">Gilt bis</p><div class="seg" role="radiogroup" aria-label="Gilt bis">${UNTIL.map((u,i)=>`<label><input type="radio" name="until" value="${i}" data-nf="until" ${n.until===i?'checked':''}><span>${u[0]}</span></label>`).join('')}</div>
+    <div class="dsec"><h3>So klingt es</h3><div class="m v" style="max-width:100%"><div class="txt" id="ntp">${esc(noteSpeech(n.text))}</div></div></div>
+    <div class="acts"><button class="btn" data-action="closeModal" id="mfirst">Abbrechen</button><button class="btn" data-action="noteListen">${ic('play')}Anhören</button><button class="btn primary" data-action="noteSave">${ic('bolt')}Tagesnotiz aktivieren</button></div>
+  </div></div>`;
 }
 
 /* ---------- Notfall ---------- */
 function notfallView(){
   const lf=linkedFuture();
-  return `<div class="page">${mchips()}
-    <div class="head"><div><h1>Notfall & Vertretung</h1><p class="lead">Welche Kontakte Vocia nennt, wenn Patient:innen in dringenden Fällen anrufen. Vocia nennt nur geprüfte Kontaktdaten.</p></div></div>
-    <div id="sec-standard" class="card pad" style="scroll-margin-top:24px"><div class="shead"><h3>Standard-Notdienst</h3>${pill(['Aktiv','ok','checkc'])}</div>
-      <dl class="kv"><dt>Typ</dt><dd>${STD.type}</dd><dt>Telefon</dt><dd class="num">${STD.phone}</dd><dt>Geprüft am</dt><dd>${fmt(STD.checked)}</dd></dl>
-      <div class="msg info">${ic('info')}<div class="body">Notfalltexte werden von Ihrer Praxis und der verantwortlichen Stelle freigegeben. Vocia gibt keine medizinische Entwarnung.</div></div></div>
-    <div class="section" id="sec-vertretungen"><div class="shead"><h2>Vertretungen</h2></div>
-      ${hint('notfall','Vertretung, Ansage und Terminsperre gehören zusammen. Richten Sie alles in einem Schritt ein.')}
-      ${lf.length?`<div class="card">${lf.map(it=>{const d=it.draft;return `<div style="padding:20px 24px">
-        <div class="shead" style="margin-bottom:12px"><b>${fmt(it.start)} – ${fmt(it.end)}</b>${pill(hStatus(it))}</div>
+  return `<div class="page">${head({title:'Notfall & Vertretung',lead:'Welche Kontakte Vocia in dringenden Fällen nennt. Vocia nennt nur geprüfte Kontaktdaten.'})}
+  <div class="body" style="grid-template-columns:1fr 1.3fr">
+    <section class="card${fl('standard')}" id="sec-standard"><div class="ch"><h3>Standard-Notdienst</h3>${pill(['Aktiv','ok','checkc'])}</div>
+      <dl class="kv"><dt>Typ</dt><dd>${STD.type}</dd><dt>Telefon</dt><dd>${STD.phone}</dd><dt>Geprüft am</dt><dd>${fmt(STD.checked)}</dd></dl>
+      <div class="msg info">${ic('info')}<div class="bd">Notfalltexte werden von Ihrer Praxis und der verantwortlichen Stelle freigegeben. Vocia gibt keine medizinische Entwarnung.</div></div>
+      <button class="btn sm end" style="align-self:flex-start;margin-top:16px" data-action="stub">${ic('pencil')}Bearbeiten</button></section>
+    <section class="card${fl('vertretungen')}" id="sec-vertretungen"><div class="ch"><h3>Vertretungen</h3></div>
+      ${hint('notfall','Vertretung, Ansage und Terminsperre gehören zusammen.')}
+      <div class="scroll">${lf.length?lf.map(it=>{const d=it.draft;return `<div class="mini" style="display:block;cursor:default">
+        <div class="ch" style="margin-bottom:10px"><b>${fmt(it.start)} – ${fmt(it.end)}</b>${pill(hStatus(it))}</div>
         <dl class="kv">${d.emergency==='vertretung'?`<dt>Vertretung</dt><dd>${esc(d.vName)}</dd><dt>Telefon</dt><dd>${esc(d.vPhone)}</dd>${d.vAddr?`<dt>Adresse</dt><dd>${esc(d.vAddr)}</dd>`:''}`:`<dt>Kontakt</dt><dd>Standard-Notdienst, ${STD.phone}</dd>`}<dt>Geprüft am</dt><dd>${fmt(d.verifiedOn)}</dd></dl>
-        <div class="shead" style="margin:12px 0 0"><span class="chip">${ic('link')}Teil des Urlaubs ${fmtS(it.start)}–${fmtS(it.end)}</span><button class="btn sm" data-action="edit" data-id="${it.id}" data-step="2">Im Urlaub bearbeiten</button></div></div>`}).join('')}</div>`
-      :`<div class="card soft empty">${ic('users')}<b>Keine Vertretungen geplant</b>Der Standard-Notdienst gilt durchgehend.</div>`}</div>
-  </div>`;
+        <button class="btn sm" style="margin-top:12px" data-action="edit" data-id="${it.id}" data-step="2">Im Urlaub bearbeiten</button></div>`}).join('')
+      :`<div class="empty">${ic('users')}<b>Keine Vertretungen geplant</b>Der Standard-Notdienst gilt durchgehend.</div>`}</div></section>
+  </div></div>`;
 }
 
 /* ---------- Integrationen ---------- */
 function intCard(id,icon,title,sub,status,fields,extra){
   const c=S.intCheck[id];
-  return `<div class="card pad" id="sec-${id}" style="scroll-margin-top:24px"><div class="irow"><span class="ibox">${ic(icon)}</span><div class="body"><h3>${title}</h3><p class="t2" style="margin:2px 0 0">${sub}</p></div>${pill(status)}</div>
-    <dl class="kv" style="margin-top:20px">${fields.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>${extra||''}
-    <div class="toolrow" style="margin-top:16px"><button class="btn sm" data-action="intcheck" data-id="${id}" ${c==='busy'?'aria-busy="true" disabled':''}>${c==='busy'?'<span class="spin" aria-hidden="true"></span>Wird geprüft …':`${ic('refresh')}Verbindung prüfen`}</button>${c==='ok'?`<span class="t2" style="align-self:center">Gerade geprüft · keine Fehler</span>`:''}</div></div>`;
+  return `<section class="card${fl(id)}" id="sec-${id}"><div class="irow"><span class="ibox">${ic(icon)}</span><div class="bd"><h3>${title}</h3><p class="t2" style="margin:2px 0 0">${sub}</p></div></div>
+    <div style="margin:14px 0 16px">${pill(status)}</div>
+    <dl class="kv" style="grid-template-columns:100px 1fr">${fields.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>${extra||''}
+    <div class="end" style="padding-top:16px;display:flex;gap:10px;align-items:center"><button class="btn sm" data-action="intcheck" data-id="${id}" ${c==='busy'?'aria-busy="true" disabled':''}>${c==='busy'?'<span class="spin" aria-hidden="true"></span>Wird geprüft …':`${ic('refresh')}Verbindung prüfen`}</button>${c==='ok'?'<span class="t2">Gerade geprüft, keine Fehler</span>':''}</div></section>`;
 }
 function intView(){
-  return `<div class="page">${mchips()}
-    <div class="head"><div><h1>Integrationen</h1><p class="lead">Verbundene Systeme und welche Daten Vocia liest oder schreibt.</p></div></div>
-    <div class="grid">
-      ${intCard('kalender','cal','Praxiskalender (PVS)','Letzte Synchronisation vor 2 Min.',['Verbunden','ok','checkc'],[['Liest','Freie Zeiten, Terminarten, bestehende Termine'],['Schreibt','Neue Termine, Absagen'],['Berechtigung','Läuft in 12 Tagen ab']],`<div class="msg warn">${ic('clock')}<div class="body"><b>Berechtigung läuft am ${fmt(addDays(TODAY,12))} ab.</b> Danach kann Vocia keine Termine mehr bestätigen und übergibt alle Terminwünsche ans Team.</div><button class="btn sm" data-action="stub">Erneuern</button></div>`)}
-      ${intCard('telefon','phone','Telefonanlage','Weiterleitung der Praxisnummer 030 4471 2200',['Aktiv','ok','checkc'],[['Weiterleitung','Nach 3 Klingeltönen und außerhalb der Sprechzeiten'],['Ausweichnummer','030 4471 2299 bei Störung'],['Letzter Testanruf',S.test.at||'02.10.2026, 09:14']])}
-      ${intCard('nachrichten','sms','SMS & E-Mail','Terminbestätigungen an Patient:innen',['Verzögert','warn','clock'],[['Seit','Heute, 13:40'],['Betroffen','2 Bestätigungen in der Warteschlange'],['Verhalten','Erneuter Versand, keine Doppelzustellung']],`<div class="msg info">${ic('info')}<div class="body">Termine bleiben im Kalender bestätigt. Nur die Benachrichtigung verzögert sich.</div></div>`)}
-    </div>
-  </div>`;
+  return `<div class="page">${head({title:'Integrationen',lead:'Verbundene Systeme und welche Daten Vocia liest oder schreibt.'})}
+  <div class="body" style="grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto">
+    ${intCard('kalender','cal','Praxiskalender (PVS)','Sync vor 2 Min.',['Verbunden','ok','checkc'],[['Liest','Freie Zeiten, Terminarten, bestehende Termine'],['Schreibt','Neue Termine, Absagen'],['Berechtigung',`Bis ${fmt(addDays(TODAY,12))}`]],`<div class="msg warn">${ic('clock')}<div class="bd"><b>Berechtigung läuft in 12 Tagen ab.</b> Danach übergibt Vocia alle Terminwünsche ans Team.<div style="margin-top:8px"><button class="btn sm" data-action="stub">Jetzt erneuern</button></div></div></div>`)}
+    ${intCard('telefon','phone','Telefonanlage','Praxisnummer 030 4471 2200',['Aktiv','ok','checkc'],[['Weiterleitung','Nach 3 Klingeltönen und außerhalb der Sprechzeiten'],['Ausweichnummer','030 4471 2299 bei Störung'],['Letzter Test',S.test.at||'02.10.2026, 09:14']])}
+    ${intCard('nachrichten','sms','SMS & E-Mail','Terminbestätigungen',['Verzögert','warn','clock'],[['Seit','Heute, 13:40'],['Betroffen','2 Bestätigungen in der Warteschlange'],['Verhalten','Erneuter Versand, keine Doppelzustellung']],`<div class="msg info">${ic('info')}<div class="bd">Termine bleiben im Kalender bestätigt. Nur die Benachrichtigung verzögert sich.</div></div>`)}
+  </div></div>`;
 }
 
 /* ---------- Auswertung ---------- */
 function auswView(){
   const W=WEEK,tot=W.reduce((a,x)=>a+x.s+x.h+x.f,0),s=W.reduce((a,x)=>a+x.s,0),h=W.reduce((a,x)=>a+x.h,0),f=W.reduce((a,x)=>a+x.f,0);
-  const max=Math.max(...W.map(x=>x.s+x.h+x.f));
-  const rmax=REASONS[0][1];
-  return `<div class="page">${mchips()}
-    <div class="head"><div><h1>Auswertung</h1><p class="lead">Volumen und Qualität. Eine niedrige Übergabequote ist nur gut, wenn die sichere Lösungsquote hoch bleibt.</p></div>
-      <div class="tabs" role="tablist" aria-label="Zeitraum"><button class="tab" role="tab" aria-selected="true">7 Tage</button><button class="tab" role="tab" aria-selected="false" data-action="stub">30 Tage</button></div></div>
-    <div id="sec-ueberblick" class="grid g4" style="scroll-margin-top:24px">
-      <div class="stat"><span class="lbl">Anrufe</span><span class="big num">${tot}</span><span class="def">Letzte 7 Tage</span></div>
-      <div class="stat green"><span class="lbl">Sicher gelöst</span><span class="big num">${pct(s,tot)}<small>%</small></span><span class="def">Mit Bestätigung abgeschlossen</span></div>
-      <div class="stat"><span class="lbl">Übergeben</span><span class="big num">${pct(h,tot)}<small>%</small></span><span class="def">An das Team, mit Aufgabe</span></div>
-      <div class="stat"><span class="lbl">Fehlgeschlagen</span><span class="big num">${f}</span><span class="def">Abgebrochen oder Fehler</span></div>
+  const max=Math.max(...W.map(x=>x.s+x.h+x.f)),rmax=REASONS[0][1];
+  return `<div class="page">${head({title:'Auswertung',lead:'Eine niedrige Übergabequote ist nur gut, wenn die sichere Lösungsquote hoch bleibt.',actions:`<div class="tabs" role="tablist" aria-label="Zeitraum"><button class="tab" role="tab" aria-selected="true">7 Tage</button><button class="tab" role="tab" aria-selected="false" data-action="stub">30 Tage</button></div>`})}
+  <div class="body" style="grid-template-columns:2fr 1fr;grid-template-rows:auto minmax(0,1fr)">
+    <div class="kstrip" style="grid-column:1 / 3">
+      <div class="ks"><span>Anrufe · 7 Tage</span><b>${tot}</b></div>
+      <div class="ks"><span>Sicher gelöst</span><b>${pct(s,tot)}<small>%</small></b><em>mit Bestätigung</em></div>
+      <div class="ks"><span>Übergeben</span><b>${pct(h,tot)}<small>%</small></b><em>mit Aufgabe</em></div>
+      <div class="ks"><span>Fehlgeschlagen</span><b>${f}</b><em>abgebrochen oder Fehler</em></div>
     </div>
-    <div class="section card pad" id="sec-verlauf">
-      <div class="shead"><h3>Anrufe pro Tag</h3><div class="legend"><span><i style="background:var(--vocia-primary-blue)"></i>Gelöst</span><span><i style="background:var(--blue-300)"></i>Übergeben</span><span><i style="background:var(--orange-600)"></i>Fehlgeschlagen</span></div></div>
+    <section class="card${fl('verlauf')}" id="sec-verlauf"><div class="ch"><h3>Anrufe pro Tag</h3><div class="legend"><span><i style="background:var(--vocia-primary-blue)"></i>Gelöst</span><span><i style="background:var(--blue-300)"></i>Übergeben</span><span><i style="background:var(--orange-600)"></i>Fehlgeschlagen</span></div></div>
       <div class="chart" role="img" aria-label="${W.map(x=>`${WD[D(x.date).getDay()]}: ${x.s} gelöst, ${x.h} übergeben, ${x.f} fehlgeschlagen`).join('; ')}">
-        ${W.map(x=>{const t=x.s+x.h+x.f;return `<div class="bar" title="${x.s} gelöst · ${x.h} übergeben · ${x.f} fehlgeschlagen">${t?`<div class="seg f" style="height:${x.f/max*100}%"></div><div class="seg h" style="height:${x.h/max*100}%"></div><div class="seg s" style="height:${x.s/max*100}%"></div>`:''}</div>`}).join('')}
-      </div>
-      <div class="xl">${W.map(x=>{const t=x.s+x.h+x.f;return `<span><b class="num">${t||'–'}</b>${WD[D(x.date).getDay()].slice(0,2)}${x.d===0?' (heute)':''}</span>`}).join('')}</div>
-      <p class="cap" style="margin:12px 0 0">Wochenenden: Praxis geschlossen, Anrufe gehen an den Notdienst-Hinweis.</p>
-    </div>
-    <div class="section card pad" id="sec-gruende"><div class="shead"><h3>Übergabegründe</h3><span class="cap">Letzte 7 Tage</span></div>
-      <div class="rank">${REASONS.map(([l,n])=>`<div class="r"><span>${l}</span><b class="num" style="text-align:right">${n}</b><div class="track"><div style="width:${n/rmax*100}%"></div></div></div>`).join('')}</div>
-      <div class="note"><b>Actionable reasons.</b> "Verschieben nicht freigegeben" leads; enabling rescheduling end-to-end is the next roadmap candidate (§3.2).</div></div>
-  </div>`;
+        ${W.map(x=>{const t=x.s+x.h+x.f;return `<div class="bar" title="${x.s} gelöst · ${x.h} übergeben · ${x.f} fehlgeschlagen">${t?`<div class="seg f" style="height:${x.f/max*100}%"></div><div class="seg h" style="height:${x.h/max*100}%"></div><div class="seg s" style="height:${x.s/max*100}%"></div>`:''}</div>`}).join('')}</div>
+      <div class="xl">${W.map(x=>{const t=x.s+x.h+x.f;return `<span><b>${t||'–'}</b>${WD[D(x.date).getDay()].slice(0,2)}${x.d===0?' (heute)':''}</span>`}).join('')}</div>
+      <p class="cap" style="margin:10px 0 0">Am Wochenende ist die Praxis geschlossen; Anrufer hören den Notdienst-Hinweis.</p></section>
+    <section class="card${fl('gruende')}" id="sec-gruende"><div class="ch"><h3>Übergabegründe</h3><span class="cap">7 Tage</span></div>
+      <div class="rank">${REASONS.map(([l,n])=>`<div class="r"><span>${l}</span><b style="text-align:right">${n}</b><div class="track"><div style="width:${n/rmax*100}%"></div></div></div>`).join('')}</div></section>
+  </div></div>`;
 }
 
 /* ---------- Einstellungen ---------- */
 function settingsView(){
-  return `<div class="page">${mchips()}
-    <div class="head"><div><h1>Einstellungen</h1><p class="lead">Team, Sicherheit und Datenaufbewahrung. Änderungen werden im Prüfprotokoll festgehalten.</p></div></div>
-    <div id="sec-team" style="scroll-margin-top:24px"><div class="shead"><h2>Team & Rollen</h2><button class="btn sm" data-action="stub">${ic('plus')}Person einladen</button></div>
-      <div class="card list team"><div class="row hd" aria-hidden="true"><span>Name</span><span>Rolle</span><span>2FA</span><span>Zuletzt aktiv</span></div>
+  return `<div class="page">${head({title:'Einstellungen',lead:'Team, Sicherheit und Datenaufbewahrung. Änderungen werden im Prüfprotokoll festgehalten.'})}
+  <div class="body" style="grid-template-columns:1.7fr 1fr;grid-template-rows:auto auto;align-content:start">
+    <section class="card${fl('team')}" id="sec-team" style="padding:0"><div class="ch" style="padding:20px 20px 0"><h3>Team & Rollen</h3><button class="btn sm" data-action="stub">${ic('plus')}Person einladen</button></div>
+      <div class="list team"><div class="row hd" aria-hidden="true"><span>Name</span><span>Rolle</span><span>2FA</span><span>Zuletzt aktiv</span></div>
       ${TEAM.map(p=>`<div class="row" style="cursor:default"><span class="t1">${p.n}${p.n===ME?' <span class="t2">(Sie)</span>':''}</span><span>${p.r}</span><span>${p.twofa?pill(['Aktiv','ok','checkc']):pill(['Fehlt','warn','alert'])}</span><span class="t2">${p.last}</span></div>`).join('')}</div>
-      <div class="msg warn">${ic('alert')}<div class="body">S. Neumann hat noch keine Zwei-Faktor-Anmeldung eingerichtet. Ab ${fmt(addDays(TODAY,7))} ist sie Pflicht.</div></div></div>
-    <div class="grid g2 section" id="sec-sicherheit">
-      <div class="card pad"><h3 style="margin-bottom:12px">Sicherheit</h3><dl class="kv"><dt>Zwei-Faktor</dt><dd>Pflicht für alle</dd><dt>Sitzung</dt><dd>Abmeldung nach 30 Min. Inaktivität</dd><dt>Prüfprotokoll</dt><dd>Alle Zugriffe und Änderungen</dd></dl></div>
-      <div class="card pad" id="sec-daten" style="scroll-margin-top:24px"><h3 style="margin-bottom:12px">Datenaufbewahrung</h3><dl class="kv"><dt>Audioaufnahmen</dt><dd>Aus</dd><dt>Transkripte</dt><dd>30 Tage, nur Praxisleitung</dd><dt>Zusammenfassungen</dt><dd>12 Monate</dd></dl>
-        <p class="cap" style="margin:12px 0 0">Mit Ihrer Datenschutzbeauftragten abgestimmt am 12.08.2026.</p></div>
-    </div>
-    <div class="section card pad irow" id="sec-plan"><span class="ibox">${ic('card')}</span><div class="body"><h3>Plan „Praxis“</h3><p class="t2" style="margin:2px 0 0">Bis 1.500 Anrufe pro Monat · nächste Rechnung am ${fmt(addDays(TODAY,16))}</p></div><button class="btn sm" data-action="stub">Rechnungen</button></div>
-  </div>`;
+      <div class="msg warn" style="margin:4px 20px 20px">${ic('alert')}<div class="bd">S. Neumann hat noch keine Zwei-Faktor-Anmeldung. Ab ${fmt(addDays(TODAY,7))} ist sie Pflicht.</div></div></section>
+    <section class="card${fl('sicherheit')}" id="sec-sicherheit"><h3 style="margin-bottom:14px">Sicherheit</h3><dl class="kv"><dt>Zwei-Faktor</dt><dd>Pflicht für alle</dd><dt>Sitzung</dt><dd>Abmeldung nach 30 Min. Inaktivität</dd><dt>Prüfprotokoll</dt><dd>Alle Zugriffe und Änderungen</dd></dl></section>
+    <section class="card${fl('daten')}" id="sec-daten"><h3 style="margin-bottom:14px">Datenaufbewahrung</h3><dl class="kv"><dt>Audioaufnahmen</dt><dd>Aus</dd><dt>Transkripte</dt><dd>30 Tage, nur Praxisleitung</dd><dt>Zusammenfassungen</dt><dd>12 Monate</dd></dl>
+      <p class="cap" style="margin:12px 0 0">Mit Ihrer Datenschutzbeauftragten abgestimmt am 12.08.2026.</p></section>
+    <section class="card${fl('plan')}" id="sec-plan"><div class="irow"><span class="ibox">${ic('card')}</span><div class="bd"><h3>Plan „Praxis“</h3><p class="t2" style="margin:2px 0 0">Bis 1.500 Anrufe pro Monat · nächste Rechnung am ${fmt(addDays(TODAY,16))}</p></div></div>
+      <button class="btn sm end" style="align-self:flex-start;margin-top:14px" data-action="stub">Rechnungen ansehen</button></section>
+  </div></div>`;
 }
 
 /* ---------- Holiday flow ---------- */
@@ -846,106 +919,92 @@ function errs1(d){const e={};
   if(!d.start)e.start='Bitte wählen Sie den ersten geschlossenen Tag.';
   else if(d.start<TODAY&&!S.editingId)e.start='Der Urlaub kann nicht in der Vergangenheit beginnen.';
   if(!d.reopen)e.reopen='Bitte wählen Sie den Tag, an dem die Praxis wieder öffnet.';
-  else if(d.start&&d.reopen<=d.start)e.reopen='Der Tag der Wiedereröffnung muss nach dem ersten geschlossenen Tag liegen.';
+  else if(d.start&&d.reopen<=d.start)e.reopen='Muss nach dem ersten geschlossenen Tag liegen.';
   return e}
 function errs2(d){const e={};
-  if(d.emergency==='vertretung'){if(!d.vName.trim())e.vName='Bitte geben Sie den Namen der Vertretungspraxis an.';if(!d.vPhone.trim())e.vPhone='Bitte geben Sie eine Telefonnummer an. Vocia nennt keine unbestätigten Kontaktdaten.'}
+  if(d.emergency==='vertretung'){if(!d.vName.trim())e.vName='Bitte geben Sie den Namen der Vertretungspraxis an.';if(!d.vPhone.trim())e.vPhone='Bitte geben Sie eine Telefonnummer an.'}
   if(!d.verified)e.verified='Bitte bestätigen Sie, dass Sie die Angaben geprüft haben.';
   return e}
 function warn3(d){const t=ansageOf(d),w=[];
   if(!t.trim())return ['Die Ansage ist leer. Vocia braucht einen Text.'];
-  if(!/digitale Assistentin|KI|Vocia/.test(t))w.push('Der Hinweis, dass hier eine digitale Assistentin spricht, fehlt. Anrufer müssen darüber informiert werden.');
+  if(!/digitale Assistentin|KI|Vocia/.test(t))w.push('Der Hinweis, dass hier eine digitale Assistentin spricht, fehlt.');
   if(d.edited&&!t.includes(long(d.reopen))&&!t.includes(fmtS(d.reopen)))w.push(`Der Tag der Wiedereröffnung (${long(d.reopen)}) fehlt im Text.`);
   if(d.edited&&d.mention&&d.emergency==='vertretung'&&d.vName.trim()&&!t.includes(d.vName.trim()))w.push(`Die Vertretung (${d.vName.trim()}) wird im Text nicht genannt.`);
   return w}
-const stepErrs=n=>n===1?errs1(S.draft):n===2?errs2(S.draft):n===3&&!ansageOf(S.draft).trim()?{ansage:'Die Ansage ist leer.'}:{};
+const stepErrs=n=>n===1?errs1(S.draft):n===2?errs2(S.draft):n===3&&!ansageOf(S.draft).trim()?{ansage:'leer'}:{};
 const overlaps=d=>S.items.filter(i=>i.id!==S.editingId&&i.start<=lastDay(d)&&i.end>=d.start);
 const apptsIn=d=>APPTS.filter(a=>a.d>=d.start&&a.d<=lastDay(d));
 const fieldErr=(n,k,e)=>S.tried[n]&&e[k]?`<p class="ferr" id="e-${k}">${ic('err')}<span>${e[k]}</span></p>`:'';
 const inv=(n,k,e)=>S.tried[n]&&e[k]?`aria-invalid="true" aria-describedby="e-${k}"`:'';
 
 function step1(d){
-  const e=errs1(d);
-  let o=`<p class="eyebrow">Schritt 1 von 4</p><h1 id="steph" tabindex="-1">Wann ist die Praxis geschlossen?</h1>
-  <p class="lead" style="margin-bottom:32px">Geben Sie den Zeitraum einmal ein. Terminsperre, Ansage und Notfallkontakt werden daraus abgeleitet.</p>
-  <div class="grid2">
-    <div class="field"><label for="f-start">Erster geschlossener Tag</label><input id="f-start" type="date" value="${d.start}" data-field="start" ${inv(1,'start',e)}>${fieldErr(1,'start',e)}</div>
-    <div class="field"><label for="f-reopen">Wieder geöffnet am</label><input id="f-reopen" type="date" value="${d.reopen}" data-field="reopen" ${inv(1,'reopen',e)}>${fieldErr(1,'reopen',e)}</div>
-  </div>
-  <div class="note"><b>"Wieder geöffnet am" instead of an end date.</b> Teams think "we're back on Monday"; this removes off-by-one mismatches.</div>`;
-  if(!e.start&&!e.reopen){
-    o+=`<div class="derived"><div><small>Letzter Öffnungstag</small><b>${long(lastOpen(d.start))}</b></div>
-      <div class="mid"><small>Geschlossen</small><b>${fmtS(d.start)} – ${fmtS(lastDay(d))}</b><div class="t2">${workdays(d)} Werktage</div></div>
-      <div><small>Wieder geöffnet</small><b>${long(d.reopen)}</b></div></div>`;
-    const ov=overlaps(d);
-    if(ov.length)o+=`<div class="msg warn">${ic('alert')}<div class="body"><b>Überschneidung:</b> ${ov.map(x=>`${x.kind} ${fmtS(x.start)}–${fmtS(x.end)}`).join(', ')}. Bitte prüfen Sie, ob beide Einträge nötig sind.</div></div>`;
-    const a=apptsIn(d);
-    o+=`<div class="block"><h3>Termine</h3>
-      <label class="check boxed"><input type="checkbox" data-field="block" ${d.block?'checked':''}><span>Keine neuen Termine in diesem Zeitraum buchen<small>Vocia vergibt telefonisch keine Termine. Endet automatisch mit dem Urlaub.</small></span></label>
-      ${a.length?`<div class="msg warn">${ic('alert')}<div class="body"><b>${a.length} bestehende ${a.length===1?'Termin liegt':'Termine liegen'} im Zeitraum.</b> Vocia sagt sie nicht automatisch ab. Bitte buchen Sie sie um.
+  const e=errs1(d),ok=!e.start&&!e.reopen,a=ok?apptsIn(d):[],ov=ok?overlaps(d):[];
+  return {title:'Wann ist die Praxis geschlossen?',lead:'Geben Sie den Zeitraum einmal ein. Terminsperre, Ansage und Notfallkontakt werden daraus abgeleitet.',cols:'1.1fr 1fr',
+  left:`<div class="grid2">
+      <div class="field"><label for="f-start">Erster geschlossener Tag</label><input id="f-start" type="date" value="${d.start}" data-field="start" ${inv(1,'start',e)}>${fieldErr(1,'start',e)}</div>
+      <div class="field"><label for="f-reopen">Wieder geöffnet am</label><input id="f-reopen" type="date" value="${d.reopen}" data-field="reopen" ${inv(1,'reopen',e)}>${fieldErr(1,'reopen',e)}</div></div>
+    ${ok?`<div class="derived"><div><small>Letzter Öffnungstag</small><b>${long(lastOpen(d.start))}</b></div><div class="mid"><small>Geschlossen</small><b>${fmtS(d.start)} – ${fmtS(lastDay(d))}</b><div class="t2">${workdays(d)} Werktage</div></div><div><small>Wieder geöffnet</small><b>${long(d.reopen)}</b></div></div>`:''}
+    ${ov.length?`<div class="msg warn">${ic('alert')}<div class="bd"><b>Überschneidung:</b> ${ov.map(x=>`${x.kind} ${fmtS(x.start)}–${fmtS(x.end)}`).join(', ')}. Bitte prüfen Sie, ob beide Einträge nötig sind.</div></div>`:''}`,
+  right:`<section class="card soft" style="padding:18px"><h3 style="margin-bottom:12px">Termine</h3>
+      <label class="check boxed" style="background:var(--surface)"><input type="checkbox" data-field="block" ${d.block?'checked':''}><span>Keine neuen Termine in diesem Zeitraum<small>Vocia vergibt telefonisch keine Termine. Endet automatisch mit dem Urlaub.</small></span></label>
+      ${!ok?'':a.length?`<div class="msg warn">${ic('alert')}<div class="bd"><b>${a.length} bestehende ${a.length===1?'Termin liegt':'Termine liegen'} im Zeitraum.</b> Vocia sagt sie nicht automatisch ab. Bitte umbuchen.
         <ul class="appts">${a.map(x=>`<li><span>${WD[D(x.d).getDay()].slice(0,2)}, ${fmt(x.d)}</span><span>${x.t}</span><span>${x.what}</span></li>`).join('')}</ul></div></div>`
-      :`<div class="msg ok">${ic('checkc')}<div class="body">Keine bestehenden Termine im Zeitraum.</div></div>`}</div>`;
-  }
-  return o;
+      :`<div class="msg ok">${ic('checkc')}<div class="bd">Keine bestehenden Termine im Zeitraum.</div></div>`}</section>`};
 }
 function step2(d){
   const e=errs2(d);
-  return `<p class="eyebrow">Schritt 2 von 4</p><h1 id="steph" tabindex="-1">Wohin in dringenden Fällen?</h1>
-  <p class="lead" style="margin-bottom:32px">Vocia nennt diesen Kontakt, wenn Anrufer nach Notdienst oder Vertretung fragen.</p>
-  <fieldset style="border:0;padding:0;margin:0"><legend class="sr">Notfallkontakt</legend><div class="opts">
-    <label class="opt"><input type="radio" name="emergency" value="standard" data-field="emergency" ${d.emergency==='standard'?'checked':''}><div><b>Standard-Notdienst</b><span>${STD.type}, ${STD.phone}</span></div></label>
-    <label class="opt"><input type="radio" name="emergency" value="vertretung" data-field="emergency" ${d.emergency==='vertretung'?'checked':''}><div><b>Vertretungspraxis</b><span>Eine Kollegenpraxis übernimmt.</span></div></label>
-  </div></fieldset>
-  ${d.emergency==='vertretung'?`<div class="vform">
-    <div><button class="btn sm" data-action="useLast">${ic('refresh')}Zuletzt verwendet: ${LAST_V.name}</button></div>
-    <div class="grid2">
-      <div class="field"><label for="f-vName">Name der Praxis</label><input id="f-vName" type="text" autocomplete="off" value="${esc(d.vName)}" data-field="vName" data-live="1" ${inv(2,'vName',e)}>${fieldErr(2,'vName',e)}</div>
-      <div class="field"><label for="f-vPhone">Telefonnummer</label><input id="f-vPhone" type="tel" value="${esc(d.vPhone)}" data-field="vPhone" data-live="1" ${inv(2,'vPhone',e)}>${fieldErr(2,'vPhone',e)}</div>
-    </div>
-    <div class="field"><label for="f-vAddr">Adresse <em>(optional)</em></label><input id="f-vAddr" type="text" value="${esc(d.vAddr)}" data-field="vAddr" data-live="1"></div>
-  </div>`:''}
-  <div class="block grid" style="gap:8px">
+  return {title:'Wohin in dringenden Fällen?',lead:'Vocia nennt diesen Kontakt, wenn Anrufer nach Notdienst oder Vertretung fragen.',cols:'1.2fr 1fr',
+  left:`<fieldset style="border:0;padding:0;margin:0"><legend class="sr">Notfallkontakt</legend><div class="opts" style="grid-template-columns:1fr 1fr">
+      <label class="opt"><input type="radio" name="emergency" value="standard" data-field="emergency" ${d.emergency==='standard'?'checked':''}><div><b>Standard-Notdienst</b><span>${STD.phone}</span></div></label>
+      <label class="opt"><input type="radio" name="emergency" value="vertretung" data-field="emergency" ${d.emergency==='vertretung'?'checked':''}><div><b>Vertretungspraxis</b><span>Kollegenpraxis übernimmt</span></div></label></div></fieldset>
+    ${d.emergency==='vertretung'?`<div class="vform" style="margin-top:12px">
+      <div><button class="btn sm" data-action="useLast">${ic('refresh')}Zuletzt verwendet: ${LAST_V.name}</button></div>
+      <div class="grid2">
+        <div class="field"><label for="f-vName">Name der Praxis</label><input id="f-vName" type="text" autocomplete="off" value="${esc(d.vName)}" data-field="vName" data-live="1" ${inv(2,'vName',e)}>${fieldErr(2,'vName',e)}</div>
+        <div class="field"><label for="f-vPhone">Telefonnummer</label><input id="f-vPhone" type="tel" value="${esc(d.vPhone)}" data-field="vPhone" data-live="1" ${inv(2,'vPhone',e)}>${fieldErr(2,'vPhone',e)}</div></div>
+      <div class="field"><label for="f-vAddr">Adresse <em>(optional)</em></label><input id="f-vAddr" type="text" value="${esc(d.vAddr)}" data-field="vAddr" data-live="1"></div></div>`
+    :`<div class="msg info">${ic('info')}<div class="bd">${STD.type}, ${STD.phone}. Zuletzt geprüft am ${fmt(STD.checked)}.</div></div>`}`,
+  right:`<div style="display:grid;gap:8px">
     <label class="check boxed"><input type="checkbox" data-field="mention" ${d.mention?'checked':''}><span>Notfallkontakt direkt in der Ansage nennen<small>Viele Anrufer fragen sonst trotzdem nach.</small></span></label>
     <label class="check boxed ${S.tried[2]&&e.verified?'invalid':''}"><input id="f-verified" type="checkbox" data-field="verified" ${d.verified?'checked':''} ${inv(2,'verified',e)}><span>Ich habe die Angaben geprüft<small>Name, Telefonnummer und Erreichbarkeit während des Urlaubs. Das Prüfdatum wird gespeichert.</small></span></label>
-    ${fieldErr(2,'verified',e)}
-  </div>
-  <div class="note"><b>Emergency before announcement.</b> Once the contact is verified, the announcement names it automatically; no unverified number reaches a patient.</div>`;
+    ${fieldErr(2,'verified',e)}</div>`};
 }
 function step3(d){
   const w=warn3(d);
-  return `<p class="eyebrow">Schritt 3 von 4</p><h1 id="steph" tabindex="-1">Was hören Anrufer?</h1>
-  <p class="lead" style="margin-bottom:32px">Der Text wurde aus Zeitraum und Notfallkontakt erstellt. Sie können ihn anpassen.</p>
-  <div class="field"><label for="f-ansage">Urlaubsansage</label><textarea id="f-ansage" data-field="ansage" data-live="1">${esc(ansageOf(d))}</textarea></div>
-  <div class="toolrow"><button class="btn" data-action="listen">${ic('play')}Anhören</button><button class="btn ghost" id="regenBtn" data-action="regen" ${d.edited?'':'hidden'}>${ic('refresh')}Text neu erstellen</button></div>
-  <div id="ansWarn" aria-live="polite">${w.map(x=>`<div class="msg warn">${ic('alert')}<div class="body">${esc(x)}</div></div>`).join('')}</div>
-  <details class="legal"><summary>Datenschutz & Transparenz</summary><ul><li>Anrufer müssen erfahren, dass sie mit einer digitalen Assistentin sprechen.</li><li>Die genaue Formulierung stimmt Ihre Praxis mit der zuständigen Datenschutzstelle ab.</li></ul></details>`;
+  return {title:'Was hören Anrufer?',lead:'Der Text wurde aus Zeitraum und Notfallkontakt erstellt. Sie können ihn anpassen.',cols:'1.5fr 1fr',
+  left:`<div class="field"><label for="f-ansage">Urlaubsansage</label><textarea id="f-ansage" data-field="ansage" data-live="1">${esc(ansageOf(d))}</textarea></div>
+    <div class="toolrow"><button class="btn" data-action="listen">${ic('play')}Anhören</button><button class="btn ghost" id="regenBtn" data-action="regen" ${d.edited?'':'hidden'}>${ic('refresh')}Text neu erstellen</button></div>
+    <div id="ansWarn" aria-live="polite">${w.map(x=>`<div class="msg warn">${ic('alert')}<div class="bd">${esc(x)}</div></div>`).join('')}</div>`,
+  right:`<section class="card soft legal" style="padding:18px"><h3 style="margin-bottom:10px">Datenschutz & Transparenz</h3><ul>
+    <li>Anrufer müssen erfahren, dass sie mit einer digitalen Assistentin sprechen. Der Hinweis wird geprüft.</li>
+    <li>Die genaue Formulierung stimmt Ihre Praxis mit der zuständigen Datenschutzstelle ab.</li>
+    <li>Nach dem Urlaub gilt automatisch wieder die Standard-Begrüßung.</li></ul></section>`};
 }
 function step4(d){
   const last=lastDay(d),a=apptsIn(d),active=d.start<=TODAY;
   const emerg=d.emergency==='vertretung'?`Bitte wenden Sie sich an unsere Vertretung, <mark>${esc(d.vName)}</mark>, Telefon <mark>${esc(d.vPhone)}</mark>.`:`Bitte wenden Sie sich an den zahnärztlichen Notdienst unter <mark>${STD.phone}</mark>.`;
-  const book=d.block?`Die Praxis ist bis einschließlich <mark>${long(last)}</mark> geschlossen. Ich kann Ihren Terminwunsch aufnehmen. Das Praxisteam meldet sich ab <mark>${long(d.reopen)}</mark> bei Ihnen. Der Termin ist damit noch nicht bestätigt.`:`Ich schaue nach freien Terminen ab <mark>${long(d.reopen)}</mark>.`;
-  return `<p class="eyebrow">Schritt 4 von 4</p><h1 id="steph" tabindex="-1">So erlebt ein Anrufer Ihren Urlaub</h1>
-  <p class="lead" style="margin-bottom:32px">Ein Beispielgespräch mit Ihren Einstellungen. Prüfen Sie es und veröffentlichen Sie den Urlaub.</p>
-  <div class="sim"><div class="simhd"><span>Beispielanruf am ${long(active?TODAY:d.start)}</span><button class="btn sm" data-action="listen">${ic('play')}Ansage anhören</button></div>
+  const book=d.block?`Die Praxis ist bis einschließlich <mark>${long(last)}</mark> geschlossen. Ich nehme Ihren Terminwunsch auf. Das Praxisteam meldet sich ab <mark>${long(d.reopen)}</mark>. Der Termin ist damit noch nicht bestätigt.`:`Ich schaue nach freien Terminen ab <mark>${long(d.reopen)}</mark>.`;
+  return {title:'So erlebt ein Anrufer Ihren Urlaub',lead:'Ein Beispielgespräch mit Ihren Einstellungen. Prüfen Sie es und veröffentlichen Sie den Urlaub.',cols:'1.35fr 1fr',
+  left:`<div class="sim" style="height:100%"><div class="simhd"><span>Beispielanruf am ${long(active?TODAY:d.start)}</span><button class="btn sm" data-action="listen">${ic('play')}Ansage anhören</button></div>
     <div class="conv">
       <div class="m v"><div class="who">Vocia</div><div class="txt">${esc(ansageOf(d))}</div></div>
       <div class="m c"><div class="who">Anrufer</div><div class="txt">Kann ich diese Woche noch einen Termin bekommen?</div></div>
       <div class="m v"><div class="who">Vocia</div><div class="txt">${book}</div></div>
-      <div class="m c"><div class="who">Anrufer</div><div class="txt">Mir ist ein Bracket abgebrochen und es tut ziemlich weh.</div></div>
-      <div class="m v"><div class="who">Vocia</div><div class="txt">${emerg}</div></div>
-    </div></div>
-  <div class="note"><b>Honest status language.</b> Vocia says "I can note your request", never "your appointment is confirmed".</div>
-  <div class="block"><h3>Zusammenfassung</h3><div class="card summary">
-    <div class="ci">${ic('checkc','ok')}<div>Geschlossen ${fmt(d.start)} – ${fmt(last)}, wieder geöffnet ${long(d.reopen)}<small>${d.block?'Keine neuen Termine im Zeitraum':'Termine bleiben buchbar'}</small></div><button class="btn ghost sm" data-action="step" data-step="1">Ändern</button></div>
-    ${a.length?`<div class="ci">${ic('alert','wn')}<div>${a.length} bestehende ${a.length===1?'Termin':'Termine'} im Zeitraum<small>Werden nicht automatisch abgesagt. Bitte umbuchen.</small></div><button class="btn ghost sm" data-action="step" data-step="1">Ansehen</button></div>`:''}
-    <div class="ci">${ic('checkc','ok')}<div>Notfälle: ${d.emergency==='vertretung'?esc(d.vName):'Standard-Notdienst'}<small>Geprüft am ${fmt(d.verifiedOn||TODAY)}${d.mention?' · wird in der Ansage genannt':''}</small></div><button class="btn ghost sm" data-action="step" data-step="2">Ändern</button></div>
-    <div class="ci">${ic('checkc','ok')}<div>Urlaubsansage<small>Danach gilt automatisch wieder die Standard-Begrüßung</small></div><button class="btn ghost sm" data-action="step" data-step="3">Ändern</button></div>
-  </div>
-  <div class="msg info">${ic('info')}<div class="body">${active?'<b>Der Urlaub läuft bereits.</b> Änderungen gelten sofort nach dem Veröffentlichen.':`Wird am <b>${long(d.start)}</b> um 00:00 Uhr automatisch aktiv und endet vor der Öffnung am <b>${long(d.reopen)}</b>.`}</div></div></div>`;
+      <div class="m c"><div class="who">Anrufer</div><div class="txt">Mir ist ein Bracket abgebrochen und es tut weh.</div></div>
+      <div class="m v"><div class="who">Vocia</div><div class="txt">${emerg}</div></div></div></div>`,
+  right:`<section class="card summary" style="padding:4px 20px"><div class="ci">${ic('checkc','ok')}<div>${fmtS(d.start)} – ${fmtS(last)} geschlossen<small>Wieder geöffnet ${long(d.reopen)} · ${d.block?'keine neuen Termine':'Termine buchbar'}</small></div><button class="btn ghost sm" data-action="step" data-step="1">Ändern</button></div>
+    ${a.length?`<div class="ci">${ic('alert','wn')}<div>${a.length} bestehende ${a.length===1?'Termin':'Termine'} im Zeitraum<small>Werden nicht automatisch abgesagt</small></div><button class="btn ghost sm" data-action="step" data-step="1">Ansehen</button></div>`:''}
+    <div class="ci">${ic('checkc','ok')}<div>Notfälle: ${d.emergency==='vertretung'?esc(d.vName):'Standard-Notdienst'}<small>Geprüft am ${fmt(d.verifiedOn||TODAY)}${d.mention?' · in der Ansage genannt':''}</small></div><button class="btn ghost sm" data-action="step" data-step="2">Ändern</button></div>
+    <div class="ci">${ic('checkc','ok')}<div>Urlaubsansage<small>Danach automatisch wieder Standard-Begrüßung</small></div><button class="btn ghost sm" data-action="step" data-step="3">Ändern</button></div></section>
+    <div class="msg info">${ic('info')}<div class="bd">${active?'<b>Der Urlaub läuft bereits.</b> Änderungen gelten sofort.':`Wird am <b>${long(d.start)}</b> um 00:00 Uhr aktiv und endet vor der Öffnung am <b>${long(d.reopen)}</b>.`}</div></div>`};
 }
+function stepper(){return `<ol class="stepper" aria-label="Schritte">${['Zeitraum','Notfall','Ansage','Prüfen'].map((t,i)=>{const n=i+1,cur=n===S.step,done=!cur&&n<S.maxStep;
+  return `<li><button class="stp ${done?'done':''}" data-action="step" data-step="${n}" ${n>S.maxStep?'disabled':''} ${cur?'aria-current="step"':''}><span class="sd">${done?ic('check'):n}</span>${t}</button></li>`}).join('')}</ol>`}
 function flowView(){
-  return `<div style="display:flex;flex-direction:column;min-height:100%"><div class="flowpage" style="flex:1;width:100%">${mchips()}${[step1,step2,step3,step4][S.step-1](S.draft)}</div>
-    <div class="flowfoot"><span class="pos">${S.editingId?'Urlaub bearbeiten':'Urlaub planen'}</span><div class="acts">
+  const v=[step1,step2,step3,step4][S.step-1](S.draft);
+  return `<div class="page flow">${head({eyebrow:`${S.editingId?'Urlaub bearbeiten':'Urlaub planen'} · Schritt ${S.step} von 4`,title:v.title,lead:v.lead,hid:'steph',actions:stepper()})}
+    <div class="body" style="grid-template-columns:${v.cols};align-items:start"><div class="col">${v.left}</div><div class="col">${v.right}</div></div>
+    <div class="flowfoot"><span class="pos">${S.editingId?'Urlaub bearbeiten':'Urlaub planen'} · Entwurf${S.dirty?' mit Änderungen':''}</span><div class="acts">
       ${S.step>1?`<button class="btn" data-action="back">Zurück</button>`:`<button class="btn" data-action="cancel">Abbrechen</button>`}
       ${S.step<4?`<button class="btn primary" data-action="next">Weiter</button>`:`<button class="btn primary" data-action="publish" ${S.busy?'aria-busy="true" disabled':''}>${S.busy?'<span class="spin" aria-hidden="true"></span>Wird veröffentlicht …':`${ic('check')}Urlaub veröffentlichen`}</button>`}
     </div></div></div>`;
@@ -954,6 +1013,7 @@ function flowView(){
 /* ---------- overlays ---------- */
 function modal(){
   if(!S.modal)return '';
+  if(S.modal.type==='note')return noteModal();
   if(S.modal.type==='discard')return `<div class="overlay" data-action="closeModal"><div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="mh">
     <h2 id="mh">Entwurf verwerfen?</h2><p>Der Urlaub ist noch nicht veröffentlicht. Ihre Eingaben gehen verloren und Vocia nutzt weiter die Standard-Begrüßung.</p>
     <div class="acts"><button class="btn" data-action="closeModal" id="mfirst">Weiter bearbeiten</button><button class="btn primary" data-action="discard">Entwurf verwerfen</button></div></div></div>`;
@@ -961,41 +1021,39 @@ function modal(){
   const active=hStatus(it)[0]==='Aktiv';
   return `<div class="overlay" data-action="closeModal"><div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="mh">
     <h2 id="mh">${it.kind} ${fmtS(it.start)}–${fmtS(it.end)} löschen?</h2>
-    ${it.draft?`<p>Damit werden auch entfernt:</p><ul><li>Urlaubsansage</li>${it.draft.block?'<li>Terminsperre</li>':''}<li>Notfallkontakt für diesen Zeitraum</li></ul>${active?'<p><b style="color:var(--text-primary)">Der Urlaub ist gerade aktiv.</b> Vocia kehrt sofort zur Standard-Begrüßung zurück und nimmt wieder Termine an.</p>':''}`:'<p>Diese Sonderzeit wird entfernt.</p>'}
+    ${it.draft?`<p>Damit werden auch entfernt:</p><ul><li>Urlaubsansage</li>${it.draft.block?'<li>Terminsperre</li>':''}<li>Notfallkontakt für diesen Zeitraum</li></ul>${active?'<p style="margin-top:10px"><b style="color:var(--text-primary)">Der Urlaub ist gerade aktiv.</b> Vocia kehrt sofort zur Standard-Begrüßung zurück.</p>':''}`:'<p>Diese Sonderzeit wird entfernt.</p>'}
     <div class="acts"><button class="btn" data-action="closeModal" id="mfirst">Abbrechen</button><button class="btn primary" data-action="confirmDelete">Löschen</button></div></div></div>`;
 }
 function drawer(){
   if(!S.drawer)return '';
-  const body=S.drawer.type==='call'?callDrawer(CALLS.find(c=>c.id===S.drawer.id)):taskDrawer(TASKS.find(t=>t.id===S.drawer.id));
+  const body=S.drawer.type==='call'?callDrawer(CALLS.find(c=>c.id===S.drawer.id)):S.drawer.type==='q'?qDrawer(QUESTIONS.find(q=>q.id===S.drawer.id)):taskDrawer(TASKS.find(t=>t.id===S.drawer.id));
   return `<div class="scrim" data-action="closeDrawer"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dtitle">${body}</aside>`;
 }
 
 /* ---------- render ---------- */
 const VIEWS={dashboard:dashboardView,anrufe:callsView,aufgaben:tasksView,termine:termineView,zeiten:zeitenView,ansage:ansageView,notfall:notfallView,integrationen:intView,auswertung:auswView,einstellungen:settingsView,flow:flowView};
-const app=document.getElementById('app');
-let animDrawer=true;
+const app=document.getElementById('app'),stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.setProperty('--s',s)}
+addEventListener('resize',fit);fit();
 function render(){
-  document.body.classList.toggle('notes',S.notes);
-  const prev=document.getElementById('main');const y=prev?prev.scrollTop:0;
-  const pn=panel();
-  const hadDrawer=!!document.querySelector('.drawer');
-  app.innerHTML=`<div class="shell ${pn?'':'nopanel'}">${rail()}${pn}<div class="mainwrap"><main class="main" id="main">${VIEWS[S.view]()}</main></div></div>${drawer()}${modal()}`;
-  if(hadDrawer&&S.drawer){const dw=document.querySelector('.drawer'),sc=document.querySelector('.scrim');dw.style.animation='none';sc.style.animation='none'}
-  const m=document.getElementById('main');m.scrollTop=S.top?0:y;
-  if(S.modal){const f=document.getElementById('mfirst');f&&f.focus()}
+  stage.classList.toggle('notes',S.notes);
+  const hadDrawer=!!document.querySelector('.drawer'),hadModal=!!document.querySelector('.overlay');
+  app.innerHTML=`<div class="shell">${sidebar()}<div class="mainwrap"><main class="main${S.enter&&S.view==='dashboard'?' enter':''}" id="main">${VIEWS[S.view]()}</main></div></div>${drawer()}${modal()}`;
+  if(hadDrawer&&S.drawer){document.querySelector('.drawer').style.animation='none';document.querySelector('.scrim').style.animation='none'}
+  if(hadModal&&S.modal){const o=document.querySelector('.overlay');if(o)o.style.animation='none'}
+  if(S.modal){const f=document.querySelector('.modal [data-autofocus]')||document.getElementById('mfirst');if(f){f.focus();if(f.tagName==='TEXTAREA')f.setSelectionRange(f.value.length,f.value.length)}}
   else if(S.focus){const f=document.querySelector(S.focus);f&&f.focus()}
-  const ac=document.querySelector('.rbtn[aria-current="page"]');if(ac&&window.innerWidth<=900)ac.scrollIntoView({block:'nearest',inline:'center'});
-  S.top=false;S.focus=null;
+  S.focus=null;S.flash=null;S.enter=false;
 }
 function refreshLive(){const d=S.draft;if(!d)return;
-  const aw=document.getElementById('ansWarn');if(aw)aw.innerHTML=warn3(d).map(x=>`<div class="msg warn">${ic('alert')}<div class="body">${esc(x)}</div></div>`).join('');
+  const aw=document.getElementById('ansWarn');if(aw)aw.innerHTML=warn3(d).map(x=>`<div class="msg warn">${ic('alert')}<div class="bd">${esc(x)}</div></div>`).join('');
   const rb=document.getElementById('regenBtn');if(rb)rb.hidden=!d.edited}
 let tt,undoFn=null;
 function toast(msg,undo){const t=document.getElementById('toast');undoFn=undo||null;
   t.innerHTML=`<span>${esc(msg)}</span>${undo?`<button class="btn sm" data-action="undo">${ic('undo')}Rückgängig</button>`:''}`;
   t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>{t.classList.remove('show');undoFn=null},undo?6000:2600)}
 function speak(text){try{if(!('speechSynthesis' in window))throw 0;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='de-DE';speechSynthesis.speak(u);toast('Wird vorgelesen')}catch(_){toast('Vorlesen wird in diesem Browser nicht unterstützt')}}
-const leaveFlow=()=>{S.view=S.origin;S.draft=null;S.editingId=null;S.dirty=false;S.tried={};S.top=true};
+const leaveFlow=()=>{S.view=S.origin;S.draft=null;S.editingId=null;S.dirty=false;S.tried={}};
 const nowHM=()=>{const n=new Date();return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`};
 
 document.addEventListener('click',e=>{
@@ -1003,40 +1061,62 @@ document.addEventListener('click',e=>{
   const a=el.dataset.action,d=S.draft;
   switch(a){
     case 'stub':toast('Nicht Teil dieses Prototyps');return;
-    case 'nav':{
-      const to=el.dataset.view;
+    case 'nav':{const to=el.dataset.view;
       if(S.view==='flow'&&S.dirty){S.modal={type:'discard',then:to};break}
       if(S.view==='flow')leaveFlow();
-      S.drawer=null;S.view=to;S.origin=to;S.banner=null;S.top=true;break}
-    case 'filter':S.sub[S.view]=el.dataset.id;S.top=true;break;
-    case 'anchor':{S.sub[S.view]=el.dataset.id;render();const sec=document.getElementById('sec-'+el.dataset.id);if(sec){sec.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}return}
-    case 'plan':S.origin=el.dataset.origin||'zeiten';S.draft=newDraft();S.editingId=null;S.step=1;S.maxStep=1;S.dirty=false;S.tried={};S.banner=null;S.view='flow';S.top=true;S.focus='#steph';break;
+      S.drawer=null;S.view=to;S.origin=to;S.banner=null;S.enter=to==='dashboard';break}
+    case 'filter':S.sub[S.view]=el.dataset.id;break;
+    case 'go':{const to=el.dataset.view,sub=el.dataset.sub;S.drawer=null;S.view=to;S.origin=to;S.banner=null;if(sub){S.sub[to]=sub;if(!DEF_SUB[to])S.flash=sub}break}
+    case 'openQ':{const q=QUESTIONS.find(x=>x.id===el.dataset.id);S.qDraft=q.a||'';S.qErr=false;S.drawer={type:'q',id:q.id,ret:`[data-action="openQ"][data-id="${q.id}"]`};S.focus=q.medical?'#dtitle':'#qa';break}
+    case 'saveQ':{const q=QUESTIONS.find(x=>x.id===el.dataset.id);if(!S.qDraft.trim()){S.qErr=true;S.focus='#qa';break}
+      const prev={status:q.status,a:q.a};q.a=S.qDraft.trim();q.status='answered';S.drawer=null;
+      toast('Antwort gespeichert. Vocia beantwortet die Frage ab jetzt selbst.',()=>{q.status=prev.status;q.a=prev.a;render()});break}
+    case 'ignoreQ':{const q=QUESTIONS.find(x=>x.id===el.dataset.id);q.status='ignored';S.drawer=null;toast('Frage ignoriert',()=>{q.status='open';render()});break}
+    case 'ackQ':{const q=QUESTIONS.find(x=>x.id===el.dataset.id);q.status='team';S.drawer=null;toast('Zur Kenntnis genommen',()=>{q.status='open';render()});break}
+    case 'callTask':{const t=TASKS.find(x=>x.id===el.dataset.id);S.drawer={type:'task',id:t.id,ret:`[data-action="callTask"][data-id="${t.id}"]`};S.calling=t.id;t.owner=ME;t.status='bearbeitung';S.focus='#dtitle';break}
+    case 'callnow':{const t=TASKS.find(x=>x.id===el.dataset.id);S.calling=t.id;t.owner=ME;t.status='bearbeitung';break}
+    case 'cbres':{const t=TASKS.find(x=>x.id===el.dataset.id),r=el.dataset.r,prev={status:t.status,due:t.due,overdue:t.overdue,n:t.attempts.length};
+      const stamp='Heute, '+nowHM();S.calling=null;
+      const undo=()=>{t.status=prev.status;t.due=prev.due;t.overdue=prev.overdue;t.attempts.length=prev.n;render()};
+      if(r==='ok'){t.attempts.push({t:stamp,r:'Erreicht'});t.status='erledigt';S.drawer=null;toast(`${t.id} erledigt`,undo)}
+      else if(r==='nicht'){t.attempts.push({t:stamp,r:'Nicht erreicht'});t.due=plus2h();t.overdue=false;toast(`Nicht erreicht. Nächster Versuch: ${t.due}`,undo)}
+      else{t.attempts.push({t:stamp,r:'Nachricht auf Mailbox'});t.status='wartet';toast('Mailbox-Nachricht vermerkt',undo)}
+      break}
+    case 'noteEdit':S.noteDraft=S.note?{...S.note}:{text:'',until:0};S.noteErr=false;S.modal={type:'note',ret:'[data-action="noteEdit"]'};break;
+    case 'sugg':S.noteDraft.text=SUGG[+el.dataset.i];S.noteErr=false;break;
+    case 'noteListen':speak(noteSpeech(S.noteDraft.text));return;
+    case 'noteSave':if(!S.noteDraft.text.trim()){S.noteErr=true;break}
+      S.note={text:S.noteDraft.text.trim(),until:S.noteDraft.until};S.modal=null;S.focus='[data-action="noteEdit"]';toast('Tagesnotiz ist aktiv');break;
+    case 'noteEnd':{const prev=S.note;S.note=null;toast('Tagesnotiz beendet',()=>{S.note=prev;render()});break}
+    case 'sayGreet':speak(S.note?noteSpeech(S.note.text):GREET+' Wie kann ich Ihnen helfen?');return;
+    case 'anchor':S.sub[S.view]=el.dataset.id;S.flash=el.dataset.id;break;
+    case 'plan':S.origin=el.dataset.origin||'zeiten';S.draft=newDraft();S.editingId=null;S.step=1;S.maxStep=1;S.dirty=false;S.tried={};S.banner=null;S.view='flow';S.focus='#steph';break;
     case 'edit':{const it=S.items.find(i=>i.id===+el.dataset.id);if(!it||!it.draft)return;
-      S.origin=S.view;S.draft=JSON.parse(JSON.stringify(it.draft));S.editingId=it.id;S.step=+(el.dataset.step||4);S.maxStep=4;S.dirty=false;S.tried={};S.banner=null;S.view='flow';S.top=true;S.focus='#steph';break}
+      S.origin=S.view;S.draft=JSON.parse(JSON.stringify(it.draft));S.editingId=it.id;S.step=+(el.dataset.step||4);S.maxStep=4;S.dirty=false;S.tried={};S.banner=null;S.view='flow';S.focus='#steph';break}
     case 'delete':S.modal={type:'delete',id:+el.dataset.id,ret:`[data-action="delete"][data-id="${el.dataset.id}"]`};break;
     case 'closeModal':if(el.classList.contains('overlay')&&e.target!==el)return;{const r=S.modal&&S.modal.ret;S.modal=null;S.focus=r||null}break;
-    case 'confirmDelete':{const it=S.items.find(i=>i.id===S.modal.id);S.items=S.items.filter(i=>i.id!==S.modal.id);S.modal=null;S.banner=`${it.kind} ${fmtS(it.start)}–${fmtS(it.end)} wurde gelöscht.`;S.focus='h1';break}
+    case 'confirmDelete':{const it=S.items.find(i=>i.id===S.modal.id);S.items=S.items.filter(i=>i.id!==S.modal.id);S.modal=null;S.banner=`${it.kind} ${fmtS(it.start)}–${fmtS(it.end)} wurde gelöscht.`;break}
     case 'discard':{const to=S.modal.then;S.modal=null;leaveFlow();if(to){S.view=to;S.origin=to}break}
     case 'dismiss':S.banner=null;break;
     case 'openCall':S.drawer={type:'call',id:el.dataset.id,ret:S.drawer?S.drawer.ret:`[data-id="${el.dataset.id}"]`};S.focus='#dtitle';break;
     case 'openTask':
       if(S.view!=='aufgaben'&&!S.drawer){S.view='aufgaben';S.origin='aufgaben'}
       S.drawer={type:'task',id:el.dataset.id,ret:S.drawer?S.drawer.ret:`[data-action="openTask"][data-id="${el.dataset.id}"]`};S.focus='#dtitle';break;
-    case 'closeDrawer':{const r=S.drawer&&S.drawer.ret;S.drawer=null;S.focus=r;break}
+    case 'closeDrawer':{const r=S.drawer&&S.drawer.ret;S.drawer=null;S.calling=null;S.focus=r;break}
     case 'assign':{const t=TASKS.find(x=>x.id===el.dataset.id);t.owner=ME;if(t.status==='neu')t.status='zugewiesen';toast(`${t.id} ist Ihnen zugewiesen`);break}
     case 'done':{const t=TASKS.find(x=>x.id===el.dataset.id);const prev={status:t.status,owner:t.owner};t.status='erledigt';t.owner=t.owner||ME;S.drawer=null;
-      toast(`${t.id} als erledigt markiert`,()=>{t.status=prev.status;t.owner=prev.owner;render()});S.focus='h1';break}
+      toast(`${t.id} als erledigt markiert`,()=>{t.status=prev.status;t.owner=prev.owner;render()});break}
     case 'reopen':{const t=TASKS.find(x=>x.id===el.dataset.id);t.status=t.owner?'zugewiesen':'neu';toast(`${t.id} wieder geöffnet`);break}
     case 'undo':if(undoFn){undoFn();undoFn=null;document.getElementById('toast').classList.remove('show')}return;
     case 'testcall':S.test={state:'busy',at:S.test.at};render();setTimeout(()=>{S.test={state:'ok',at:`Heute, ${nowHM()}`};render()},1400);return;
     case 'intcheck':{const id=el.dataset.id;S.intCheck[id]='busy';render();setTimeout(()=>{S.intCheck[id]='ok';render()},1000);return}
     case 'say':speak(el.dataset.text);return;
-    case 'step':{const n=+el.dataset.step;if(n>S.maxStep)return;S.step=n;S.top=true;S.focus='#steph';break}
+    case 'step':{const n=+el.dataset.step;if(n>S.maxStep)return;S.step=n;S.focus='#steph';break}
     case 'next':{const er=stepErrs(S.step);
       if(Object.keys(er).length){S.tried[S.step]=true;render();const f=document.querySelector('[aria-invalid="true"]');if(f)f.focus();return}
       if(S.step===2&&!d.verifiedOn)d.verifiedOn=TODAY;
-      S.step++;S.maxStep=Math.max(S.maxStep,S.step);S.top=true;S.focus='#steph';break}
-    case 'back':S.step=Math.max(1,S.step-1);S.top=true;S.focus='#steph';break;
+      S.step++;S.maxStep=Math.max(S.maxStep,S.step);S.focus='#steph';break}
+    case 'back':S.step=Math.max(1,S.step-1);S.focus='#steph';break;
     case 'cancel':if(S.dirty){S.modal={type:'discard'};break}leaveFlow();break;
     case 'useLast':d.vName=LAST_V.name;d.vPhone=LAST_V.phone;d.vAddr=LAST_V.addr;S.dirty=true;break;
     case 'regen':d.edited=false;d.ansage='';break;
@@ -1046,15 +1126,15 @@ document.addEventListener('click',e=>{
         const item={id:S.editingId||Date.now(),kind:'Urlaub',start:d.start,end:lastDay(d),draft:saved};
         S.items=S.editingId?S.items.map(i=>i.id===S.editingId?item:i):[...S.items,item];
         S.banner=item.start<=TODAY?`<b>Urlaub ${fmtS(item.start)}–${fmtS(item.end)} veröffentlicht.</b> Die Änderungen sind jetzt aktiv.`:`<b>Urlaub ${fmtS(item.start)}–${fmtS(item.end)} veröffentlicht.</b> Vocia übernimmt ihn automatisch am ${long(item.start)}.`;
-        S.busy=false;leaveFlow();S.view='zeiten';S.origin='zeiten';S.sub.zeiten='urlaub';S.focus='h1';render();
-        const sec=document.getElementById('sec-urlaub');if(sec)sec.scrollIntoView({block:'start'});
-      },700);return}
+        S.busy=false;leaveFlow();S.view='zeiten';S.origin='zeiten';S.sub.zeiten='urlaub';render()},700);return}
     default:return;
   }
   render();
 });
 document.addEventListener('change',e=>{
-  const t=e.target,f=t.dataset&&t.dataset.field;if(!f)return;
+  const t=e.target;
+  if(t.dataset&&t.dataset.nf==='until'){S.noteDraft.until=+t.value;return}
+  const f=t.dataset&&t.dataset.field;if(!f)return;
   if(f==='notes'){S.notes=t.checked;render();return}
   const d=S.draft;if(!d||t.dataset.live)return;
   S.dirty=true;
@@ -1065,7 +1145,10 @@ document.addEventListener('change',e=>{
   render();
 });
 document.addEventListener('input',e=>{
-  const t=e.target;if(!t.dataset||!t.dataset.live||!S.draft)return;
+  const t=e.target;
+  if(t.dataset&&t.dataset.nf==='text'){S.noteDraft.text=t.value;document.getElementById('ntc').textContent=t.value.length+'/160';document.getElementById('ntp').textContent=noteSpeech(t.value);return}
+  if(t.dataset&&t.dataset.qa){S.qDraft=t.value;document.getElementById('qac').textContent=t.value.length+'/240';const p=document.getElementById('qprev');if(t.value.trim())p.textContent=t.value;else p.innerHTML='<span class="t2">Ihre Antwort erscheint hier.</span>';return}
+  if(!t.dataset||!t.dataset.live||!S.draft)return;
   const d=S.draft;S.dirty=true;
   if(t.dataset.field==='ansage'){d.ansage=t.value;d.edited=true}
   else{d[t.dataset.field]=t.value;d.verified=false;d.verifiedOn=null;const v=document.getElementById('f-verified');if(v)v.checked=false}
@@ -1074,9 +1157,9 @@ document.addEventListener('input',e=>{
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return;
   if(S.modal){const r=S.modal.ret;S.modal=null;S.focus=r||null;render()}
-  else if(S.drawer){const r=S.drawer.ret;S.drawer=null;S.focus=r;render()}
+  else if(S.drawer){const r=S.drawer.ret;S.drawer=null;S.calling=null;S.focus=r;render()}
 });
-window.addEventListener('beforeunload',e=>{if(S.view==='flow'&&S.dirty){e.preventDefault();e.returnValue=''}});
+addEventListener('beforeunload',e=>{if(S.view==='flow'&&S.dirty){e.preventDefault();e.returnValue=''}});
 render();
 })();
 </script>
